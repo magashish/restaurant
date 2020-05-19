@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Restaurant;
 use App\Models\RestaurantMenu;
+use App\Models\RestaurantMenuOption;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use \Illuminate\Support\Facades\Validator;
@@ -29,92 +30,113 @@ class RestaurantController extends Controller
      */
     public function index(Request $request)
     {
-		if ($request->ajax()) {
+        if ($request->ajax()) {
             $data = Restaurant::latest()->get();
             return Datatables::of($data)
-                    ->addIndexColumn()
-                    ->addColumn('action', function($row){   
-                            return '<a href="/admin/restaurant/'.$row->id.'" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
-							           <a href="/admin/restaurant-menu/'.$row->id.'" class="btn btn-xs btn-primary"><i class="fa fa-eye"></i></a>
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    return '<a href="/admin/restaurant/' . $row->id . '" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
+							           <a href="/admin/restaurant-menu/' . $row->id . '" class="btn btn-xs btn-primary"><i class="fa fa-eye"></i></a>
 									   <button class="btn btn-xs btn-delete" data-remote="javascript:void(0)"><i class="fa fa-trash"></i></button>';
-                    })
-                    ->rawColumns(['action'])
-                    ->make(true);
-        } 
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
         return view('pages.admin.restaurant.index');
     }
-	
-	 public function create()
+
+    public function create()
     {
         return view('pages.admin.restaurant.create');
-    }
-	 public function store(Request $request)
-    {
-		   $validator = Validator::make($request->all(), [ 
-            'name' => 'required',
-            'logo' =>'required|mimes:jpg.png,jpeg|max:2048',
-            'timings' => 'required',
-            'isopen'=>'required',
-        ]);
-		
-		$file = $request->file('logo');
-		$fileName = time().'.'.$file->getClientOriginalExtension();
-		$destinationPath = 'uploads';
-        $file->move($destinationPath,$fileName);
-		
-		$openinghour = $request->post('openinghour');
-		$closinghour = $request->post('closinghour');		
-		
-		$Restaurant = new Restaurant;
-        $Restaurant->name = $request->post('name');       
-        $Restaurant->logo = $fileName;
-		$Restaurant->timings = $openinghour." - ".$closinghour;
-        $Restaurant->isopen =$request->post('isopen');
-        $Restaurant->shortdescription = $request->post('shortdescription');
-        $Restaurant->description =$request->post('description');
-        
-        
-       $Restaurant->save();
-       $request->session()->flash('success', 'Restaurant Menu added successfully');
-		
-        return view('pages.admin.restaurant.create');
-    }
-     public function show($id){
-		$data = Restaurant::find($id);
-       return view('pages.admin.restaurant.show', compact('data'));
-	}
-	
-    public function createmenu($id){
-        return view('pages.admin.restaurant.menucreate')->with('id',$id);
     }
 
-    public function addmenu(Request $request){
-		$validator = Validator::make($request->all(), [ 
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'logo' => 'required|mimes:jpg.png,jpeg|max:2048',
+            'timings' => 'required',
+            'isopen' => 'required',
+        ]);
+
+        $file = $request->file('logo');
+        $fileName = time() . '.' . $file->getClientOriginalExtension();
+        $destinationPath = 'uploads';
+        $file->move($destinationPath, $fileName);
+
+        $openinghour = $request->post('openinghour');
+        $closinghour = $request->post('closinghour');
+
+        $Restaurant = new Restaurant;
+        $Restaurant->name = $request->post('name');
+        $Restaurant->logo = $fileName;
+        $Restaurant->timings = $openinghour . " - " . $closinghour;
+        $Restaurant->isopen = $request->post('isopen');
+        $Restaurant->shortdescription = $request->post('shortdescription');
+        $Restaurant->description = $request->post('description');
+
+
+        $Restaurant->save();
+        $request->session()->flash('success', 'Restaurant Menu added successfully');
+
+        return view('pages.admin.restaurant.create');
+    }
+
+    public function show($id)
+    {
+        $data = Restaurant::find($id);
+        return view('pages.admin.restaurant.show', compact('data'));
+    }
+
+    public function createmenu($id)
+    {
+        return view('pages.admin.restaurant.menucreate')->with('id', $id);
+    }
+
+    public function addmenu(Request $request)
+    {
+        //dd($request->all());
+        $validator = Validator::make($request->all(), [
             'restaurant_id' => 'required',
-			'price'=>'required',
+            'price' => 'required',
             'dishname' => 'required',
             'image' => 'required|mimes:jpg.png,jpeg|max:2048',
-            'category'=>'required',
+            'category' => 'required',
         ]);
-		$file = $request->file('image');
-		$fileName = time().'.'.$file->getClientOriginalExtension();
-		$destinationPath = 'uploads';
-        $file->move($destinationPath,$fileName);
-		
-	   $itemoptions = $request->post('itemoption');
-	   $itemoption = json_encode($itemoptions);
-		
+        $file = $request->file('image');
+        $fileName = time() . '.' . $file->getClientOriginalExtension();
+        $destinationPath = 'uploads';
+        $file->move($destinationPath, $fileName);
+
+        $itemoptions = $request->post('itemoption');
+        $itemoption = json_encode($itemoptions);
+
         $RestaurantMenu = new RestaurantMenu;
         $RestaurantMenu->restaurant_id = $request->post('restaurant_id');
         $RestaurantMenu->dishname = $request->post('dishname');
         $RestaurantMenu->image = $fileName;
-        $RestaurantMenu->category =$request->post('category');
+        $RestaurantMenu->category = $request->post('category');
         $RestaurantMenu->status = '1';
-		$RestaurantMenu->price =$request->post('price');
-		$RestaurantMenu->itemoption = $itemoption;		
-        
-       $RestaurantMenu->save();
-       $request->session()->flash('success', 'Restaurant Menu added successfully');
-        return view('pages.admin.restaurant.menucreate')->with('id',$request->post('restaurant_id'));
+        $RestaurantMenu->price = $request->post('price');
+        $RestaurantMenu->itemoption = $itemoption;
+
+        if ($RestaurantMenu->save()) {
+            $restaurantOptions = $request->get('option');
+
+            if (!empty($restaurantOptions)) {
+                foreach ($restaurantOptions as $restaurantOption) {
+                    $restaurantOptionObj = new RestaurantMenuOption;
+                    $restaurantOptionObj->restaurant_menu_id = $RestaurantMenu->id;
+                    $restaurantOptionObj->name = $restaurantOption['item'];
+                    $restaurantOptionObj->price = $restaurantOption['price'];
+                    $restaurantOptionObj->save();
+                }
+            }
+        }
+        //$request->session()->flash('success', 'Restaurant Menu added successfully');
+        //return view('pages.admin.restaurant.menucreate')->with('id', $request->post('restaurant_id'));
+
+        return redirect()->route('restaurantmenu', [$request->post('restaurant_id')])
+            ->with('success', 'Restaurant Menu added successfull');
     }
 }
