@@ -32,3 +32,4 @@
 <script src="{{ asset('js/Chart.min.js') }}"></script>
 <script src="{{ asset('js/demo.js') }}"></script>
 <script src="{{ asset('js/dashboard3.js') }}"></script>
+<script src="{{ asset('js/jquery.repeater.js') }}"></script>
