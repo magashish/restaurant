@@ -9,4 +9,9 @@ class Restaurant extends Model
     protected $fillable = [
         'name', 'logo', 'timings','isopen','shortdescription','description'
     ];
+
+    public function menu()
+    {
+        return $this->hasMany('App\Models\RestaurantMenu', 'restaurant_id');
+    }
 }
