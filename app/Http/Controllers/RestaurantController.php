@@ -28,18 +28,10 @@ class RestaurantController extends Controller{
      */
     public function show($id)
     {
-        $maindata = Restaurant::find($id);
-        /*$data = DB::table('restaurants')
-				->join('restaurant_menu', function($join) use ($id)
-				{
-					$join->on('restaurants.id', '=', 'restaurant_menu.restaurant_id')
-						    ->where('restaurant_menu.restaurant_id', '=', $id);
-				})
-				->get();*/
-        $data = Restaurant::where('id', $id)->with('menu')->first();
+        $data = Restaurant::where('id', $id)->with('menu', 'menu.options')->first();
         /*echo "<pre>";
         print_r($data);die;*/
 
-       return view('pages.restaurant.show', compact('maindata','data'));
+       return view('pages.restaurant.show', compact('data'));
 	}
 }

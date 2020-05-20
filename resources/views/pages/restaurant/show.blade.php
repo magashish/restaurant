@@ -1,7 +1,7 @@
 @extends('layouts.default')
 @section('content')
 
-    @if($maindata->isopen  ===0)
+    @if($data->isopen  ===0)
         @php $status = 'Closed'; @endphp
     @else
         @php $status = 'Open'; @endphp
@@ -12,13 +12,13 @@
             <div class="row">
                 <div class='col-md-12 col-sm-12'>
                     <div class="restaurant_detail">
-                        <div class="restaurant_img"><img src="{{asset('uploads').'/'.$maindata->logo}}"></div>
+                        <div class="restaurant_img"><img src="{{asset('uploads').'/'.$data->logo}}"></div>
                         <div class="restaurant_info">
                             <div class="resort_open">{{$status}}</div>
-                            <h2>{{$maindata->name}}</h2>
-                            <p>{{$maindata->shortdescription }}</p>
+                            <h2>{{$data->name}}</h2>
+                            <p>{{$data->shortdescription }}</p>
                             <!--<div class="min_order"><i class="fas fa-check"></i> Min $ 10.00</div>-->
-                            <div class="time"><i class="far fa-clock"></i> {{$maindata->timings}}</div>
+                            <div class="time"><i class="far fa-clock"></i> {{$data->timings}}</div>
                         </div>
                     </div>
                 </div>
@@ -60,16 +60,18 @@
                                         <div class="prodcut_cat">
                                             <h3>{{ $proddata->name }}</h3>
                                             <span>{{ $proddata->dishname }}</span>
-                                            <span>$ {{ $proddata->price }}</span>
+                                            <span class="menu-item-price-span">$ <span class="menu-item-price">{{ $proddata->price }}</span></span>
                                             <form>
                                                 <?php
-                                                $options = json_decode($proddata->itemoption);
+                                                $options = json_decode($proddata->options);
                                                 ?>
                                                 @foreach($options as $option)
-                                                    @php $new_str = str_replace(' ', '', $option); @endphp
+                                                    @php $new_str = str_replace(' ', '', $option->name); @endphp
                                                     <span>
-    											<input type="checkbox" name="itemoption" id="{{ $new_str }}">
-    											<label for="{{ $new_str }}"> {{ $option }}</label>
+    											<input type="checkbox" name="itemoption" id="{{ $new_str }}" class="menu-option-checkbox">
+    											<label for="{{ $new_str }}">
+                                                    {{ $option->name }} $<span class="menu-option-price">{{ $option->price }}</span>
+                                                </label>
     										</span>
                                                 @endforeach
                                                 <a href="#" class="addtocart">Add to cart</a>
@@ -110,7 +112,7 @@
                             <div class="tab-pane container fade" id="restaurant_info">
                                 <h4>POPULAR ORDERS Delicious hot food!</h4>
                                 <div class="tab_inner">
-                                    {{$maindata->description }}
+                                    {{$data->description }}
                                 </div>
                             </div>
                         </div>
@@ -140,3 +142,21 @@
         </div>
     </div>
 @stop
+@section('page_script')
+    <script>
+        $(document).ready(function () {
+            $(".menu-option-checkbox").on("change", function () {
+                var itemPriceObj = $(this).parents("form").siblings(".menu-item-price-span").find(".menu-item-price");
+                var itemPrice = itemPriceObj.text();
+
+                var optionPrice = $(this).siblings('label').find(".menu-option-price").text();
+                if($(this).is(":checked")) {
+                    itemPrice = parseInt(itemPrice) + parseInt(optionPrice);
+                } else {
+                    itemPrice = parseInt(itemPrice) - parseInt(optionPrice);
+                }
+                itemPriceObj.text(itemPrice);
+            });
+        });
+    </script>
+@endsection

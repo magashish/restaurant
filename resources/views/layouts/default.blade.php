@@ -13,5 +13,6 @@
    <footer>
        @include('includes.footer')
    </footer>
+@yield('page_script')
 </body>
 </html>
