@@ -26,16 +26,20 @@ class RestaurantController extends Controller{
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-	public function show($id){
-		$maindata = Restaurant::find($id);
-		$data = DB::table('restaurants')
+    public function show($id)
+    {
+        $maindata = Restaurant::find($id);
+        /*$data = DB::table('restaurants')
 				->join('restaurant_menu', function($join) use ($id)
 				{
 					$join->on('restaurants.id', '=', 'restaurant_menu.restaurant_id')
 						    ->where('restaurant_menu.restaurant_id', '=', $id);
 				})
-				->get();
-    
+				->get();*/
+        $data = Restaurant::where('id', $id)->with('menu')->first();
+        /*echo "<pre>";
+        print_r($data);die;*/
+
        return view('pages.restaurant.show', compact('maindata','data'));
 	}
 }
