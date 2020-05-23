@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRestaurantMenuOptionsTable extends Migration
+class CreateCartsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,14 @@ class CreateRestaurantMenuOptionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('restaurant_menu_options', function (Blueprint $table) {
+        Schema::create('carts', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')->on('users')->references('id')->onDelete('cascade');
             $table->bigInteger('restaurant_menu_id')->unsigned();
             $table->foreign('restaurant_menu_id')->on('restaurant_menu')->references('id')->onDelete('cascade');
-            $table->string('name');
             $table->double('price', 10, 2);
+            $table->integer('quantity')->default(0);
             $table->timestamps();
         });
     }
@@ -30,6 +32,6 @@ class CreateRestaurantMenuOptionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('restaurant_menu_options');
+        Schema::dropIfExists('carts');
     }
 }

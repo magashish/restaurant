@@ -54,19 +54,22 @@
                                     <div class="product_info">
                                         <div class="product_left">
                                             <div class="product_img"><img
-                                                    src="{{ isset($proddata->image) ? asset('uploads').'/'.$proddata->image : '' }}"></div>
+                                                    src="{{ $proddata->image }}">
+                                            </div>
                                             <div class="rating"><img src="{{ asset('images/rating_img.png') }}"></div>
                                         </div>
                                         <div class="prodcut_cat">
                                             <h3>{{ $proddata->name }}</h3>
                                             <span>{{ $proddata->dishname }}</span>
-                                            <span class="menu-item-price-span">$ <span class="menu-item-price">{{ $proddata->price }}</span></span>
-                                        <form method="POST" name="addtocart" action="{{ route('addtocart') }}">
+                                            <span class="menu-item-price-span">$ <span
+                                                    class="menu-item-price">{{ $proddata->price }}</span></span>
+                                            <form method="POST" name="addtocart" action="{{ route('addtocart') }}">
                                                 @csrf
-                                                <input type="hidden" name="pid" value="{{ $proddata->id }}" />
-                                                <input type="hidden" name="pname" value="{{ $proddata->dishname }}" />
-                                                <input type="hidden" class="price" name="price" value="{{ $proddata->price }}" />
-                                                <input type="hidden" name="pqty" value="1" />
+                                                <input type="hidden" name="pid" value="{{ $proddata->id }}"/>
+                                                <input type="hidden" name="pname" value="{{ $proddata->dishname }}"/>
+                                                <input type="hidden" class="price" name="price"
+                                                       value="{{ $proddata->price }}"/>
+                                                <input type="hidden" name="pqty" value="1"/>
                                                 <?php
                                                 $options = json_decode($proddata->options);
                                                 ?>
@@ -74,12 +77,17 @@
                                                 @foreach($options as $option)
                                                     @php $new_str = str_replace(' ', '', $option->name); @endphp
                                                     <span>
-                                                    <input type="checkbox" name="itemoption{{ $id }}" id="{{ $new_str }}" value="{{ $new_str }}" class="menu-option-checkbox">
-    											<label for="{{ $new_str }}">{{ $option->name }} $<span class="menu-option-price">{{ $option->price }}</span></label>
+                                                    <input type="checkbox" name="itemoption{{ $id }}"
+                                                           id="{{ $new_str }}" value="{{ $new_str }}"
+                                                           class="menu-option-checkbox">
+    											<label for="{{ $new_str }}">{{ $option->name }} $<span
+                                                        class="menu-option-price">{{ $option->price }}</span></label>
                                             </span>
-                                                @php $id++; @endphp
+                                                    @php $id++; @endphp
                                                 @endforeach
-                                                <button type="submit" class="addtocart" name="Add To Cart" value="Add To Cart">Add To Cart</button>
+                                                <button type="submit" class="addtocart" name="Add To Cart"
+                                                        value="Add To Cart">Add To Cart
+                                                </button>
                                             </form>
                                         </div>
                                     </div>
@@ -155,7 +163,7 @@
                 var itemPrice = itemPriceObj.text();
 
                 var optionPrice = $(this).siblings('label').find(".menu-option-price").text();
-                if($(this).is(":checked")) {
+                if ($(this).is(":checked")) {
                     itemPrice = parseInt(itemPrice) + parseInt(optionPrice);
                 } else {
                     itemPrice = parseInt(itemPrice) - parseInt(optionPrice);
