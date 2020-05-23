@@ -30,6 +30,7 @@ Route::get('/contact', function(){
 })->name('contact');
 
 Route::post('/cart', 'CartController@addtocart')->name('addtocart');
+Route::post('/cart/update', 'CartController@updatecart')->name('updatecart');
 
 /*Admin Routes*/
 Route::get('/admin', function(){

@@ -21,7 +21,7 @@
                             <th>Price</th>
                             <th>Quatity</th>
                             <th>Total</th>
-                            <th>Remove</th>
+                            <th>Action</th>
                         </tr>
 
                         <?php $total = 0 ?>
@@ -36,7 +36,10 @@
                           <td class="cartprice">$ {{ $details['price']}}</td>
                           <td class="cart_qty"><input type="number" id="quantity" name="quantity" value="{{ $details['quantity'] }}" min="1" max="10"></td>
                           <td class="carttotal">$ {{$details['price'] * $details['quantity']}}</td>
-                          <td class="cartremove"><a href="#"><i class="far fa-trash-alt"></i></a></td>
+                          <td class="cartremove">
+                            <button class="btn btn-info btn-sm update-cart" data-id="{{ $id }}"><i class="far fa-sync-alt"></i></button>
+                            <button class="btn btn-danger btn-sm remove-from-cart" data-id="{{ $id }}"><i class="far fa-trash-alt"></i></button>
+                          </td>
                          </tr>
                           @endforeach
                          @endif
@@ -69,9 +72,9 @@
                         <li>Delivery Charges <span>$ 0</span></li>
                         <li>Total <span>${{ $total }}</span></li>
                     </ul>
-                    <div class="updatecrt">
-                        <a href="#">Update Cart</a>
-                    </div>
+                    <!--<div class="updatecrt">
+                       <a href="{{ route('updatecart') }}">Update Cart</a>
+                    </div>-->
                     <div class="checkout_btn">
                         <a href="#">Checkout</a>
                     </div>
@@ -84,5 +87,37 @@
         </div>
     </div>
 </div>
+@endsection
+@section('page_script')
+   <script type="text/javascript">
+        $(document).ready(function () {
+          $(".update-cart").click(function (e) {
+           e.preventDefault();
+           var ele = $(this);
+            $.ajax({
+               url: '{{ url('update-cart') }}',
+               method: "patch",
+               data: {_token: '{{ csrf_token() }}', id: ele.attr("data-id"), quantity: ele.parents("tr").find(".quantity").val()},
+               success: function (response) {
+                   window.location.reload();
+               }
+            });
+        });
 
+        $(".remove-from-cart").click(function (e) {
+            e.preventDefault();
+            var ele = $(this);
+            if(confirm("Are you sure")) {
+                $.ajax({
+                    url: '{{ url('remove-from-cart') }}',
+                    method: "DELETE",
+                    data: {_token: '{{ csrf_token() }}', id: ele.attr("data-id")},
+                    success: function (response) {
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    });
+    </script>
 @endsection
