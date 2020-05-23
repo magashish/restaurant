@@ -12,7 +12,7 @@ body {
 img{border:none; max-width:100%; width: auto;height:auto;}
 a, li{text-decoration:none !important; color:#0f1539;
     transition: all 0.4s ease-in-out 0s;
-    -webkit-transition: all 0.4s ease-in-out 0s;  
+    -webkit-transition: all 0.4s ease-in-out 0s;
     -moz-transition: all 0.4s ease-in-out 0s;
     -ms-transition: all 0.4s ease-in-out 0s;
     -o-transition: all 0.4s ease-in-out 0s;}
@@ -515,7 +515,7 @@ footer {
     background-repeat: no-repeat;
     background-position: center;
 }
-a.addtocart {
+button.addtocart,a.addtocart {
     background: #b10700;
     margin-top: 10px;
     display: inline-block;
@@ -524,7 +524,7 @@ a.addtocart {
     text-transform: uppercase;
     border-radius: 5px;
 }
-a.addtocart:hover{
+button.addtocart:hover,a.addtocart:hover{
     background: #000;
 }
 .choose_menu {
@@ -572,7 +572,224 @@ a.addtocart:hover{
     max-width: 280px;
     width: 100%;
 }
+.page-title h2{
+    text-align: center;
+    margin: 0;
+    color: #000;
+    text-transform: uppercase;
+}
 
+.inner_banner.title_banner:after {
+    background-size: 12% auto, 13%, auto;
+}
+.inner_banner.title_banner {
+    padding: 60px 0;
+}
+.cart_table  table{
+    width: 100%;
+}
+.cart_table th, .cart_table td {
+    border: 1px solid #dadada;
+    padding: 13px;
+    text-align: center;
+    font-size: 16px;
+}
+.cart_table th {
+    background: #f2f2f2;
+    font-size: 18px;
+}
+.cart_table th:first-child, .cart_table td:first-child {
+    text-align: left;
+}
+.productimg {
+    width: 80px;
+    border-radius: 5px;
+    overflow: hidden;
+    vertical-align: middle;
+    margin-right: 5px;
+    display: inline-block;
+}
+.productname {
+    display: inline-block;
+}
+td.cartprice, td.carttotal{
+    font-weight: bold;
+}
+.cart_qty input {
+    text-align: center;
+    padding: 6px;
+}
+td.cartremove a {
+    color: #d6150d;
+    font-size: 24px;
+}
+td.cartremove a:hover{
+    color: #000;
+}
+.coupon, .picupordelivery {
+    float: left;
+    width: 100%;
+    margin-top: 30px;
+}
+.coupon h4, .picupordelivery h4{
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.coupon input {
+    float: left;
+    width: 300px;
+    background: #f6f2f2;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    height: 50px;
+}
+.coupon  input[type="submit"] {
+    width: auto;
+    background: #b10700;
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    height: 50px;
+    padding: 10px 25px;
+}
+.coupon  input[type="submit"]:hover{
+    background: #000;
+}
+.picupordelivery span {
+    margin-right: 20px;
+}
+input[type=checkbox], input[type=radio]{
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    left: -10000px;
+}
+input[type=checkbox] + label, input[type=radio] + label{
+    padding-left: 23px;
+    font-size: 16px;
+    position: relative;
+}
+input[type=checkbox] + label:before, input[type=radio] + label:before{
+    content: "";
+    border: 1px solid #999;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    left: 0;
+    top: 4px;
+}
+input[type=checkbox]:checked + label:before, input[type=radio]:checked + label:before{
+    background: url(../images/check_icon.png) no-repeat;
+    background-position: 3px 2px;
+}
+.cart_total {
+    background: #f5f5f5;
+    padding: 25px;
+    float: left;
+    width: 100%;
+}
+.cart_total h3{
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.cart_total li {
+    border-bottom: 1px solid #d4d4d4;
+    padding: 10px 0;
+    float: left;
+    width: 100%;
+    font-size: 16px;
+}
+.cart_total li span {
+    float: right;
+}
+.updatecrt a {
+    border: 1px solid #d4d4d4;
+    padding: 10px 50px;
+    display: inline-block;
+    font-size: 16px;
+}
+.updatecrt, .checkout_btn, .place_order {
+    text-align: center;
+    margin-top: 30px;
+    float: left;
+    width: 100%;
+}
+.checkout_btn a, .place_order a {
+    width: 100%;
+    background: #b10700;
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    padding: 20px 20px;
+    display: block;
+}
+.checkout_btn a:hover, .updatecrt a:hover, .place_order a:hover{
+    background: #000;
+    color: #fff;
+}
+.paymentmethod {
+    margin-top: 30px;
+    float: left;
+    width: 100%;
+}
+.billingdetail{
+    float: left;
+    width: 100%;
+}
+.billingdetail h3, .checkoutorder h3{
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+.billingdetail input, .billingdetail textarea{
+    background: #f5f5f5;
+    border: 1px solid #e5e5e5;
+    padding: 10px 15px;
+    float: left;
+    width: 100%;
+    margin-bottom: 15px;
+}
+.billingdetail textarea{
+    height: 120px;
+}
+.billingdetail label{
+    float: left;
+    width: 100%;
+    font-size: 14px;
+    margin-bottom: 3px;
+}
+.billingdetail label span{
+    color: red;
+}
+.billingform{
+    margin: 0 -15px;
+}
+.col-half {
+    float: left;
+    width: 50%;
+    padding: 0 15px;
+}
+.col-full, .billingdetail  .diff_ship{
+    float: left;
+    width: 100%;
+    padding: 0 15px;
+}
+.billingdetail  .diff_ship{
+    margin-top: 30px;
+}
+.billingdetail  .diff_ship label, .billingdetail  .diff_ship h3 {
+    display: inline-block;
+    width: auto;
+    float: none;
+    vertical-align: top;
+    margin-right: 5px;
+}
 
 
 
@@ -590,10 +807,10 @@ a.addtocart:hover{
         margin-bottom: 5px;
     }
     .restaurant_info p {
-        font-size: 16px;    
+        font-size: 16px;
     }
     .inner_banner {
-        padding: 60px 0;    
+        padding: 60px 0;
     }
     .nav-tabs .nav-link {
         font-size: 16px;
@@ -753,6 +970,29 @@ a.addtocart:hover{
     .special_img {
         margin-top: 30px;
     }
+    .cart_total {
+        padding: 20px;
+        margin-top: 20px;
+    }
+    .col-half {
+        width: 100%;
+    }
+    .billingdetail input, .billingdetail textarea {
+        padding: 8px 13px;
+        margin-bottom: 9px;
+    }
+    .billingdetail h3, .checkoutorder h3 {
+        font-size: 17px;
+        font-weight: bold;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+    .checkoutorder {
+        margin-top: 30px;
+    }
+    .checkoutorder .cart_total {
+        margin-top: 0;
+    }
 }
 
 @media(max-width: 767px){
@@ -771,7 +1011,7 @@ a.addtocart:hover{
 	    float: right;
 	    width: 100%;
 	}
-	.main_slider {	    
+	.main_slider {
 		padding: 20px 0;
 	}
 	ul.carousel-indicators {
@@ -870,4 +1110,78 @@ a.addtocart:hover{
     .choose_menu {
         margin-top: 20px;
     }
+    td.cart_img:before {
+        content: "Ordered";
+        float: left;
+        font-weight: bold;
+    }
+    td.cartprice:before {
+        content: "Price";
+        float: left;
+        font-weight: bold;
+    }
+    td.cart_qty:before {
+        content: "Quatity";
+        float: left;
+        font-weight: bold;
+    }
+    td.carttotal:before {
+        content: "Total";
+        float: left;
+        font-weight: bold;
+    }
+    td.cartremove:before {
+        content: "Remove";
+        float: left;
+        font-weight: bold;
+    }
+    .cart_table th{
+        display: none;
+    }
+    .cart_table table , .cart_table tbody{
+        width: 100%;
+    }
+    .cart_table td {
+        padding: 8px;
+        font-size: 14px;
+        display: block;
+        width: 100%;
+        text-align: right !important;
+        border-bottom: none;
+    }
+    .cart_table td:last-child{
+        border-bottom: 1px solid #dadada;
+    }
+    .productimg {
+        width: 40px;
+    }
+    .cart_table tr {
+        margin-bottom: 10px;
+        display: block;
+    }
+    .coupon input {
+        width: 100%;
+        margin-bottom: 10px;
+        height: auto;
+    }
+    .coupon input[type="submit"] {
+        height: auto;
+    }
+    .inner_banner.title_banner {
+        padding: 30px 0;
+    }
+    td.cartremove a {
+        font-size: 16px;
+    }
+    .coupon h4, .picupordelivery h4 {
+        font-size: 16px;
+        margin-bottom: 14px;
+    }
+    .checkout_btn a, .place_order a {
+        padding: 14px 20px;
+    }
+    .cart_total li {
+        font-size: 14px;
+    }
+
 }

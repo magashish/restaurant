@@ -29,6 +29,9 @@ Route::get('/contact', function(){
    return View::make('pages.contact');
 })->name('contact');
 
+Route::post('/cart', 'CartController@addtocart')->name('addtocart');
+
+/*Admin Routes*/
 Route::get('/admin', function(){
    return View::make('pages.admin.dashboard');
 })->name('admin');

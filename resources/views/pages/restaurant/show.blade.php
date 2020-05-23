@@ -36,12 +36,12 @@
                             <li class="nav-item">
                                 <a class="nav-link active" data-toggle="tab" href="#Menu">Menu</a>
                             </li>
-                            <li class="nav-item">
+                            <!--<li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" href="#Reviews">Reviews</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" href="#book_table">Book a Table</a>
-                            </li>
+                            </li>-->
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" href="#restaurant_info">Restaurant info</a>
                             </li>
@@ -61,27 +61,32 @@
                                             <h3>{{ $proddata->name }}</h3>
                                             <span>{{ $proddata->dishname }}</span>
                                             <span class="menu-item-price-span">$ <span class="menu-item-price">{{ $proddata->price }}</span></span>
-                                            <form>
+                                        <form method="POST" name="addtocart" action="{{ route('addtocart') }}">
+                                                @csrf
+                                                <input type="hidden" name="pid" value="{{ $proddata->id }}" />
+                                                <input type="hidden" name="pname" value="{{ $proddata->dishname }}" />
+                                                <input type="hidden" class="price" name="price" value="{{ $proddata->price }}" />
+                                                <input type="hidden" name="pqty" value="1" />
                                                 <?php
                                                 $options = json_decode($proddata->options);
                                                 ?>
+                                                @php $id = 0; @endphp
                                                 @foreach($options as $option)
                                                     @php $new_str = str_replace(' ', '', $option->name); @endphp
                                                     <span>
-    											<input type="checkbox" name="itemoption" id="{{ $new_str }}" class="menu-option-checkbox">
-    											<label for="{{ $new_str }}">
-                                                    {{ $option->name }} $<span class="menu-option-price">{{ $option->price }}</span>
-                                                </label>
-    										</span>
+                                                    <input type="checkbox" name="itemoption{{ $id }}" id="{{ $new_str }}" value="{{ $new_str }}" class="menu-option-checkbox">
+    											<label for="{{ $new_str }}">{{ $option->name }} $<span class="menu-option-price">{{ $option->price }}</span></label>
+                                            </span>
+                                                @php $id++; @endphp
                                                 @endforeach
-                                                <a href="#" class="addtocart">Add to cart</a>
+                                                <button type="submit" class="addtocart" name="Add To Cart" value="Add To Cart">Add To Cart</button>
                                             </form>
                                         </div>
                                     </div>
                                 @endforeach
 
                             </div>
-                            <div class="tab-pane container fade" id="Reviews">
+                            <!--<div class="tab-pane container fade" id="Reviews">
                                 <h4>POPULAR ORDERS Delicious hot food!</h4>
                                 <div class="tab_inner">
                                     <strong>What is Lorem Ipsum? </strong>
@@ -108,7 +113,7 @@
                                         recently with desktop publishing software like Aldus PageMaker including
                                         versions of Lorem Ipsum.</p>
                                 </div>
-                            </div>
+                            </div>-->
                             <div class="tab-pane container fade" id="restaurant_info">
                                 <h4>POPULAR ORDERS Delicious hot food!</h4>
                                 <div class="tab_inner">
@@ -156,6 +161,7 @@
                     itemPrice = parseInt(itemPrice) - parseInt(optionPrice);
                 }
                 itemPriceObj.text(itemPrice);
+                $(".price").val(itemPrice);
             });
         });
     </script>
