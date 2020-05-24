@@ -38,12 +38,12 @@
     <div class="container">
         <div class="headerflex">
             <div class="logo">
-                <a href="{{ route('pages.home') }}"><img src="{{ asset('images/logo.png') }}"></a>
+                <a href="{{ url('/') }}"><img src="{{ asset('images/logo.png') }}"></a>
             </div>
             <div class="navbar">
                 <div class="close_icon"><img src="{{ asset('images/close_icon.png') }}"></div>
                 <ul>
-                    <li><a href="{{ route('pages.home') }}">Home</a></li>
+                    <li><a href="{{ url('/') }}">Home</a></li>
                     <li><a href="{{route('about')}}">About</a></li>
                     <li><a href="{{route('restaurantfront.all')}}">Restaurants</a></li>
                     <li><a href="{{route('contact')}}">Contact</a></li>
