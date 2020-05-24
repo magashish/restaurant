@@ -25,38 +25,32 @@
                         <h3>Company</h3>
                         <ul>
                             <li><a href="#"><i class="fas fa-angle-double-right"></i> About</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Blog</a></li>
+                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Team</a></li>
                             <li><a href="#"><i class="fas fa-angle-double-right"></i> Careers</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Report Fraud</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-6 col-sm-12 foot_col2">
+                        <h3>Legal</h3>
+                        <ul>
+                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Terms & Condition</a></li>
+                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Refund & Cancellation</a></li>
+                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Privacy Policy</a></li>
+                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Cookie Policy</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6 col-sm-12 foot_col2">
+                        <h3>CONTACT</h3>
+                        <ul>
+                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Help & Support</a></li>
+                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Partner with us</a></li>
+                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Ride With us</a></li>
                             <li><a href="#"><i class="fas fa-angle-double-right"></i> Contact</a></li>
                         </ul>
                     </div>
-                    <div class="col-lg-3 col-md-6 col-sm-12 foot_col2">
-                        <h3>RESTAURANTS</h3>
-                        <ul>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Add Restaurants</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Claim your Listing</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Business App</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Restaurant Widgets</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Products for Businesses</a></li>
-                        </ul>
-                    </div>
 
                     <div class="col-lg-3 col-md-6 col-sm-12 foot_col2">
-                        <h3>Working Hours</h3>
-                        <ul>
-                            <li>Monday <span>1pm - 10pm</span></li>
-                            <li>Tuesday <span>1pm - 10pm</span></li>
-                            <li>Wednesday <span>1pm - 10pm</span></li>
-                            <li>Thursday <span>1pm - 10pm</span></li>
-                            <li>Friday <span>1pm - 10pm</span></li>
-                            <li class="day_close">Saturday <span>Closed</span></li>
-                            <li>Sunday <span>1pm - 10pm</span></li>
-                        </ul>
-                    </div>
-
-                    <div class="col-lg-3 col-md-6 col-sm-12 foot_col2">
-                        <h3>Contact Us</h3>
+                        <h3>Address</h3>
                         <h4>Head Office:</h4>
                         <p>1422 1st St. Santa Rosa,t CA 94559. USA </p>
                         <div class="phone_email">
@@ -93,5 +87,5 @@
         });
         $('.mob_serach_icon').on('click', function(){
             $('body').toggleClass('searchopen');
-        });        
+        });
     </script>
