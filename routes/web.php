@@ -13,7 +13,7 @@
 
 Route::get('/', function () {
     return View::make('pages.home');
-});
+})->name('pages.home');
 
 Route::get('/about', function(){
    return View::make('pages.about');
@@ -55,6 +55,8 @@ Route::group(['namespace' => 'Front'], function () {
     Route::post('/delete-cart-item', 'CartController@deleteCartItem')->name('delete.cart.item');
     Route::get('/checkout', 'OrderController@checkout')->name('checkout');
     Route::post('/place-order', 'OrderController@placeOrder')->name('place.order');
+
+    Route::get('/thank-you', 'OrderController@thankYou')->name('thank.you');
 });
 
 Auth::routes();

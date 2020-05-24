@@ -68,6 +68,11 @@ class OrderController extends Controller
             $orderItemObj->save();
         }
 
-        return redirect()->route('restaurant');
+        return redirect()->route('thank.you');
+    }
+
+    public function thankYou(Request $request)
+    {
+        return view('pages.thank-you');
     }
 }
