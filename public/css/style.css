@@ -129,7 +129,7 @@ header.header {
     width: 250px;
     color: #777;
 }
-.header_search input[type="submit"] {
+.header_search button.searchform,.header_search input[type="submit"] {
     border: none;
     font-size: 0;
     width: 26px;

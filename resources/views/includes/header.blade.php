@@ -50,9 +50,9 @@
                 </ul>
             </div>
             <div class="header_search">
-                <form>
-                    <input type="text" name="" placeholder="Search Menu">
-                    <input type="submit" name="" value="ok">
+            <form id="search-from" method="GET" action="{{route('search')}}">
+                    <input type="text" name="name" placeholder="Search Menu">
+                    <button class="searchform" type="submit" name="" value="ok"></button>
                 </form>
             </div>
             <div class="mob_view">

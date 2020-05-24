@@ -47,6 +47,7 @@ Route::group(['namespace' => 'Admin'], function () {
 
 Route::group(['namespace' => 'Front'], function () {
     Route::get('/', 'HomeController@index')->name('home.index');
+    Route::get('/search', 'SearchController@index')->name('search');
 
     Route::get('/restaurant/{id}', 'RestaurantController@show')->name('restaurantfront.show');
     Route::get('/restaurants', 'RestaurantController@allrestaurant')->name('restaurantfront.all');
