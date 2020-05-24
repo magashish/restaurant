@@ -48,13 +48,15 @@ Route::group(['namespace' => 'Admin'], function () {
 Route::group(['namespace' => 'Front'], function () {
     Route::get('/restaurant/{id}', 'RestaurantController@show')->name('restaurantfront.show');
 
-    Route::get('/cart', 'CartController@cart')->name('cart');
-    Route::post('/add-to-cart', 'CartController@addtocart')->name('addtocart');
-    Route::post('/cart/update', 'CartController@updatecart')->name('updatecart');
-    Route::post('/update-cart', 'CartController@updateCart')->name('update.cart');
-    Route::post('/delete-cart-item', 'CartController@deleteCartItem')->name('delete.cart.item');
-    Route::get('/checkout', 'OrderController@checkout')->name('checkout');
-    Route::post('/place-order', 'OrderController@placeOrder')->name('place.order');
+    Route::group(['middleware' => 'auth'], function () {
+        Route::get('/cart', 'CartController@cart')->name('cart');
+        Route::post('/add-to-cart', 'CartController@addtocart')->name('addtocart');
+        Route::post('/cart/update', 'CartController@updatecart')->name('updatecart');
+        Route::post('/update-cart', 'CartController@updateCart')->name('update.cart');
+        Route::post('/delete-cart-item', 'CartController@deleteCartItem')->name('delete.cart.item');
+        Route::get('/checkout', 'OrderController@checkout')->name('checkout');
+        Route::post('/place-order', 'OrderController@placeOrder')->name('place.order');
+    });
 
     Route::get('/thank-you', 'OrderController@thankYou')->name('thank.you');
 });

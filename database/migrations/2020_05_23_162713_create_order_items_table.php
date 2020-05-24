@@ -17,8 +17,10 @@ class CreateOrderItemsTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('order_id')->unsigned();
             $table->foreign('order_id')->on('orders')->references('id')->onDelete('cascade');
-            $table->bigInteger('cart_id')->unsigned();
-            $table->foreign('cart_id')->on('carts')->references('id')->onDelete('cascade');
+            $table->bigInteger('restaurant_menu_id')->unsigned();
+            $table->foreign('restaurant_menu_id')->on('restaurant_menu')->references('id')->onDelete('cascade');
+            $table->double('price', 10, 2);
+            $table->integer('quantity')->default(0);
             $table->timestamps();
         });
     }

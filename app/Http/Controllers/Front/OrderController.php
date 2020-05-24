@@ -39,22 +39,29 @@ class OrderController extends Controller
         $shippingAddressData = $requestFields['shipping_address'];
 
         if(!empty($shippingAddressData)) {
-            $shippingAddressObj = new ShippingAddress;
-            $shippingAddressObj->user_id = $userId;
-            $shippingAddressObj->first_name = $shippingAddressData['first_name'];
-            $shippingAddressObj->last_name = $shippingAddressData['last_name'];
-            $shippingAddressObj->email = $shippingAddressData['email'];
-            $shippingAddressObj->mobile = $shippingAddressData['mobile'];
-            $shippingAddressObj->address = $shippingAddressData['address'];
-            $shippingAddressObj->city = $shippingAddressData['city'];
-            $shippingAddressObj->state = $shippingAddressData['state'];
-            $shippingAddressObj->zip = $shippingAddressData['zip'];
-            $shippingAddressObj->save();
+            $shippingAddressObj = ShippingAddress::where('user_id', $userId)->first();
+            if(!$shippingAddressObj) {
+                $shippingAddressObj = new ShippingAddress;
+                $shippingAddressObj->user_id = $userId;
+                $shippingAddressObj->first_name = $shippingAddressData['first_name'];
+                $shippingAddressObj->last_name = $shippingAddressData['last_name'];
+                $shippingAddressObj->email = $shippingAddressData['email'];
+                $shippingAddressObj->mobile = $shippingAddressData['mobile'];
+                $shippingAddressObj->address = $shippingAddressData['address'];
+                $shippingAddressObj->city = $shippingAddressData['city'];
+                $shippingAddressObj->state = $shippingAddressData['state'];
+                $shippingAddressObj->zip = $shippingAddressData['zip'];
+                $shippingAddressObj->save();
+            }
         }
 
         // Save order
         $orderObj = new Order;
         $orderObj->user_id = $userId;
+
+        $latestOrder = Order::orderBy('created_at','DESC')->first();
+        $oid = '#ORDER'.date("ymd").str_pad(($latestOrder->id ?? 0) + 1, 8, "0", STR_PAD_LEFT);
+        $orderObj->oid = $oid;
         $orderObj->shipping_address_id = $shippingAddressObj->id;
         $orderObj->save();
 
@@ -64,15 +71,19 @@ class OrderController extends Controller
         foreach ($cartItem as $item) {
             $orderItemObj = new OrderItem;
             $orderItemObj->order_id = $orderObj->id;
-            $orderItemObj->cart_id = $item->id;
+            $orderItemObj->restaurant_menu_id = $item->restaurant_menu_id;
+            $orderItemObj->price = $item->price;
+            $orderItemObj->quantity = $item->quantity;
             $orderItemObj->save();
         }
+        Cart::where('user_id', $userId)->delete();
 
-        return redirect()->route('thank.you');
+        return redirect()->route('thank.you', ['oid' => $orderObj->oid]);
     }
 
     public function thankYou(Request $request)
     {
-        return view('pages.thank-you');
+        $oid = $request->get('oid') ?? "";
+        return view('pages.thank-you')->with(compact('oid'));
     }
 }

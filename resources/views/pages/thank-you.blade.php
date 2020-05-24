@@ -6,7 +6,7 @@
                 <div class="col-lg-12 col-sm-12">
                     <div class="jumbotron text-center">
                         <h1 class="display-3">Thank You!</h1>
-                        <p class="lead"><strong>Please check your email</strong> for order details. Your order id is #100001</p>
+                        <p class="lead"><strong>Please check your email</strong> for order details. Your order id is {{ $oid }}</p>
                         <hr>
                         <p>
                             Having questions? <a href="">Contact us</a>

@@ -70,7 +70,7 @@
                     <li>Total <span>${{ $total }}</span></li>
                 </ul>
                 <div class="checkout_btn">
-                    <a href="#">Checkout</a>
+                    <a href="{{ route('checkout') }}">Checkout</a>
                 </div>
             </div>
             <div class="special_img">

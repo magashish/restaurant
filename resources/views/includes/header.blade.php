@@ -21,6 +21,7 @@
                         {{--<div class="login"><a href="{{route('login')}}"><i
                                     class="fas fa-sign-in-alt"></i> {{ __('Login') }}</a></div>--}}
                         <div class="login"><a href="javascript:void(0)"> {{ Auth::user()->name }}</a></div>
+                        <div class="login"><a href="{{ route('cart') }}"> <i class="fa fa-shopping-cart" aria-hidden="true"></i>Cart</a></div>
                         <div class="signup"><a href="{{ route('logout') }}" onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();"><i
                                     class="far fa-edit"></i> {{ __('Logout') }}</a></div>
@@ -37,12 +38,12 @@
     <div class="container">
         <div class="headerflex">
             <div class="logo">
-                <a href="#"><img src="{{ asset('images/logo.png') }}"></a>
+                <a href="{{ route('pages.home') }}"><img src="{{ asset('images/logo.png') }}"></a>
             </div>
             <div class="navbar">
                 <div class="close_icon"><img src="{{ asset('images/close_icon.png') }}"></div>
                 <ul>
-                    <li><a href="/">Home</a></li>
+                    <li><a href="{{ route('pages.home') }}">Home</a></li>
                     <li><a href="{{route('about')}}">About</a></li>
                     <li><a href="{{route('restaurant')}}">Menu</a></li>
                     <li><a href="{{route('contact')}}">Contact</a></li>
