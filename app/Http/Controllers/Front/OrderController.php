@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Mail\OrderPlcaed;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ShippingAddress;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Mail;
 
 class OrderController extends Controller
 {
@@ -23,17 +25,18 @@ class OrderController extends Controller
             foreach ($cartData as $cartDatum) {
                 $total += $cartDatum['price'] * $cartDatum['quantity'];
             }
+            $data['order_total'] = $total;
+
+            return view('pages.checkout.checkout')->with(compact('data'));
         }
-
-        $data['order_total'] = $total;
-
-        return view('pages.checkout.checkout')->with(compact('data'));
+        return redirect()->route('cart');
     }
 
     public function placeOrder(Request $request)
     {
         $requestFields = $request->all();
         $userId = \Auth::user()->id;
+        $email = \Auth::user()->email;
 
         // Save shipping address
         $shippingAddressData = $requestFields['shipping_address'];
@@ -77,6 +80,10 @@ class OrderController extends Controller
             $orderItemObj->save();
         }
         Cart::where('user_id', $userId)->delete();
+
+        // Send mail
+        $orderData = Order::where('id', $orderObj->id)->with('order_item')->first();
+        Mail::to($email)->send(new OrderPlcaed($orderData));
 
         return redirect()->route('thank.you', ['oid' => $orderObj->oid]);
     }

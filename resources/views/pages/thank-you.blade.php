@@ -12,7 +12,7 @@
                             Having questions? <a href="">Contact us</a>
                         </p>
                         <p class="lead">
-                            <a class="btn btn-primary btn-sm addtocart" href="{{ route('pages.home') }}" role="button">Continue to homepage</a>
+                            <a class="btn btn-primary btn-sm addtocart" href="{{ url('/') }}" role="button">Continue to homepage</a>
                         </p>
                     </div>
                 </div>

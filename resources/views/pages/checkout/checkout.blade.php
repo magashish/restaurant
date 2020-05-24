@@ -77,7 +77,16 @@
                                 <li>Total <span>${{ $finalTotal }}</span></li>
                             </ul>
                             <div class="paymentmethod">
-                                <img src="{{ asset('images/paymentmethod.jpg') }}">
+                                {{--<img src="{{ asset('images/paymentmethod.jpg') }}">--}}
+                                <h3>Payment Method</h3>
+                                <div class="md-radio md-radio-inline">
+                                    <input id="3" type="radio" name="payment_method" value="cod" checked>
+                                    <label for="3">COD</label>
+                                </div>
+                                <div class="md-radio md-radio-inline">
+                                    <input id="4" type="radio" name="payment_method" value="paypal">
+                                    <label for="4">PayPal</label>
+                                </div>
                             </div>
                             <div class="place_order">
                                 <a onclick="document.getElementById('place-order-form').submit()" href="#">Place Order</a>
