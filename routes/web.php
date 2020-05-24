@@ -14,7 +14,6 @@
 // Route::get('/', function () {
 //     return View::make('pages.home');
 // });
-Route::get('/', 'Front\HomeController@index')->name('home.index');
 
 Route::get('/about', function(){
    return View::make('pages.about');
@@ -47,6 +46,8 @@ Route::group(['namespace' => 'Admin'], function () {
 });
 
 Route::group(['namespace' => 'Front'], function () {
+    Route::get('/', 'HomeController@index')->name('home.index');
+
     Route::get('/restaurant/{id}', 'RestaurantController@show')->name('restaurantfront.show');
 
     Route::get('/cart', 'CartController@cart')->name('cart');
