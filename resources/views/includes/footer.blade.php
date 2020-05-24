@@ -5,7 +5,7 @@
                         <a href="#"><img src="{{ asset('images/logo.png') }}"></a>
                     </div>
                     <div class="col-md-6 col-sm-12">
-                        <div class="location_select">
+                        <!--<div class="location_select">
                             <select>
                                 <option>Select Location</option>
                                 <option>Location 1</option>
@@ -13,7 +13,7 @@
                                 <option>Location 3</option>
                                 <option>Location 4</option>
                             </select>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
