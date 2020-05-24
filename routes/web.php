@@ -49,6 +49,7 @@ Route::group(['namespace' => 'Front'], function () {
     Route::get('/', 'HomeController@index')->name('home.index');
 
     Route::get('/restaurant/{id}', 'RestaurantController@show')->name('restaurantfront.show');
+    Route::get('/restaurants', 'RestaurantController@allrestaurant')->name('restaurantfront.all');
 
     Route::get('/cart', 'CartController@cart')->name('cart');
     Route::post('/add-to-cart', 'CartController@addtocart')->name('addtocart');
@@ -60,5 +61,4 @@ Route::group(['namespace' => 'Front'], function () {
 });
 
 Auth::routes();
-
 Route::get('/home', 'HomeController@index')->name('home');

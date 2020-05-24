@@ -42,7 +42,7 @@
                         </div>
                       @endforeach
                         <div class="resort_inner view_btn">
-                            <a href="#">View All</a>
+                            <a href="{{route('restaurantfront.all')}}">View All</a>
                         </div>
                     </div>
                 </div>
