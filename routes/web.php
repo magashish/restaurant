@@ -11,9 +11,10 @@
 |
 */
 
-Route::get('/', function () {
-    return View::make('pages.home');
-});
+// Route::get('/', function () {
+//     return View::make('pages.home');
+// });
+Route::get('/', 'Front\HomeController@index')->name('home.index');
 
 Route::get('/about', function(){
    return View::make('pages.about');
