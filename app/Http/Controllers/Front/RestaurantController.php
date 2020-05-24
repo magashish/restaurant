@@ -33,5 +33,10 @@ class RestaurantController extends Controller{
         print_r($data);die;*/
 
        return view('pages.restaurant.show', compact('data'));
+    }
+    public function allrestaurant()
+    {
+        $restaurants = Restaurant::latest()->get();
+        return view('pages.restaurant.allrestaurants', compact('restaurants'));
 	}
 }

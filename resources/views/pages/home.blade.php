@@ -32,30 +32,17 @@
                         </a>
                     </div>
                 </div>
+
                 <div class="col-lg-4 col-md-12">
                     <div class="restaurant_logo">
+                      @foreach($restaurants as $restaurant)
                         <div class="resort_inner">
-                            <div class="resort_logo"><a href="{{route('restaurantfront.show', 1)}}"><img src="{{ asset('images/restaurant_logo1.png') }}"></a></div>
-                            <a href="{{route('restaurantfront.show', 1)}}">Red Onion</a>
+                            <div class="resort_logo"><a href="{{route('restaurantfront.show', $restaurant->id)}}"><img src="{{asset('uploads').'/'.$restaurant->logo}}"></a></div>
+                            <a href="{{route('restaurantfront.show', $restaurant->id)}}">{{$restaurant->name}}</a>
                         </div>
-                        <div class="resort_inner">
-                            <div class="resort_logo"><a href="#"><img src="{{ asset('images/restaurant_logo2.png') }}"></a></div>
-                            <a href="#">Vantage Restaurant</a>
-                        </div>
-                        <div class="resort_inner">
-                            <div class="resort_logo"><a href="#"><img src="{{ asset('images/restaurant_logo3.png') }}"></a></div>
-                            <a href="#">Vantage Restaurant</a>
-                        </div>
-                        <div class="resort_inner">
-                            <div class="resort_logo"><a href="#"><img src="{{ asset('images/restaurant_logo4.png') }}"></a></div>
-                            <a href="#">Vantage Restaurant</a>
-                        </div>
-                        <div class="resort_inner">
-                            <div class="resort_logo"><a href="#"><img src="{{ asset('images/restaurant_logo2.png') }}"></a></div>
-                            <a href="#">Vantage Restaurant</a>
-                        </div>
+                      @endforeach
                         <div class="resort_inner view_btn">
-                            <a href="#">View All</a>
+                            <a href="{{route('restaurantfront.all')}}">View All</a>
                         </div>
                     </div>
                 </div>

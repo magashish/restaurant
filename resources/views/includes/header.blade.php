@@ -45,7 +45,7 @@
                 <ul>
                     <li><a href="{{ route('pages.home') }}">Home</a></li>
                     <li><a href="{{route('about')}}">About</a></li>
-                    <li><a href="{{route('restaurant')}}">Menu</a></li>
+                    <li><a href="{{route('restaurantfront.all')}}">Restaurants</a></li>
                     <li><a href="{{route('contact')}}">Contact</a></li>
                 </ul>
             </div>
