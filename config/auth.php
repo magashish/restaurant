@@ -46,6 +46,11 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+        'admin' => [
+            'redirectTo' => 'admin/dashboard',
+            'driver' => 'session',
+            'provider' => 'admin',
+        ],
     ],
 
     /*
@@ -75,6 +80,10 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+        'admin' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
     ],
 
     /*
