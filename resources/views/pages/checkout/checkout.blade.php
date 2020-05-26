@@ -35,6 +35,17 @@
                                 <label>Phone No.<span>*</span></label>
                                 <input type="text" name="shipping_address[mobile]">
                             </div>
+                            @guest
+                                <input type="hidden" name="is_authenticated" value="false">
+                                <div class="col-half">
+                                    <label>Password<span>*</span></label>
+                                    <input type="password" name="shipping_address[password]">
+                                </div>
+                                <div class="col-half">
+                                    <label>Password Confirmation<span>*</span></label>
+                                    <input type="password" name="shipping_address[password_confirmation]">
+                                </div>
+                            @endguest
                             <div class="col-full">
                                 <label>Address<span>*</span></label>
                                 <input type="text" name="shipping_address[address]">

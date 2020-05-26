@@ -70,6 +70,7 @@
                                                 <input type="hidden" class="price" name="price"
                                                        value="{{ $proddata->price }}"/>
                                                 <input type="hidden" name="pqty" value="1"/>
+                                                <input type="hidden" name="image" value="{{ $proddata->image }}"/>
                                                 <?php
                                                 $options = json_decode($proddata->options);
                                                 ?>

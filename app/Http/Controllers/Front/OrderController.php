@@ -6,20 +6,41 @@ use App\Mail\OrderPlcaed;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\RestaurantMenu;
 use App\Models\ShippingAddress;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Mail;
+use Session;
 
 class OrderController extends Controller
 {
     public function checkout(Request $request)
     {
         $data = [];
-        $userId = \Auth::user()->id;
         $total = 0;
+        $userId = \Auth::user()->id ?? 0;
+        $cartData = [];
 
-        $cartData = Cart::where('user_id', $userId)->get()->toArray();
+        if(\Auth::check()) {
+            $cartData = Cart::where('user_id', $userId)->get()->toArray();
+        } else {
+            $cart = Session::get('cart');
+
+            if(!empty($cart)) {
+                foreach ($cart as $key => $data) {
+                    $cartData[] = [
+                        'id' => $key,
+                        'user_id' => NULL,
+                        'restaurant_menu_id' => $key,
+                        'price' => $data['price'],
+                        'quantity' => $data['quantity'],
+                        'product_detail' => RestaurantMenu::where('id', $key)->first()->toArray()
+                    ];
+                }
+            }
+        }
 
         if(count($cartData) > 0) {
             foreach ($cartData as $cartDatum) {
@@ -35,11 +56,44 @@ class OrderController extends Controller
     public function placeOrder(Request $request)
     {
         $requestFields = $request->all();
+
+        $shippingAddressData = $requestFields['shipping_address'];
+
+        $isAthenticated = $request->get('is_authenticated');
+        if($isAthenticated == "false") {
+            // Register user
+            $checkEmailExist = User::where('email', $shippingAddressData['email'])->first();
+
+            if($checkEmailExist) {
+                return redirect()->route('checkout');
+            }
+
+            $userObj = new User;
+            $userObj->name = $shippingAddressData['first_name'] . " ". $shippingAddressData['last_name'];
+            $userObj->email = $shippingAddressData['email'];
+            $userObj->password = bcrypt($shippingAddressData['password']);
+            if($userObj->save()) {
+                \Auth::loginUsingId($userObj->id);
+
+                $cart = Session::get('cart');
+
+                if(!empty($cart)) {
+                    foreach ($cart as $key => $data) {
+                        $cartObj = new Cart;
+                        $cartObj->user_id = \Auth::user()->id;
+                        $cartObj->restaurant_menu_id = \Auth::user()->id;
+                        $cartObj->price = $data['price'];
+                        $cartObj->quantity = $data['quantity'];
+                        $cartObj->save();
+                    }
+                }
+            }
+        }
+
         $userId = \Auth::user()->id;
         $email = \Auth::user()->email;
 
         // Save shipping address
-        $shippingAddressData = $requestFields['shipping_address'];
 
         if(!empty($shippingAddressData)) {
             $shippingAddressObj = ShippingAddress::where('user_id', $userId)->first();

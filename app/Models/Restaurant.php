@@ -14,4 +14,12 @@ class Restaurant extends Model
     {
         return $this->hasMany('App\Models\RestaurantMenu', 'restaurant_id');
     }
+
+    public function getLogoAttribute($value = "")
+    {
+        if(!empty($value)) {
+            return asset("uploads/$value");
+        }
+        return $value;
+    }
 }

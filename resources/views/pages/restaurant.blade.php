@@ -43,13 +43,16 @@
     					<div class="tab-content">
     						<div class="tab-pane container active" id="Menu">
     							<h4>POPULAR ORDERS Delicious hot food!</h4>
+                                @foreach($restaurants as $restaurant)
     							<div class="product_info">
     								<div class="product_left">
-    									<div class="product_img"><img src="images/product_img.jpg"></div>
+    									<div class="product_img">
+                                            <a href="{{ route('restaurantfront.show', [$restaurant->id]) }}"><img src="{{ $restaurant->logo }}"></a>
+                                        </div>
     									<div class="rating"><img src="images/rating_img.png"></div>
     								</div>
     								<div class="prodcut_cat">
-    									<h3>Red Onion</h3>
+                                        <a href="{{ route('restaurantfront.show', [$restaurant->id]) }}"><h3>{{ $restaurant->name }}</h3></a>
     									<span>Super Burger</span>
     									<form>
     										<span>
@@ -76,75 +79,7 @@
     									</form>
     								</div>
     							</div>
-
-    							<div class="product_info">
-    								<div class="product_left">
-    									<div class="product_img"><img src="images/product_img.jpg"></div>
-    									<div class="rating"><img src="images/rating_img.png"></div>
-    								</div>
-    								<div class="prodcut_cat">
-    									<h3>Red Onion</h3>
-    									<span>Super Double Burger</span>
-    									<form>
-    										<span>
-    											<input type="checkbox" name="" id="lettuce" checked>
-    											<label for="lettuce">Minus Lettuce</label>
-    										</span>
-    										<span>
-    											<input type="checkbox" name="" id="mayo" checked>
-    											<label for="mayo">Minus Mayo</label>
-    										</span>
-    										<span>
-    											<input type="checkbox" name="" id="tomati" checked>
-    											<label for="tomati">Minus Tomati</label>
-    										</span>
-    										<span>
-    											<input type="checkbox" name="" id="mustard">
-    											<label for="mustard">Minus Mustard Sauce</label>
-    										</span>
-    										<span>
-    											<input type="checkbox" name="" id="cheese">
-    											<label for="cheese">Minus Cheese Slice</label>
-    										</span>
-    										<a href="#" class="addtocart">Add to cart</a>
-    									</form>
-    								</div>
-    							</div>
-
-    							<div class="product_info">
-    								<div class="product_left">
-    									<div class="product_img"><img src="images/product_img.jpg"></div>
-    									<div class="rating"><img src="images/rating_img.png"></div>
-    								</div>
-    								<div class="prodcut_cat">
-    									<h3>Red Onion</h3>
-    									<span>Super Triple Burger</span>
-    									<form>
-    										<span>
-    											<input type="checkbox" name="" id="lettuce" checked>
-    											<label for="lettuce">Minus Lettuce</label>
-    										</span>
-    										<span>
-    											<input type="checkbox" name="" id="mayo" checked>
-    											<label for="mayo">Minus Mayo</label>
-    										</span>
-    										<span>
-    											<input type="checkbox" name="" id="tomati" checked>
-    											<label for="tomati">Minus Tomati</label>
-    										</span>
-    										<span>
-    											<input type="checkbox" name="" id="mustard">
-    											<label for="mustard">Minus Mustard Sauce</label>
-    										</span>
-    										<span>
-    											<input type="checkbox" name="" id="cheese">
-    											<label for="cheese">Minus Cheese Slice</label>
-    										</span>
-    										<a href="#" class="addtocart">Add to cart</a>
-    									</form>
-    								</div>
-    							</div>
-
+                                @endforeach
     						</div>
     						<div class="tab-pane container fade" id="Reviews">
     							<h4>POPULAR ORDERS Delicious hot food!</h4>
@@ -181,7 +116,7 @@
     						<li><a href="#">Baskets</a></li>
     						<li><a href="#">Fresh Salads</a></li>
     						<li><a href="#">Appetizers</a></li>
-    						<li><a href="#">Beverages</a></li>    					
+    						<li><a href="#">Beverages</a></li>
     						<li><a href="#">Desserts & Beverages</a></li>
     					</ul>
     				</div>

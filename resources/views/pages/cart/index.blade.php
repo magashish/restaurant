@@ -42,15 +42,17 @@
                                             <td class="cartprice">$ {{ $menu['price']}}</td>
                                             <td class="cart_qty">
                                                 <input type="number" class="item-quantity" name="quantity"
-                                                       value="{{ $menu['quantity'] }}" min="1" max="5">
+                                                       value="{{ $menu['quantity'] }}" min="1" max="5" {{ \Auth::check() ? '' : 'disabled' }}>
                                             </td>
                                             <td class="carttotal">$ {{$menu['price'] * $menu['quantity']}}</td>
                                             <td class="cartremove">
                                                 {{--<button class="btn btn-info btn-sm update-cart" data-id="{{ $key }}"><i
                                                         class="far fa-sync-alt"></i></button>--}}
+                                                @auth
                                                 <button class="btn btn-danger btn-sm remove-from-cart delete-cart-item"
                                                         data-id="{{ $key }}">
                                                     <i class="far fa-trash-alt"></i></button>
+                                                @endauth
                                             </td>
                                         </tr>
                                     @endforeach
@@ -102,7 +104,7 @@
                     <div class="col-lg-12">
                         <div class="cart_table empty-cart-container">
                             <h3>Empty Cart</h3>
-                            <a href="{{ route('restaurant') }}" class="btn btn-primary">Continue Shopping</a>
+                            <a href="{{ route('restaurant.all') }}" class="btn btn-primary">Continue Shopping</a>
                         </div>
                     </div>
                 </div>

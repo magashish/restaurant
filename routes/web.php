@@ -19,9 +19,9 @@ Route::get('/about', function () {
     return View::make('pages.about');
 })->name('about');
 
-Route::get('/restaurant', function () {
+/*Route::get('/restaurant', function () {
     return View::make('pages.restaurant');
-})->name('restaurant');
+})->name('restaurant');*/
 
 Route::get('/contact', function () {
     return View::make('pages.contact');
@@ -54,15 +54,17 @@ Route::group(['namespace' => 'Front'], function () {
 
     Route::get('/restaurant/{id}', 'RestaurantController@show')->name('restaurantfront.show');
     Route::get('/restaurants', 'RestaurantController@allrestaurant')->name('restaurantfront.all');
+    Route::get('/restaurant', 'RestaurantController@allRestaurantList')->name('restaurant.all');
+
+    Route::get('/cart', 'CartController@cart')->name('cart');
+    Route::post('/add-to-cart', 'CartController@addtocart')->name('addtocart');
+    Route::post('/cart/update', 'CartController@updatecart')->name('updatecart');
+    Route::post('/update-cart', 'CartController@updateCart')->name('update.cart');
+    Route::post('/delete-cart-item', 'CartController@deleteCartItem')->name('delete.cart.item');
+    Route::get('/checkout', 'OrderController@checkout')->name('checkout');
+    Route::post('/place-order', 'OrderController@placeOrder')->name('place.order');
 
     Route::group(['middleware' => 'auth'], function () {
-        Route::get('/cart', 'CartController@cart')->name('cart');
-        Route::post('/add-to-cart', 'CartController@addtocart')->name('addtocart');
-        Route::post('/cart/update', 'CartController@updatecart')->name('updatecart');
-        Route::post('/update-cart', 'CartController@updateCart')->name('update.cart');
-        Route::post('/delete-cart-item', 'CartController@deleteCartItem')->name('delete.cart.item');
-        Route::get('/checkout', 'OrderController@checkout')->name('checkout');
-        Route::post('/place-order', 'OrderController@placeOrder')->name('place.order');
     });
 
     Route::get('/thank-you', 'OrderController@thankYou')->name('thank.you');
