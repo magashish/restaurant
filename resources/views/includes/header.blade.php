@@ -11,6 +11,7 @@
             <div class="col-lg-6 col-md-6 col-sm-12">
                 <div class="header_top_right">
                     @guest
+                    <div class="login"><a href="{{ route('cart') }}"> <i class="fa fa-shopping-cart" aria-hidden="true"></i>Cart</a></div>
                         <div class="login"><a href="{{route('login')}}"><i
                                     class="fas fa-sign-in-alt"></i> {{ __('Login') }}</a></div>
                         @if (Route::has('register'))
