@@ -18,60 +18,83 @@
                     <div class="col-lg-8 col-sm-12">
                         <div class="billingdetail">
                             <h3>Billing details</h3>
-
-                            <div class="col-half">
-                                <label>First Name<span>*</span></label>
-                                <input type="text" name="shipping_address[first_name]">
-                            </div>
-                            <div class="col-half">
-                                <label>Last Name<span>*</span></label>
-                                <input type="text" name="shipping_address[last_name]">
-                            </div>
-                            <div class="col-half">
-                                <label>Email Address<span>*</span></label>
-                                <input type="text" name="shipping_address[email]">
-                            </div>
-                            <div class="col-half">
-                                <label>Phone No.<span>*</span></label>
-                                <input type="text" name="shipping_address[mobile]">
-                            </div>
-                            @guest
-                                <input type="hidden" name="is_authenticated" value="false">
+                            @if(session('error'))
+                                <div class="col-full">
+                                    <div class="alert alert-danger" role="alert">
+                                        {{ session('error') }}
+                                    </div>
+                                </div>
+                            @endif
+                            <div id="new-address-container">
                                 <div class="col-half">
-                                    <label>Password<span>*</span></label>
-                                    <input type="password" name="shipping_address[password]">
+                                    <label>First Name<span>*</span></label>
+                                    <input type="text" name="shipping_address[first_name]">
                                 </div>
                                 <div class="col-half">
-                                    <label>Password Confirmation<span>*</span></label>
-                                    <input type="password" name="shipping_address[password_confirmation]">
+                                    <label>Last Name<span>*</span></label>
+                                    <input type="text" name="shipping_address[last_name]">
                                 </div>
-                            @endguest
-                            <div class="col-full">
-                                <label>Address<span>*</span></label>
-                                <input type="text" name="shipping_address[address]">
+                                <div class="col-half">
+                                    <label>Email Address<span>*</span></label>
+                                    <input type="text" name="shipping_address[email]">
+                                </div>
+                                <div class="col-half">
+                                    <label>Phone No.<span>*</span></label>
+                                    <input type="text" name="shipping_address[mobile]">
+                                </div>
+                                @guest
+                                    <input type="hidden" name="is_authenticated" value="false">
+                                    <div class="col-half">
+                                        <label>Password<span>*</span></label>
+                                        <input type="password" name="shipping_address[password]">
+                                    </div>
+                                    <div class="col-half">
+                                        <label>Password Confirmation<span>*</span></label>
+                                        <input type="password" name="shipping_address[password_confirmation]">
+                                    </div>
+                                @endguest
+                                <div class="col-full">
+                                    <label>Address<span>*</span></label>
+                                    <input type="text" name="shipping_address[address]">
+                                </div>
+                                <div class="col-full">
+                                    <label>Town/City<span>*</span></label>
+                                    <input type="text" name="shipping_address[city]">
+                                </div>
+                                <div class="col-half">
+                                    <label>State<span>*</span></label>
+                                    <input type="text" name="shipping_address[state]">
+                                </div>
+                                <div class="col-half">
+                                    <label>Zip<span>*</span></label>
+                                    <input type="text" name="shipping_address[zip]">
+                                </div>
+                                <div class="col-full">
+                                    <label>Order Notes (optional)</label>
+                                    <textarea name="shipping_address['notes']"></textarea>
+                                </div>
+                                <div class="col-full save-address-checkbox">
+                                    <input type="checkbox" id="save-address-checkbox-1"
+                                           name="save_address">
+                                    <label>Save address</label>
+                                </div>
                             </div>
-                            <div class="col-full">
-                                <label>Town/City<span>*</span></label>
-                                <input type="text" name="shipping_address[city]">
-                            </div>
-                            <div class="col-half">
-                                <label>State<span>*</span></label>
-                                <input type="text" name="shipping_address[state]">
-                            </div>
-                            <div class="col-half">
-                                <label>Zip<span>*</span></label>
-                                <input type="text" name="shipping_address[zip]">
-                            </div>
-                            <div class="diff_ship">
-                                <h3>Ship to a different address?</h3>
-                                <input type="checkbox" name="" id="shipdiff">
-                                <label for="shipdiff"></label>
-                            </div>
-
-                            <div class="col-full">
-                                <label>Order Notes</label>
-                                <textarea></textarea>
-                            </div>
+                            @auth
+                                <div class="diff_ship">
+                                    <h3>Ship to a different address?</h3>
+                                    <input type="checkbox" name="ssss" id="shipdiff">
+                                    <label for="shipdiff"></label>
+                                </div>
+                                <div class="col-full" id="saved-address-container">
+                                    @foreach($data['saved_addresses'] as $address)
+                                        <input type="radio" name="address_id" class="saved-address-radio" value="{{ $address->id }}">
+                                        <label>{{ $address->first_name." ".$address->lasst_name }}
+                                            , {{ $address->address }}, {{ $address->city }}, {{ $address->state }}
+                                            , {{ $address->zip }}</label>
+                                        <br>
+                                    @endforeach
+                                </div>
+                            @endauth
                         </div>
                     </div>
 
@@ -83,7 +106,7 @@
                                 <li>Tax <span>$0</span></li>
                                 <li>Delivery Charges <span>$10</span></li>
                                 @php
-                                $finalTotal = $data['order_total'] + 10;
+                                    $finalTotal = $data['order_total'] + 10;
                                 @endphp
                                 <li>Total <span>${{ $finalTotal }}</span></li>
                             </ul>
@@ -100,7 +123,8 @@
                                 </div>
                             </div>
                             <div class="place_order">
-                                <a onclick="document.getElementById('place-order-form').submit()" href="#">Place Order</a>
+                                <a onclick="document.getElementById('place-order-form').submit()" href="#">Place
+                                    Order</a>
                             </div>
                         </div>
                         <div class="special_img">
@@ -201,6 +225,16 @@
                     });
                 }
             });*/
+
+            $("#shipdiff").on("change", function () {
+                if ($(this).is(":checked")) {
+                    $("#new-address-container").hide();
+                    $("#saved-address-container").show();
+                } else {
+                    $("#new-address-container").show();
+                    $("#saved-address-container").hide();
+                }
+            });
         });
     </script>
 @endsection
@@ -208,6 +242,16 @@
     <style>
         .empty-cart-container {
             text-align: center;
+        }
+
+        .save-address-checkbox #save-address-checkbox-1, .saved-address-radio {
+            position: inherit !important;
+            opacity: 1 !important;
+            visibility: inherit !important;
+        }
+
+        #saved-address-container {
+            display: none;
         }
     </style>
 @endsection

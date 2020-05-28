@@ -9,9 +9,16 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
+                    {{--<form method="POST" action="{{ route('login') }}">--}}
+                    <form method="POST" action="{{ route('user.login') }}">
                         @csrf
-
+                        @if(session('error'))
+                            <div class="col-full">
+                                <div class="alert alert-danger" role="alert">
+                                    {{ session('error') }}
+                                </div>
+                            </div>
+                        @endif
                         <div class="form-group row">
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 

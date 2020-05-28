@@ -49,6 +49,8 @@ Route::group(['namespace' => 'Admin'], function () {
 });
 
 Route::group(['namespace' => 'Front'], function () {
+    Route::post('/user-login', 'UserController@login')->name('user.login');
+
     Route::get('/', 'HomeController@index')->name('home.index');
     Route::get('/search', 'SearchController@index')->name('search');
 

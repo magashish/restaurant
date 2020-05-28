@@ -48,14 +48,19 @@ class OrderController extends Controller
             }
             $data['order_total'] = $total;
 
+            $data['saved_addresses'] = ShippingAddress::where('user_id', $userId)->get();
+
             return view('pages.checkout.checkout')->with(compact('data'));
         }
+
         return redirect()->route('cart');
     }
 
     public function placeOrder(Request $request)
     {
         $requestFields = $request->all();
+        /*echo "<pre>";
+        print_r($requestFields);die;*/
 
         $shippingAddressData = $requestFields['shipping_address'];
 
@@ -65,7 +70,7 @@ class OrderController extends Controller
             $checkEmailExist = User::where('email', $shippingAddressData['email'])->first();
 
             if($checkEmailExist) {
-                return redirect()->route('checkout');
+                return redirect()->route('checkout')->with('error', "Account already exist, pease login to continue");
             }
 
             $userObj = new User;
@@ -81,7 +86,7 @@ class OrderController extends Controller
                     foreach ($cart as $key => $data) {
                         $cartObj = new Cart;
                         $cartObj->user_id = \Auth::user()->id;
-                        $cartObj->restaurant_menu_id = \Auth::user()->id;
+                        $cartObj->restaurant_menu_id = $key;
                         $cartObj->price = $data['price'];
                         $cartObj->quantity = $data['quantity'];
                         $cartObj->save();
