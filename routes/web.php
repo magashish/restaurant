@@ -32,7 +32,7 @@ Route::group(['namespace' => 'Admin'], function () {
     Route::get('/admin/login', 'AdminController@login')->name('admin.login');
     Route::post('/admin/login', 'AdminController@loginPost')->name('admin.login');
 
-    Route::group(['middleware' => 'auth:admin'], function () {
+    //Route::group(['middleware' => 'auth:admin'], function () {
         Route::get('/admin', 'DashboardController@index')->name('admin');
         Route::get('/admin/dashboard', 'DashboardController@index')->name('admin.dashboard');
         Route::get('/admin/restaurant', 'RestaurantController@index')->name('restaurant.index');
@@ -45,7 +45,7 @@ Route::group(['namespace' => 'Admin'], function () {
         Route::get('/admin/category', 'CategoryController@index')->name('category.index');
         Route::get('/admin/category/create', 'CategoryController@create')->name('category.create');
         Route::post('/admin/category', 'CategoryController@store')->name('category.store');
-    });
+   // });
 });
 
 Route::group(['namespace' => 'Front'], function () {

@@ -74,9 +74,8 @@
                                     <textarea name="shipping_address['notes']"></textarea>
                                 </div>
                                 <div class="col-full save-address-checkbox">
-                                    <input type="checkbox" id="save-address-checkbox-1"
-                                           name="save_address">
-                                    <label>Save address</label>
+                                    <input type="checkbox" id="save-address-checkbox-1" name="save_address" class="save_address">
+                                   <label for="save-address-checkbox-1">Save address</label>
                                 </div>
                             </div>
                             @auth
@@ -253,5 +252,6 @@
         #saved-address-container {
             display: none;
         }
+		input#save-address-checkbox-1 {display: none;}
     </style>
 @endsection

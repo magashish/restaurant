@@ -11,7 +11,7 @@
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
               <li class="breadcrumb-item active">Restaurants</li>
-            </ol>			
+            </ol>
           </div><!-- /.col -->
 		  @if(Session::has('success'))
                     <div style="width:100%" class="alert alert-success" role="alert">
@@ -26,7 +26,7 @@
 					 @endforeach
 				  </ul>
 			   </div>
-		 @endif	
+		 @endif
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
@@ -40,7 +40,7 @@
             <div class="container">
 			 <div class="content_inner">
 				<form action="{{ route('restaurant.store') }}" method="POST" enctype="multipart/form-data">
-				   @csrf        
+				   @csrf
 					<div class="form-group">
 						<label for="name">Name</label>
 						<input class="form-control" type="text" id="name" name="name" required>
@@ -61,7 +61,7 @@
 						<?php for($i = 0; $i < 24; $i++): ?>
 						  <option value="<?= $i % 12 ? $i % 12 : 12 ?>:00 <?= $i >= 12 ? 'pm' : 'am' ?>"><?= $i % 12 ? $i % 12 : 12 ?>:00 <?= $i >= 12 ? 'pm' : 'am' ?></option>
 						<?php endfor ?>
-					  </select>						
+					  </select>
 					</div>
 						<div class="form-check">
 						  <label class="radio-inline" style="margin-right: 25px;">
@@ -70,8 +70,8 @@
 						  <label class="form-check-label radio-inline">
 							<input type="radio" class="form-check-input" name="isopen" value="0" >Close
 						  </label>
-						</div>				
-					
+						</div>
+
 					<div class="form-group">
 						<label for="sdesc">Short Description</label>
 						<textarea class="form-control" id="sdesc" rows="3" name="shortdescription"></textarea>
@@ -79,11 +79,49 @@
 					<div class="form-group">
 						<label for="desc">Description</label>
 						<textarea class="form-control" id="desc" rows="3" name="description"></textarea>
-					</div>
+                    </div>
+                    <div class="form-group">
+						<label for="name">Address 1</label>
+						<input class="form-control" type="text" id="addr1" name="addr1" required>
+                    </div>
+                    <div class="form-group">
+						<label for="name">Address 2</label>
+						<input class="form-control" type="text" id="addr2" name="addr2" required>
+                    </div>
+                    <div class="form-group">
+						<label for="name">City</label>
+                        <input class="form-control" type="text" id="city" name="city" required>
+
+                        <label for="state" class="radio-inline">State</label>
+					    <select id="state" name="state" style="margin-right:10px;">
+                            <option value="">--Please Select--</option>
+                            <option value="california">California</option>
+                          <option value="florida">Florida</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+						<label for="name">ZipCode</label>
+                        <input class="form-control" type="text" id="postcode" name="postcode" required>
+
+                        <label for="country" class="radio-inline">Country</label>
+					    <select id="country" name="country" style="margin-right:10px;">
+                            <option value="US">US</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+						<label for="name">Phone</label>
+                        <input class="form-control" type="text" id="phone" name="phone" required>
+                        <label for="isfeatured" class="radio-inline">Featured</label>
+					    <select id="isfeatured" name="isfeatured" style="margin-right:10px;">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+
 					<input type="submit" class="btn btn-primary">
 				</form>
 				</div>
-			</div>			
+			</div>
           </div>
         </div>
         <!-- /.row -->

@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use \Illuminate\Support\Facades\Validator;
 use Session;
 use DataTables;
+use Image;
 
 class RestaurantController extends Controller
 {
@@ -57,12 +58,35 @@ class RestaurantController extends Controller
             'logo' => 'required|mimes:jpg.png,jpeg|max:2048',
             'timings' => 'required',
             'isopen' => 'required',
+            'addr1'  => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'postcode' => 'required',
+            'country' => 'required',
+            'phone' => 'required',
+            'isfeatured'=> 'required'
         ]);
 
         $file = $request->file('logo');
-        $fileName = time() . '.' . $file->getClientOriginalExtension();
-        $destinationPath = 'uploads';
-        $file->move($destinationPath, $fileName);
+		if($file){
+		$fileName = time().'.'.$file->getClientOriginalExtension();
+
+		$destinationPaththumb = 'uploads/logos/thumbnail';
+		$img = Image::make($file->getRealPath());
+        $img->resize(150, 90, function ($constraint) {
+            $constraint->aspectRatio();
+        })->save($destinationPaththumb.'/'.$fileName);
+
+		$destinationPathfull = 'uploads/logos/full';
+		$file->move($destinationPathfull,$fileName);
+		}else{
+			$fileName ="n/a";
+        }
+
+        // $file = $request->file('logo');
+        // $fileName = time() . '.' . $file->getClientOriginalExtension();
+        // $destinationPath = 'uploads';
+        // $file->move($destinationPath, $fileName);
 
         $openinghour = $request->post('openinghour');
         $closinghour = $request->post('closinghour');
@@ -74,7 +98,14 @@ class RestaurantController extends Controller
         $Restaurant->isopen = $request->post('isopen');
         $Restaurant->shortdescription = $request->post('shortdescription');
         $Restaurant->description = $request->post('description');
-
+        $Restaurant->addr1 = $request->post('addr1');
+        $Restaurant->addr2 = $request->post('addr2');
+        $Restaurant->city = $request->post('city');
+        $Restaurant->state = $request->post('state');
+        $Restaurant->postcode = $request->post('postcode');
+        $Restaurant->country = $request->post('country');
+        $Restaurant->phone = $request->post('phone');
+        $Restaurant->isfeatured = $request->post('isfeatured');
 
         $Restaurant->save();
         $request->session()->flash('success', 'Restaurant Menu added successfully');
