@@ -81,10 +81,9 @@
                         <div class="cart_total">
                             <h3>Cart Total</h3>
                             <ul>
-                                <li>Subtotal <span>$ {{ $total }}</span></li>
-                                <li>Tax <span>$ 0</span></li>
-                                <li>Delivery Charges <span>$ 0</span></li>
-                                <li>Total <span>${{ $total }}</span></li>
+                                <li>Subtotal <span>$ {{ $total }}</span></li>                                
+                                <!--<li>Total <span>${{ $total }}</span></li>-->
+								<li>Delivery and Tax will be calculated at checkout</li>
                             </ul>
                         <!--<div class="updatecrt">
                        <a href="{{ route('updatecart') }}">Update Cart</a>
