@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Restaurant extends Model
 {
     protected $fillable = [
-        'name', 'logo', 'timings','isopen','shortdescription','description'
+        'name', 'logo', 'timings','isopen','shortdescription','description','addr1','addr2','city','state','zipcode','country','phone','isfeatured'
     ];
 
     public function menu()
@@ -18,7 +18,7 @@ class Restaurant extends Model
     public function getLogoAttribute($value = "")
     {
         if(!empty($value)) {
-            return asset("uploads/$value");
+            return asset("uploads/logos/thumbnail/$value");
         }
         return $value;
     }

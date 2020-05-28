@@ -37,7 +37,7 @@
                     <div class="restaurant_logo">
                       @foreach($restaurants as $restaurant)
                         <div class="resort_inner">
-                            <div class="resort_logo"><a href="{{route('restaurantfront.show', $restaurant->id)}}"><img src="{{asset('uploads').'/'.$restaurant->logo}}"></a></div>
+                            <div class="resort_logo"><a href="{{route('restaurantfront.show', $restaurant->id)}}"><img src="{{$restaurant->logo}}"></a></div>
                             <a href="{{route('restaurantfront.show', $restaurant->id)}}">{{$restaurant->name}}</a>
                         </div>
                       @endforeach

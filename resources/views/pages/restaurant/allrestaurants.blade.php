@@ -24,7 +24,7 @@
                    @foreach($restaurants as $restaurant)
                     <div class="col-md-3 col-sm-3">
                         <div class="restaurant">
-                           <div class="restimg"><img src="{{asset('uploads').'/'.$restaurant->logo}}"></div>
+                           <div class="restimg"><img src="{{$restaurant->logo}}"></div>
                            <div class="resttitle"><a href="{{route('restaurantfront.show', $restaurant->id)}}">{{$restaurant->name}}</a></div>
                         </div>
                     </div>
