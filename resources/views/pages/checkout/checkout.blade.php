@@ -17,6 +17,7 @@
                 <div class="row">
                     <div class="col-lg-8 col-sm-12">
                         <div class="billingdetail">
+                            <h6>Returning customer? <a href="javascript:void(0)">Click here to login</a></h6><br>
                             <h3>Billing details</h3>
                             @if(session('error'))
                                 <div class="col-full">
@@ -74,8 +75,9 @@
                                     <textarea name="shipping_address['notes']"></textarea>
                                 </div>
                                 <div class="col-full save-address-checkbox">
-                                    <input type="checkbox" id="save-address-checkbox-1" name="save_address" class="save_address">
-                                   <label for="save-address-checkbox-1">Save address</label>
+                                    <input type="checkbox" id="save-address-checkbox-1" name="save_address"
+                                           class="save_address">
+                                    <label for="save-address-checkbox-1">Save address</label>
                                 </div>
                             </div>
                             @auth
@@ -84,15 +86,28 @@
                                     <input type="checkbox" name="ssss" id="shipdiff">
                                     <label for="shipdiff"></label>
                                 </div>
-                                <div class="col-full" id="saved-address-container">
-                                    @foreach($data['saved_addresses'] as $address)
-                                        <input type="radio" name="address_id" class="saved-address-radio" value="{{ $address->id }}">
-                                        <label>{{ $address->first_name." ".$address->lasst_name }}
-                                            , {{ $address->address }}, {{ $address->city }}, {{ $address->state }}
-                                            , {{ $address->zip }}</label>
-                                        <br>
-                                    @endforeach
-                                </div>
+                                @if(count($data['saved_addresses']) > 0)
+                                    <div class="col-full" id="saved-address-container">
+
+                                        <input type="hidden" id="saved-address-count"
+                                               value="{{ count($data['saved_addresses']) }}">
+                                        @foreach($data['saved_addresses'] as $address)
+                                            <input type="radio" name="address_id"
+                                                   id="saved-address-id-{{ $address->id }}" class="saved-address-radio"
+                                                   value="{{ $address->id }}">
+                                            <label
+                                                for="saved-address-id-{{ $address->id }}">{{ $address->first_name." ".$address->lasst_name }}
+                                                , {{ $address->address }}, {{ $address->city }}, {{ $address->state }}
+                                                , {{ $address->zip }}</label>
+                                            <br>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <input type="hidden" id="saved-address-count" value="0">
+                                    <div class="col-full" id="no-saved-address-container">
+                                        <h3>No saved address</h3>
+                                    </div>
+                                @endif
                             @endauth
                         </div>
                     </div>
@@ -226,12 +241,21 @@
             });*/
 
             $("#shipdiff").on("change", function () {
+                const savedAddressCount = $("#saved-address-count").val();
                 if ($(this).is(":checked")) {
-                    $("#new-address-container").hide();
-                    $("#saved-address-container").show();
+                    if (savedAddressCount > 0) {
+                        $("#new-address-container").hide();
+                        $("#saved-address-container").show();
+
+                        $("#no-saved-address-container").hide();
+                    } else {
+                        $("#no-saved-address-container").show();
+                    }
                 } else {
                     $("#new-address-container").show();
                     $("#saved-address-container").hide();
+
+                    $("#no-saved-address-container").hide();
                 }
             });
         });
@@ -243,15 +267,18 @@
             text-align: center;
         }
 
-        .save-address-checkbox #save-address-checkbox-1, .saved-address-radio {
+        /*.save-address-checkbox #save-address-checkbox-1, .saved-address-radio {
             position: inherit !important;
             opacity: 1 !important;
             visibility: inherit !important;
-        }
+        }*/
 
-        #saved-address-container {
+        #saved-address-container, #no-saved-address-container {
             display: none;
         }
-		input#save-address-checkbox-1 {display: none;}
+
+        input#save-address-checkbox-1 {
+            display: none;
+        }
     </style>
 @endsection

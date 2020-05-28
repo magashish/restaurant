@@ -169,7 +169,11 @@ class CartController extends Controller
                 $cartObj->price = $requestFields['price'];
             }
             if ($cartObj->save()) {
-                return redirect()->route('cart')->with('success', 'Item added to Cart successfull');
+                if(isset($requestFields['previous_url']) && !empty($requestFields['previous_url'])) {
+                    return redirect()->away($requestFields['previous_url'])->with('success', 'Item added to Cart successfull');
+                } else {
+                    return redirect()->route('cart')->with('success', 'Item added to Cart successfull');
+                }
             }
         } else {
             $prodId = $request->post('pid');
@@ -195,7 +199,10 @@ class CartController extends Controller
         }
         $cart = session()->get('cart');
         //dd($cart);
-
-        return redirect()->route('cart')->with('error', 'Oops! some error occured, please try again');
+        if(isset($requestFields['previous_url']) && !empty($requestFields['previous_url'])) {
+            return redirect()->away($requestFields['previous_url'])->with('error', 'Oops! some error occured, please try again');
+        } else {
+            return redirect()->route('cart')->with('error', 'Oops! some error occured, please try again');
+        }
     }
 }

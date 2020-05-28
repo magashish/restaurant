@@ -31,7 +31,7 @@ class UserController extends Controller
                     $cartObj->save();
                 }
             }
-
+            return redirect()->away($requestData['previous_url']);
             return redirect('/');
         } else {
             return redirect('login')->with('error', "Email and password do not match");

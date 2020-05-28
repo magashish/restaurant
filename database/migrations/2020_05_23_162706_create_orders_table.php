@@ -17,7 +17,7 @@ class CreateOrdersTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->on('users')->references('id')->onDelete('cascade');
-            $table->bigInteger('shipping_address_id')->unsigned();
+            $table->bigInteger('shipping_address_id')->unsigned()->nullable();
             $table->foreign('shipping_address_id')->on('shipping_addresses')->references('id')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();

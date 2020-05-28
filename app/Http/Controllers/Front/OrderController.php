@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\RestaurantMenu;
 use App\Models\ShippingAddress;
+use App\OrderAddress;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -59,6 +60,8 @@ class OrderController extends Controller
     public function placeOrder(Request $request)
     {
         $requestFields = $request->all();
+        $address = "";
+        $orderAddressData = [];
         /*echo "<pre>";
         print_r($requestFields);die;*/
 
@@ -100,8 +103,8 @@ class OrderController extends Controller
 
         // Save shipping address
 
-        if(!empty($shippingAddressData)) {
-            $shippingAddressObj = ShippingAddress::where('user_id', $userId)->first();
+        if(!empty($shippingAddressData) && isset($requestFields['save_address'])) {
+            /*$shippingAddressObj = ShippingAddress::where('user_id', $userId)->first();
             if(!$shippingAddressObj) {
                 $shippingAddressObj = new ShippingAddress;
                 $shippingAddressObj->user_id = $userId;
@@ -114,6 +117,41 @@ class OrderController extends Controller
                 $shippingAddressObj->state = $shippingAddressData['state'];
                 $shippingAddressObj->zip = $shippingAddressData['zip'];
                 $shippingAddressObj->save();
+            }*/
+
+            $shippingAddressObj = new ShippingAddress;
+            $shippingAddressObj->user_id = $userId;
+            $shippingAddressObj->first_name = $shippingAddressData['first_name'];
+            $shippingAddressObj->last_name = $shippingAddressData['last_name'];
+            $shippingAddressObj->email = $shippingAddressData['email'];
+            $shippingAddressObj->mobile = $shippingAddressData['mobile'];
+            $shippingAddressObj->address = $shippingAddressData['address'];
+            $shippingAddressObj->city = $shippingAddressData['city'];
+            $shippingAddressObj->state = $shippingAddressData['state'];
+            $shippingAddressObj->zip = $shippingAddressData['zip'];
+            $shippingAddressObj->save();
+
+            $orderAddressData = ShippingAddress::where('id', $shippingAddressObj->id)->first()->toArray();
+        } else {
+            if(isset($requestFields['address_id'])) {
+                $savedAddressObj = ShippingAddress::where('id', $requestFields['address_id'])->first()->toArray();
+                $orderAddressData = $savedAddressObj;
+
+                $address .= $savedAddressObj['first_name'] . " " . $savedAddressObj['last_name'] . ", ";
+                $address .= $savedAddressObj['address'] ?? "";
+                $address .= $savedAddressObj['city'] ?? "";
+                $address .= $savedAddressObj['state'] ?? "";
+                $address .= $savedAddressObj['zip'] ?? "";
+                $address .= $savedAddressObj['mobile'] ?? "";
+            } else {
+                $address .= $shippingAddressData['first_name'] . " " . $shippingAddressData['last_name'] . ", ";
+                $address .= $shippingAddressData['address'] ?? "";
+                $address .= $shippingAddressData['city'] ?? "";
+                $address .= $shippingAddressData['state'] ?? "";
+                $address .= $shippingAddressData['zip'] ?? "";
+                $address .= $shippingAddressData['mobile'] ?? "";
+
+                $orderAddressData = $shippingAddressData;
             }
         }
 
@@ -124,8 +162,23 @@ class OrderController extends Controller
         $latestOrder = Order::orderBy('created_at','DESC')->first();
         $oid = '#ORDER'.date("ymd").str_pad(($latestOrder->id ?? 0) + 1, 8, "0", STR_PAD_LEFT);
         $orderObj->oid = $oid;
-        $orderObj->shipping_address_id = $shippingAddressObj->id;
-        $orderObj->save();
+        $orderObj->shipping_address_id = $requestFields['address_id'] ?? (isset($requestFields['save_address']) ? $shippingAddressObj->id : NULL);
+        $orderObj->shipping_address = $address;
+        $orderObj->billing_address = $address;
+        if($orderObj->save()) {
+            // Save order address
+            $orderAddressObj = new OrderAddress;
+            $orderAddressObj->order_id = $orderObj->id;
+            $orderAddressObj->first_name = $orderAddressData['first_name'] ?? "";
+            $orderAddressObj->last_name = $orderAddressData['last_name'] ?? "";
+            $orderAddressObj->email = $orderAddressData['email'] ?? "";
+            $orderAddressObj->mobile = $orderAddressData['mobile'] ?? "";
+            $orderAddressObj->address = $orderAddressData['address'] ?? "";
+            $orderAddressObj->city = $orderAddressData['city'] ?? "";
+            $orderAddressObj->state = $orderAddressData['state'] ?? "";
+            $orderAddressObj->zip = $orderAddressData['zip'] ?? "";
+            $orderAddressObj->save();
+        }
 
         // Save order item
         $cartItem = Cart::where('user_id', $userId)->get();

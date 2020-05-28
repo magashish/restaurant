@@ -12,6 +12,7 @@
                     {{--<form method="POST" action="{{ route('login') }}">--}}
                     <form method="POST" action="{{ route('user.login') }}">
                         @csrf
+                        <input type="hidden" name="previous_url" value="{{ url()->previous() }}">
                         @if(session('error'))
                             <div class="col-full">
                                 <div class="alert alert-danger" role="alert">

@@ -65,6 +65,7 @@
                                                     class="menu-item-price">{{ $proddata->price }}</span></span>
                                             <form method="POST" name="addtocart" action="{{ route('addtocart') }}">
                                                 @csrf
+                                                <input type="hidden" name="previous_url" value="{{ \Request::fullUrl() }}">
                                                 <input type="hidden" name="pid" value="{{ $proddata->id }}"/>
                                                 <input type="hidden" name="pname" value="{{ $proddata->dishname }}"/>
                                                 <input type="hidden" class="price" name="price"
