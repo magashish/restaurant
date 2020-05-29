@@ -12,7 +12,7 @@
             <div class="row">
                 <div class='col-md-12 col-sm-12'>
                     <div class="restaurant_detail">
-                        <div class="restaurant_img"><img src="{{asset('uploads').'/'.$data->logo}}"></div>
+                        <div class="restaurant_img"><img src="{{$data->logo}}"></div>
                         <div class="restaurant_info">
                             <div class="resort_open">{{$status}}</div>
                             <h2>{{$data->name}}</h2>
