@@ -67,6 +67,10 @@ class RestaurantController extends Controller
             'isfeatured'=> 'required'
         ]);
 
+        if ($validator->fails()) {
+            return redirect(route('restaurant.create'))->withInput()->withErrors($validator);
+        }
+
         $file = $request->file('logo');
 		if($file){
 		$fileName = time().'.'.$file->getClientOriginalExtension();
