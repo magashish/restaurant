@@ -47,6 +47,12 @@
                     <li><a href="{{ url('/') }}">Home</a></li>
                     <li><a href="{{route('about')}}">About</a></li>
                     <li><a href="{{route('restaurantfront.all')}}">Restaurants</a></li>
+                    <li><a href="#">Services</a>
+                        <ul class="child">
+                            <li><a href="">Real estate</a></li>
+                            <li><a href="">Notary Services</a></li>
+                        </ul>
+                    </li>
                     <li><a href="{{route('contact')}}">Contact</a></li>
                 </ul>
             </div>

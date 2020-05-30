@@ -63,7 +63,7 @@ header.header {
  	color: #fff;
 }
 .logo {
-    max-width: 210px;
+    max-width: 270px;
 }
 .select_city, .login a{
     border-right: 1px solid #ff756f;
@@ -451,10 +451,11 @@ footer {
 }
 .product_info {
     float: left;
-    width: 100%;
+    width: 50%;
     padding: 20px;
     border-bottom: 3px solid #ebedf3;
     border-top: none;
+	min-height:200px;
 }
 .tab_inner{
     padding: 20px;
@@ -464,7 +465,7 @@ footer {
 }
 .product_left {
     float: left;
-    width: 250px;
+    width: 100px;
 }
 .product_img img {
     width: 100%;
@@ -476,8 +477,8 @@ footer {
 }
 .prodcut_cat {
     float: left;
-    width: calc(100% - 250px);
-    padding-left: 20px;
+    width: calc(100% - 100px);
+    padding-left: 15px;
 }
 .prodcut_cat h3 {
     font-size: 22px;
@@ -519,7 +520,7 @@ button.addtocart,a.addtocart {
     background: #b10700;
     margin-top: 10px;
     display: inline-block;
-    padding: 8px 15px;
+    padding: 2px 5px;
     color: #fff;
     text-transform: uppercase;
     border-radius: 5px;
@@ -809,6 +810,11 @@ input[type=checkbox]:checked + label:before, input[type=radio]:checked + label:b
     width: 90%;
     margin: 10%;
     min-height: 190px;
+}
+.prodcut_cat form label span {
+    width: auto;
+    float: none;
+    margin-left: 4px;
 }
 /***************************************Media Query*************************************/
 @media(max-width: 1199px){
