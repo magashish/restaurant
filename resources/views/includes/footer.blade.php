@@ -54,15 +54,15 @@
                         <h4>Head Office:</h4>
                         <p>1422 1st St. Santa Rosa,t CA 94559. USA </p>
                         <div class="phone_email">
-                            <p>Call Us:<a href="tel:001123456">(001) 123-4567</a></p>
+                            <p>Call Us:<a href="tel:001123456">(559) 573-6677</a></p>
                             <p>E-mail: <a href="mailto:admin@e-mail.com">admin@e-mail.com</a></p>
                         </div>
                         <div class="social_icons">
                             <ul>
-                                <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
-                                <li><a href="#"><i class="fab fa-twitter"></i></a></li>
-                                <li><a href="#"><i class="fab fa-instagram"></i></a></li>
-                                <li><a href="#"><i class="fab fa-youtube"></i></a></li>
+                                <li><a href="https://www.facebook.com/partybuscv" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                                <!--<li><a href="" target="_blank"><i class="fab fa-twitter"></i></a></li>-->
+                                <li><a href="https://www.instagram.com/p/BVWJ2eRjp3I/"><i class="fab fa-instagram"></i></a></li>
+                                <!--<li><a href="#"><i class="fab fa-youtube"></i></a></li>-->
                             </ul>
                         </div>
                     </div>
