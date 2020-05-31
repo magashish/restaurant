@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use DB;
 use App\Models\Restaurant;
 use App\Models\RestaurantMenu;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use \Illuminate\Support\Facades\Validator;
@@ -26,14 +27,31 @@ class RestaurantController extends Controller{
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function show($id)
-    {
-        $data = Restaurant::where('id', $id)->with('menu', 'menu.options')->first();
-        /*echo "<pre>";
-        print_r($data);die;*/
+     public function show(Request $request, $id)
+     {
+         $requestFields = $request->all();
+         if(isset($requestFields['cat'])) {
+             $data = Restaurant::where(['id' => $id, 'category' => $requestFields['cat']])->with('menu', 'menu.options')->first();
+         } else {
+             $data = Restaurant::where('id', $id)->with('menu', 'menu.options')->first();
+         }
+ 
+         /*echo "<pre>";
+         print_r($data);die;*/
+ 
+        return view('pages.restaurant.show', compact('data'));
+     } 
+    // public function show($id)
+    // {
+    //     $data = Restaurant::where('id', $id)->with('menu', 'menu.options')->first();
+    //     /*echo "<pre>";
+    //     print_r($data);die;*/
+    //     $data->categories;
+    //     $cat = json_decode($data->categories);
+    //     $catData = Category::find($cat)->pluck('name','id');
 
-       return view('pages.restaurant.show', compact('data'));
-    }
+    //    return view('pages.restaurant.show', compact('data','catData'));
+    // }
     public function allrestaurant()
     {
         $restaurants = Restaurant::latest()->get();

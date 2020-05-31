@@ -58,10 +58,9 @@
                                 <div class="form-group">
                                     <label for="title">Category</label>
                                     <select class="form-control" id="category" name="category">
-                                        <option value="1">Hamburger</option>
-                                        <option value="2">Kids Meal</option>
-                                        <option value="3">Sweets</option>
-                                        <option value="4">Beverages</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="table-responsive repeater">

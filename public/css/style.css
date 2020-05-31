@@ -105,14 +105,39 @@ header.header {
 .navbar ul li a {
     color: #fff;
     text-transform: uppercase;
-    font-size: 18px;
-    margin: 0 20px;
+    font-size: 17px;
+    margin: 0 15px;
 }
-.navbar ul li a:hover{
+ul.child {
+    position: absolute;
+    top: 100%;
+    display: none;
+    background: #b10700;
+    padding: 15px;
+    width: 230px;
+    left: 15px;
+}
+.navbar ul li:hover ul.child {
+    display: block;
+}
+
+.navbar ul li a:hover, .navbar ul li:hover a{
 	color: #b10700;
+}
+.navbar ul.child li a {
+    margin: 4px 0;
+    text-transform: uppercase;
+    font-size: 15px;
+    display: inline-block;
+    color: #fff !important;
+}
+.navbar ul ul.child li a:hover{
+    color: #fff;
+    opacity: .8;
 }
 .navbar ul li {
     float: left;
+    position: relative;
 }
 .header_search {
     background: #fff;
@@ -816,6 +841,184 @@ input[type=checkbox]:checked + label:before, input[type=radio]:checked + label:b
     float: none;
     margin-left: 4px;
 }
+
+/***************************************************
+                Realestate CSS Start
+***************************************************/
+.realestate_sec {
+    float: left;
+    width: 100%;
+    padding: 40px 0;
+}
+.property-item-box {
+    padding: 10px;
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 0.5s ease-in-out;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.15);
+    margin-top: 30px;
+}
+.property-item-box .box-thumbnail {
+    position: relative;
+}
+.property-item-box .box-thumbnail .box-link img {
+    border-radius: 4px;
+    height: 220px;
+    object-fit: cover;
+    object-position: center;
+    width: 100%;
+}
+.property-item-box .box-status, .property-item-box .actions {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+.property-item-box .actions {
+    left: inherit;
+    right: 20px;
+}
+.property-item-box .box-thumbnail .label-default {
+    background-color: #44ad44;
+    margin-right: 5px;
+    padding: 0.3em 0.8em 0.3em;
+    text-transform: uppercase;
+}
+.property-item-box .box-thumbnail .label-default a {
+    color: #fff;
+}
+.actions li {
+    margin-bottom: 5px !important;
+    color: #000;
+    margin-right: 0 !important;
+    cursor: pointer;
+    font-size: 12px !important;
+}
+.actions li:last-child {
+    margin: 0 !important;
+}
+.property-item-box .actions li {
+    margin: 0;
+    margin-bottom: 5px;
+    text-align: right;
+    margin-right: 0 !important;
+}
+.actions li > span {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 4px;
+    background-color: #fff;
+    opacity: 0.6;
+    text-align: center;
+}
+.property-item-box .actions li > span {
+    width: auto;
+    padding: 0 10px;
+    display: -webkit-inline-box;
+}
+.property-item-box .actions li > span .rlc-text {
+    display: none;
+    margin-left: 5px;
+}
+.property-item-box .box-content {
+    padding: 16px 8px;
+}
+.property-item-box .box-content .label {
+    padding: 0;
+    background: transparent;
+    color: #666;
+    font-size: 13px;
+    font-weight: 500;
+}
+.property-item-box .box-content .box-title {
+    color: #333;
+    font-size: 18px;
+    margin: 10px 0;
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    line-height: 125%;
+}
+.property-item-box .box-content .info-proty.user-date {
+    display: flex;
+    align-items: flex-start;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 15px;
+}
+.property-item-box .box-content .info-proty.user-date .prop-user-agent {
+    margin-right: 10px;
+}
+.property-item-box .box-content .box-price {
+    display: flex;
+    align-items: center;
+}
+.property-item-box .box-content .box-price.price .item-price {
+    font-size: 18px;
+    color: #b10700;
+    margin: 0;
+    font-weight: 600;
+}
+.property-item-box .box-content .box-price.price .item-sub-price {
+    font-size: 14px;
+    color: #7b7b7b;
+    margin-left: 26px;
+    margin-top: 0;
+    position: relative;
+}
+.property-item-box .box-content .box-price.price .item-sub-price:before {
+    content: '-';
+    position: absolute;
+    left: -15px;
+}
+.property-item-box .box-content .box-footer {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed #e4e4e4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.property-item-box .box-content .box-footer .box-info {
+    padding-right: 10px;
+    width: calc(100% - 44px);
+}
+.property-item-box .box-content .box-footer .box-info .box-meta {
+    font-size: 13px;
+    color: #262626;
+    font-weight: 500;
+}
+.property-item-box .box-content .box-footer .box-info .box-meta p {
+    margin: 0;
+    display: flex;
+    justify-content: start;
+    width: 100%;
+}
+.property-item-box .box-content .box-footer .box-info .box-meta p span {
+    margin-right: 5%;
+    font-weight: 600;
+}
+.property-item-box .box-content .box-footer .box-info .box-address {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #666;
+    line-height: normal;
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.property-item-box .box-content .box-footer a.btn-primary {
+    background: #b10700;
+    border-color: #b10700;
+    width: 44px;
+}
+/***************************************************
+                Realestate CSS END
+***************************************************/
 /***************************************Media Query*************************************/
 @media(max-width: 1199px){
     .restaurant_info {

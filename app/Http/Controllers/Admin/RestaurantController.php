@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Restaurant;
 use App\Models\RestaurantMenu;
+use App\Models\Category;
 use App\Models\RestaurantMenuOption;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -48,7 +49,8 @@ class RestaurantController extends Controller
 
     public function create()
     {
-        return view('pages.admin.restaurant.create');
+        $categories = Category::all();
+        return view('pages.admin.restaurant.create',compact('categories'));
     }
 
     public function store(Request $request)
@@ -56,7 +58,6 @@ class RestaurantController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'logo' => 'required|mimes:jpg.png,jpeg|max:2048',
-            'timings' => 'required',
             'isopen' => 'required',
             'addr1'  => 'required',
             'city' => 'required',
@@ -94,6 +95,9 @@ class RestaurantController extends Controller
 
         $openinghour = $request->post('openinghour');
         $closinghour = $request->post('closinghour');
+        $categories = $request->post('categories');
+        //dd($categories);
+        $categories = json_encode($categories);
 
         $Restaurant = new Restaurant;
         $Restaurant->name = $request->post('name');
@@ -110,11 +114,15 @@ class RestaurantController extends Controller
         $Restaurant->country = $request->post('country');
         $Restaurant->phone = $request->post('phone');
         $Restaurant->isfeatured = $request->post('isfeatured');
+        $Restaurant->categories = $categories;
+        $Restaurant->email = $request->post('email');
+        $Restaurant->gmap = $request->post('gmap');
 
         $Restaurant->save();
         $request->session()->flash('success', 'Restaurant Menu added successfully');
 
-        return view('pages.admin.restaurant.create');
+        $categories = Category::all();
+        return view('pages.admin.restaurant.create',compact('categories'));
     }
 
     public function show($id)
@@ -125,7 +133,10 @@ class RestaurantController extends Controller
 
     public function createmenu($id)
     {
-        return view('pages.admin.restaurant.menucreate')->with('id', $id);
+        $id= $id;
+        $categories = Category::all();
+        //dd($categories);
+        return view('pages.admin.restaurant.menucreate', compact('id','categories'));
     }
 
     public function addmenu(Request $request)
