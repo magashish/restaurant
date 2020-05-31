@@ -63,9 +63,11 @@
                                             <span>{{ $proddata->dishname }}</span>
                                             <span class="menu-item-price-span">$ <span
                                                     class="menu-item-price">{{ $proddata->price }}</span></span>
-                                            <form method="POST" name="addtocart" action="{{ route('addtocart') }}">
+                                            <form method="POST" class="add-to-cart-form" name="addtocart"
+                                                  action="{{ route('addtocart') }}">
                                                 @csrf
-                                                <input type="hidden" name="previous_url" value="{{ \Request::fullUrl() }}">
+                                                <input type="hidden" name="previous_url"
+                                                       value="{{ \Request::fullUrl() }}">
                                                 <input type="hidden" name="pid" value="{{ $proddata->id }}"/>
                                                 <input type="hidden" name="pname" value="{{ $proddata->dishname }}"/>
                                                 <input type="hidden" class="price" name="price"
@@ -87,7 +89,8 @@
                                             </span>
                                                     @php $id++; @endphp
                                                 @endforeach
-                                                <button type="submit" class="addtocart" name="Add To Cart"
+                                                <button type="button" class="addtocart add-to-cart-submit"
+                                                        data-menu-id="{{ $proddata->id }}" name="Add To Cart"
                                                         value="Add To Cart">Add To Cart
                                                 </button>
                                             </form>
@@ -158,6 +161,7 @@
     </div>
 @stop
 @section('page_script')
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
         $(document).ready(function () {
             $(".menu-option-checkbox").on("change", function () {
@@ -172,6 +176,32 @@
                 }
                 itemPriceObj.text(itemPrice);
                 $(".price").val(itemPrice);
+            });
+
+            $(".add-to-cart-submit").on("click", function () {
+                const menu_id = $(this).attr("data-menu-id");
+                var $this = $(this);
+
+                $.ajax({
+                    url: "{{ route('check-same-restaurant') }}",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        menu_id: menu_id,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function (response) {
+                        if(response.success) {
+                            $this.parents('form').submit();
+                        } else {
+                            swal("You can't add item from different restaurant. Please select item from same restaurant");
+                        }
+                    },
+                    error: function (error) {
+                        alert(22)
+                        //$this.parents('form').submit();
+                    }
+                });
             });
         });
     </script>

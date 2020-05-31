@@ -70,6 +70,7 @@ Route::group(['namespace' => 'Front'], function () {
     });
 
     Route::get('/thank-you', 'OrderController@thankYou')->name('thank.you');
+    Route::post('/check-same-restaurant', 'CartController@checkSameRestaurant')->name('check-same-restaurant');
 });
 
 Auth::routes();

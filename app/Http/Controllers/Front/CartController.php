@@ -125,20 +125,50 @@ class CartController extends Controller
     {
         $response = [];
         $response['success'] = FALSE;
+        $response['session_cart'] = FALSE;
 
         $requestFields = $request->all();
 
         try {
-            if (Cart::where('id', $requestFields['cart_id'])->delete()) {
-                $response['success'] = TRUE;
+            if(Auth::check()) {
+                if (Cart::where('id', $requestFields['cart_id'])->delete()) {
+                    $response['success'] = TRUE;
 
-                $userId = \Auth::user()->id;
-                $cartData = Cart::where('user_id', $userId)->with('product_detail')
-                    ->get()->toArray();
+                    $userId = \Auth::user()->id;
+                    $cartData = Cart::where('user_id', $userId)->with('product_detail')
+                        ->get()->toArray();
 
-                $response['html'] = view('pages.cart.partial.cart')->with(compact('cartData'))->render();
+                    $response['html'] = view('pages.cart.partial.cart')->with(compact('cartData'))->render();
+                } else {
+                    $response['message'] = "Oops! some error occured, please try again";
+                }
             } else {
-                $response['message'] = "Oops! some error occured, please try again";
+                $response['session_cart'] = TRUE;
+                $cart = Session::get('cart');
+
+                /*
+                 * If product already exist into the cart then update QTY of product
+                 * Othewise add new product into the cart
+                 */
+                if(isset($cart[$requestFields['cart_id']])) {
+                    unset($cart[$requestFields['cart_id']]);
+                }
+
+                $cartData = [];
+                if(!empty($cart)) {
+                    foreach ($cart as $key => $value) {
+                        $cartData[] = [
+                            'id' => $key,
+                            'restaurant_menu_id' => $key,
+                            'price' => $value['price'],
+                            'quantity' => $value['quantity'],
+                            'product_detail' => RestaurantMenu::where('id', $key)->first()->toArray()
+                        ];
+                    }
+                }
+                $response['html'] = view('pages.cart.partial.cart')->with(compact('cartData'))->render();
+
+                Session::put('cart', $cart);
             }
         } catch (\Exception $e) {
             $response = [
@@ -204,5 +234,41 @@ class CartController extends Controller
         } else {
             return redirect()->route('cart')->with('error', 'Oops! some error occured, please try again');
         }
+    }
+
+    public function checkSameRestaurant(Request $request)
+    {
+        $response = [];
+        $response['success'] = FALSE;
+        $response['can_add'] = FALSE;
+        if(\Auth::check()) {
+            $cartMenuItem = Cart::select('restaurant_menu_id')->where('user_id', \Auth::user()->id)->pluck('restaurant_menu_id')->toArray();
+        } else {
+            $menuIds = [];
+            $cart = Session::get('cart');
+
+            if(!empty($cart)) {
+                $menuIds = array_keys($cart);
+                $cartMenuItem = $menuIds;
+            }
+        }
+
+        if(empty($cartMenuItem)) {
+            $response['success'] = TRUE;
+            $response['can_add'] = TRUE;
+            return $response;
+        }
+
+        $cartRestaurantIds = RestaurantMenu::select('restaurant_id')->whereIn('id', $cartMenuItem)->pluck('restaurant_id')->toArray();
+        $cartRestaurantIds = array_unique($cartRestaurantIds);
+
+        $addToCartMenuObj = RestaurantMenu::select('restaurant_id')->where('id', $request->get('menu_id'))->first();
+        $restaurantId = $addToCartMenuObj->restaurant_id;
+
+        if($cartRestaurantIds[0] == $restaurantId) {
+            $response['success'] = TRUE;
+            $response['can_add'] = TRUE;
+        }
+        return $response;
     }
 }

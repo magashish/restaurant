@@ -29,15 +29,15 @@
                             <div id="new-address-container">
                                 <div class="col-half">
                                     <label>First Name<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->name }}" name="shipping_address[first_name]">
+                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}" name="shipping_address[first_name]">
                                 </div>
                                 <div class="col-half">
                                     <label>Last Name<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->name }}" name="shipping_address[last_name]">
+                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}" name="shipping_address[last_name]">
                                 </div>
                                 <div class="col-half">
                                     <label>Email Address<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->email }}" name="shipping_address[email]">
+                                    <input type="text" value="{{ \Auth::user()->email ?? '' }}" name="shipping_address[email]">
                                 </div>
                                 <div class="col-half">
                                     <label>Phone No.<span>*</span></label>

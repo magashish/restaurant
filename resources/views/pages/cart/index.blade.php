@@ -49,10 +49,11 @@
                                                 {{--<button class="btn btn-info btn-sm update-cart" data-id="{{ $key }}"><i
                                                         class="far fa-sync-alt"></i></button>--}}
                                                 @auth
+
+                                                @endauth
                                                 <button class="btn btn-danger btn-sm remove-from-cart delete-cart-item"
                                                         data-id="{{ $key }}">
                                                     <i class="far fa-trash-alt"></i></button>
-                                                @endauth
                                             </td>
                                         </tr>
                                     @endforeach
@@ -81,7 +82,7 @@
                         <div class="cart_total">
                             <h3>Cart Total</h3>
                             <ul>
-                                <li>Subtotal <span>$ {{ $total }}</span></li>                                
+                                <li>Subtotal <span>$ {{ $total }}</span></li>
                                 <!--<li>Total <span>${{ $total }}</span></li>-->
 								<li>Delivery and Tax will be calculated at checkout</li>
                             </ul>
@@ -164,7 +165,7 @@
                     .then((willDelete) => {
                         if (willDelete) {
                             var cart_id = $(this).parents("tr").data("cart-id");
-
+alert(2222)
                             $.ajax({
                                 url: "{{ route('delete.cart.item') }}",
                                 type: "POST",
@@ -175,11 +176,17 @@
                                 },
                                 success: function (response) {
                                     if (response.success) {
-                                        $(".cart-items-container").html(response.html);
+                                        if(response.session_cart) {
+                                            alert('if')
+                                            location.reload();
+                                        } else {
+                                            alert('else')
+                                            $(".cart-items-container").html(response.html);
+                                        }
                                     }
                                 },
                                 error: function () {
-
+alert('sss')
                                 }
                             });
                         }

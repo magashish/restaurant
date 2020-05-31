@@ -26,9 +26,15 @@ class RestaurantController extends Controller{
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $data = Restaurant::where('id', $id)->with('menu', 'menu.options')->first();
+        $requestFields = $request->all();
+        if(isset($requestFields['cat'])) {
+            $data = Restaurant::where(['id' => $id, 'category' => $requestFields['cat']])->with('menu', 'menu.options')->first();
+        } else {
+            $data = Restaurant::where('id', $id)->with('menu', 'menu.options')->first();
+        }
+
         /*echo "<pre>";
         print_r($data);die;*/
 
