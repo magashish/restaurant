@@ -117,6 +117,22 @@
                             <option value="1">Yes</option>
                         </select>
                     </div>
+                    <div class="form-group">
+						<label for="name">Categories</label>
+                        <select id='categories' name='categories[]' class="custom-select" multiple>
+                            @foreach($categories as $category)
+                             <option value="{{ $category->name }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+						<label for="name">Email</label>
+						<input class="form-control" type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+						<label for="desc">Google Map</label>
+						<textarea class="form-control" id="gmap" rows="3" name="gmap"></textarea>
+                    </div>
 
 					<input type="submit" class="btn btn-primary">
 				</form>

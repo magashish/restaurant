@@ -141,14 +141,11 @@
                     <div class="choose_menu">
                         <h2>Choose menu <i class="fas fa-utensils"></i></h2>
                         <ul>
-                            <li><a href="#">Hamburger</a></li>
-                            <li><a href="#">Kids Meal</a></li>
-                            <li><a href="#">Sweets</a></li>
-                            <li><a href="#">Baskets</a></li>
-                            <li><a href="#">Fresh Salads</a></li>
-                            <li><a href="#">Appetizers</a></li>
-                            <li><a href="#">Beverages</a></li>
-                            <li><a href="#">Desserts & Beverages</a></li>
+                           <?php $catData
+                           ?>
+                            @foreach($catData as $key => $cat)
+                             <li><a href="{{Request::url().'?cat='.$key}}">{{$cat}}</a></li>
+                            @endforeach
                         </ul>
                     </div>
                     <div class="special_img">
