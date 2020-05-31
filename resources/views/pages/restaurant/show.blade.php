@@ -167,10 +167,11 @@
 
                 var optionPrice = $(this).siblings('label').find(".menu-option-price").text();
                 if ($(this).is(":checked")) {
-                    itemPrice = parseInt(itemPrice) + parseInt(optionPrice);
+                    itemPrice = parseFloat(itemPrice) + parseFloat(optionPrice);
                 } else {
-                    itemPrice = parseInt(itemPrice) - parseInt(optionPrice);
+                    itemPrice = parseFloat(itemPrice) - parseFloat(optionPrice);
                 }
+                itemPrice = itemPrice.toFixed(2);
                 itemPriceObj.text(itemPrice);
                 $(".price").val(itemPrice);
             });

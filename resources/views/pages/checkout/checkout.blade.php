@@ -17,7 +17,7 @@
                 <div class="row">
                     <div class="col-lg-8 col-sm-12">
                         <div class="billingdetail">
-                            <h6>Returning customer? <a href="javascript:void(0)">Click here to login</a></h6><br>
+                            <h6>Returning customer? <a href="{{ route('login') }}">Click here to login</a></h6><br>
                             <h3>Billing details</h3>
                             @if(session('error'))
                                 <div class="col-full">
