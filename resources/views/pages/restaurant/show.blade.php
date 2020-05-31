@@ -141,7 +141,7 @@
                     <div class="choose_menu">
                         <h2>Choose menu <i class="fas fa-utensils"></i></h2>
                         <ul>
-                           <?php $catData
+                           <?php //$catData
                            ?>
                             @foreach($catData as $key => $cat)
                              <li><a href="{{Request::url().'?cat='.$key}}">{{$cat}}</a></li>

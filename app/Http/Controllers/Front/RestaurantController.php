@@ -38,10 +38,12 @@ class RestaurantController extends Controller
             $data = Restaurant::where('id', $id)->with('menu', 'menu.options')->first();
         }
 
+        $catData = [];
+
         /*echo "<pre>";
         print_r($data);die;*/
 
-        return view('pages.restaurant.show', compact('data'));
+        return view('pages.restaurant.show', compact('data', 'catData'));
     }
 
     public function allrestaurant()

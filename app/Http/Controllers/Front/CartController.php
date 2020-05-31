@@ -93,23 +93,53 @@ class CartController extends Controller
     {
         $response = [];
         $response['success'] = FALSE;
+        $response['session_cart'] = FALSE;
 
         $requestFields = $request->all();
 
         try {
-            $cardObj = Cart::find($requestFields['cart_id']);
+            if(\Auth::check()) {
+                $cardObj = Cart::find($requestFields['cart_id']);
 
-            $cardObj->quantity = $requestFields['quantity'];
-            if ($cardObj->save()) {
-                $response['success'] = TRUE;
+                $cardObj->quantity = $requestFields['quantity'];
+                if ($cardObj->save()) {
+                    $response['success'] = TRUE;
 
-                $userId = \Auth::user()->id;
-                $cartData = Cart::where('user_id', $userId)->with('product_detail')
-                    ->get()->toArray();
+                    $userId = \Auth::user()->id;
+                    $cartData = Cart::where('user_id', $userId)->with('product_detail')
+                        ->get()->toArray();
 
-                $response['html'] = view('pages.cart.partial.cart')->with(compact('cartData'))->render();
+                    $response['html'] = view('pages.cart.partial.cart')->with(compact('cartData'))->render();
+                } else {
+                    $response['message'] = "Oops! some error occured, please try again";
+                }
             } else {
-                $response['message'] = "Oops! some error occured, please try again";
+                $response['success'] = TRUE;
+                $response['session_cart'] = TRUE;
+                $cart = Session::get('cart');
+
+                /*
+                 * If product already exist into the cart then update QTY of product
+                 * Othewise add new product into the cart
+                 */
+                if(isset($cart[$requestFields['cart_id']])) {
+                    $cart[$requestFields['cart_id']]['quantity'] = $requestFields['quantity'];
+                }
+
+                $cartData = [];
+                if(!empty($cart)) {
+                    foreach ($cart as $key => $value) {
+                        $cartData[] = [
+                            'id' => $key,
+                            'restaurant_menu_id' => $key,
+                            'price' => $value['price'],
+                            'quantity' => $value['quantity'],
+                            'product_detail' => RestaurantMenu::where('id', $key)->first()->toArray()
+                        ];
+                    }
+                }
+                $response['html'] = view('pages.cart.partial.cart')->with(compact('cartData'))->render();
+                Session::put('cart', $cart);
             }
         } catch (\Exception $e) {
             $response = [
@@ -143,6 +173,7 @@ class CartController extends Controller
                     $response['message'] = "Oops! some error occured, please try again";
                 }
             } else {
+                $response['success'] = TRUE;
                 $response['session_cart'] = TRUE;
                 $cart = Session::get('cart');
 

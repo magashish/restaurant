@@ -42,7 +42,7 @@
                                             <td class="cartprice">$ {{ $menu['price']}}</td>
                                             <td class="cart_qty">
                                                 <input type="number" class="item-quantity" name="quantity"
-                                                       value="{{ $menu['quantity'] }}" min="1" max="5" {{ \Auth::check() ? '' : 'disabled' }}>
+                                                       value="{{ $menu['quantity'] }}" min="1" max="5">
                                             </td>
                                             <td class="carttotal">$ {{$menu['price'] * $menu['quantity']}}</td>
                                             <td class="cartremove">
@@ -147,7 +147,11 @@
                     },
                     success: function (response) {
                         if (response.success) {
-                            $(".cart-items-container").html(response.html);
+                            if(response.session_cart) {
+                                location.reload();
+                            } else {
+                                $(".cart-items-container").html(response.html);
+                            }
                         }
                     },
                     error: function () {
@@ -165,7 +169,7 @@
                     .then((willDelete) => {
                         if (willDelete) {
                             var cart_id = $(this).parents("tr").data("cart-id");
-alert(2222)
+
                             $.ajax({
                                 url: "{{ route('delete.cart.item') }}",
                                 type: "POST",
@@ -177,16 +181,14 @@ alert(2222)
                                 success: function (response) {
                                     if (response.success) {
                                         if(response.session_cart) {
-                                            alert('if')
                                             location.reload();
                                         } else {
-                                            alert('else')
                                             $(".cart-items-container").html(response.html);
                                         }
                                     }
                                 },
                                 error: function () {
-alert('sss')
+
                                 }
                             });
                         }
