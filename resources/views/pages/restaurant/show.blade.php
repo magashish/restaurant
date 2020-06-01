@@ -196,8 +196,9 @@
                         }
                     },
                     error: function (error) {
-                        alert(22)
+                        //alert(22)
                         //$this.parents('form').submit();
+                        swal("Oops! some error occured");
                     }
                 });
             });
