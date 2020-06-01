@@ -76,18 +76,18 @@
                                                 <input type="hidden" name="image" value="{{ $proddata->image }}"/>
                                                 <?php
                                                 $options = json_decode($proddata->options);
+                                                $id = 0;
                                                 ?>
-                                                @php $id = 0; @endphp
                                                 @foreach($options as $option)
                                                     @php $new_str = str_replace(' ', '', $option->name); @endphp
                                                     <span>
                                                     <input type="checkbox" name="itemoption{{ $id }}"
-                                                           id="{{ $new_str }}" value="{{ $new_str }}"
+                                                           id="{{$new_str.'-'.$proddata->id}}" value="{{ $new_str }}"
                                                            class="menu-option-checkbox">
-    											<label for="{{ $new_str }}">{{ $option->name }} $<span
+    											<label for="{{ $new_str.'-'.$proddata->id }}">{{ $option->name }} $<span
                                                         class="menu-option-price">{{ $option->price }}</span></label>
                                             </span>
-                                                    @php $id++; @endphp
+                                                   <?php $id++; ?>
                                                 @endforeach
                                                 <button type="button" class="addtocart add-to-cart-submit"
                                                         data-menu-id="{{ $proddata->id }}" name="Add To Cart"

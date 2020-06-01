@@ -39,11 +39,14 @@ class RestaurantController extends Controller
         }
 
         $catData = [];
-
+        if (isset($requestFields['cat'])) {
+        $data->categories;
+        $cat = json_decode($data->categories);
+        $catData = Category::find($cat)->pluck('name','id');
+        }
+       return view('pages.restaurant.show', compact('data', 'catData'));
         /*echo "<pre>";
         print_r($data);die;*/
-
-        return view('pages.restaurant.show', compact('data', 'catData'));
     }
 
     public function allrestaurant()
