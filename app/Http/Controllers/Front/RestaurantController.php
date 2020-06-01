@@ -55,7 +55,6 @@ class RestaurantController extends Controller
     public function allRestaurantList()
     {
         $restaurants = Restaurant::latest()->get();
-        //dd($restaurants);
         return view('pages.restaurant', compact('restaurants'));
     }
 }
