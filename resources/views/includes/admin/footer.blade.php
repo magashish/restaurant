@@ -33,3 +33,10 @@
 <script src="{{ asset('js/demo.js') }}"></script>
 <script src="{{ asset('js/dashboard3.js') }}"></script>
 <script src="{{ asset('js/jquery.repeater.js') }}"></script>
+<script>
+    $(document).ready( function () {
+        $('.init-data-table').DataTable({
+            "bPaginate": false
+        });
+    } );
+</script>

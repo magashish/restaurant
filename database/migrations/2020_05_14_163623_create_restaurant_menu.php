@@ -18,11 +18,12 @@ class CreateRestaurantMenu extends Migration
             $table->bigIncrements('id');
             $table->string('dishname');
             $table->bigInteger('restaurant_id')->unsigned()->index();
-			$table->string('category');
+            $table->bigInteger('category_id')->unsigned();
+            $table->foreign('category_id')->on('categories')->references('id')->onDelete('cascade');
 			$table->string('image');
-			$table->string('status');	
+			$table->string('status');
 			$table->decimal('price', 5, 2);
-            $table->text('itemoption');	
+            $table->text('itemoption');
             $table->timestamps();
 			$table->foreign('restaurant_id')->references('id')->on('restaurants')->onDelete('cascade');
         });

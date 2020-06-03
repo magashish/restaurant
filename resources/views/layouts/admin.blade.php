@@ -2,6 +2,7 @@
 <html>
 <head>
     @include('includes.admin.head')
+    @yield('page_style')
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">

@@ -1,7 +1,7 @@
 @extends('layouts.default')
 @section('content')
 
-    @if($data->isopen  ===0)
+    @if(isset($restaurantData->isopen) && $restaurantData->isopen  ===0)
         @php $status = 'Closed'; @endphp
     @else
         @php $status = 'Open'; @endphp
@@ -12,13 +12,13 @@
             <div class="row">
                 <div class='col-md-12 col-sm-12'>
                     <div class="restaurant_detail">
-                        <div class="restaurant_img"><img src="{{$data->logo}}"></div>
+                        <div class="restaurant_img"><img src="{{$restaurantData->logo}}"></div>
                         <div class="restaurant_info">
                             <div class="resort_open">{{$status}}</div>
-                            <h2>{{$data->name}}</h2>
-                            <p>{{$data->shortdescription }}</p>
+                            <h2>{{$restaurantData->name}}</h2>
+                            <p>{{$restaurantData->shortdescription }}</p>
                             <!--<div class="min_order"><i class="fas fa-check"></i> Min $ 10.00</div>-->
-                            <div class="time"><i class="far fa-clock"></i> {{$data->timings}}</div>
+                            <div class="time"><i class="far fa-clock"></i> {{$restaurantData->timings}}</div>
                         </div>
                     </div>
                 </div>
@@ -50,53 +50,64 @@
                         <div class="tab-content">
                             <div class="tab-pane container active" id="Menu">
                                 <h4>POPULAR ORDERS Delicious hot food!</h4>
-                                @foreach($data->menu as $proddata)
-                                    <div class="product_info">
-                                        <div class="product_left">
-                                            <div class="product_img"><img
-                                                    src="{{ $proddata->image }}">
+                                @if(isset($data->menu) && !empty($data->menu))
+                                    @foreach($data->menu as $proddata)
+                                        <?php
+                                        if($category != '' && $category != $proddata->category_id) {
+                                            continue;
+                                        }
+                                        ?>
+                                        <div class="product_info">
+                                            <div class="product_left">
+                                                <div class="product_img"><img
+                                                        src="{{ $proddata->image }}">
+                                                </div>
+                                                <div class="rating"><img src="{{ asset('images/rating_img.png') }}">
+                                                </div>
                                             </div>
-                                            <div class="rating"><img src="{{ asset('images/rating_img.png') }}"></div>
-                                        </div>
-                                        <div class="prodcut_cat">
-                                            <h3>{{ $proddata->name }}</h3>
-                                            <span>{{ $proddata->dishname }}</span>
-                                            <span class="menu-item-price-span">$ <span
-                                                    class="menu-item-price">{{ $proddata->price }}</span></span>
-                                            <form method="POST" class="add-to-cart-form" name="addtocart"
-                                                  action="{{ route('addtocart') }}">
-                                                @csrf
-                                                <input type="hidden" name="previous_url"
-                                                       value="{{ \Request::fullUrl() }}">
-                                                <input type="hidden" name="pid" value="{{ $proddata->id }}"/>
-                                                <input type="hidden" name="pname" value="{{ $proddata->dishname }}"/>
-                                                <input type="hidden" class="price" name="price"
-                                                       value="{{ $proddata->price }}"/>
-                                                <input type="hidden" name="pqty" value="1"/>
-                                                <input type="hidden" name="image" value="{{ $proddata->image }}"/>
-                                                <?php
-                                                $options = json_decode($proddata->options);
-                                                $id = 0;
-                                                ?>
-                                                @foreach($options as $option)
-                                                    @php $new_str = str_replace(' ', '', $option->name); @endphp
-                                                    <span>
+                                            <div class="prodcut_cat">
+                                                <h3>{{ $proddata->name }}</h3>
+                                                <span>{{ $proddata->dishname }}</span>
+                                                <span class="menu-item-price-span">$ <span
+                                                        class="menu-item-price">{{ $proddata->price }}</span></span>
+                                                <form method="POST" class="add-to-cart-form" name="addtocart"
+                                                      action="{{ route('addtocart') }}">
+                                                    @csrf
+                                                    <input type="hidden" name="previous_url"
+                                                           value="{{ \Request::fullUrl() }}">
+                                                    <input type="hidden" name="pid" value="{{ $proddata->id }}"/>
+                                                    <input type="hidden" name="pname"
+                                                           value="{{ $proddata->dishname }}"/>
+                                                    <input type="hidden" class="price" name="price"
+                                                           value="{{ $proddata->price }}"/>
+                                                    <input type="hidden" name="pqty" value="1"/>
+                                                    <input type="hidden" name="image" value="{{ $proddata->image }}"/>
+                                                    <?php
+                                                    $options = json_decode($proddata->options);
+                                                    $id = 0;
+                                                    ?>
+                                                    @foreach($options as $option)
+                                                        @php $new_str = str_replace(' ', '', $option->name); @endphp
+                                                        <span>
                                                     <input type="checkbox" name="itemoption{{ $id }}"
                                                            id="{{$new_str.'-'.$proddata->id}}" value="{{ $new_str }}"
                                                            class="menu-option-checkbox">
     											<label for="{{ $new_str.'-'.$proddata->id }}">{{ $option->name }} $<span
                                                         class="menu-option-price">{{ $option->price }}</span></label>
                                             </span>
-                                                   <?php $id++; ?>
-                                                @endforeach
-                                                <button type="button" class="addtocart add-to-cart-submit"
-                                                        data-menu-id="{{ $proddata->id }}" name="Add To Cart"
-                                                        value="Add To Cart">Add To Cart
-                                                </button>
-                                            </form>
+                                                        <?php $id++; ?>
+                                                    @endforeach
+                                                    <button type="button" class="addtocart add-to-cart-submit"
+                                                            data-menu-id="{{ $proddata->id }}" name="Add To Cart"
+                                                            value="Add To Cart">Add To Cart
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                @else
+                                    <h3 class="text-center padding-100px">No Food Found</h3>
+                                @endif
 
                             </div>
                             <!--<div class="tab-pane container fade" id="Reviews">
@@ -130,7 +141,7 @@
                             <div class="tab-pane container fade" id="restaurant_info">
                                 <h4>POPULAR ORDERS Delicious hot food!</h4>
                                 <div class="tab_inner">
-                                    {{$data->description }}
+                                    {{$restaurantData->description }}
                                 </div>
                             </div>
                         </div>
@@ -141,10 +152,12 @@
                     <div class="choose_menu">
                         <h2>Choose menu <i class="fas fa-utensils"></i></h2>
                         <ul>
-                           <?php //$catData
-                           ?>
+                            <?php //$catData
+                            ?>
                             @foreach($catData as $key => $cat)
-                             <li><a href="{{Request::url().'?cat='.$key}}">{{$cat}}</a></li>
+                                <li>
+                                    <a href="{{ route('restaurantfront.show', [$restaurantId, 'cat' => $cat->category_id]) }}">{{$cat->category_detail->name}}</a>
+                                </li>
                             @endforeach
                         </ul>
                     </div>
@@ -189,7 +202,7 @@
                         _token: "{{ csrf_token() }}"
                     },
                     success: function (response) {
-                        if(response.success) {
+                        if (response.success) {
                             $this.parents('form').submit();
                         } else {
                             swal("You can't add item from different restaurant. Please select item from same restaurant");
@@ -204,4 +217,11 @@
             });
         });
     </script>
+@endsection
+@section('page_style')
+    <style>
+        .padding-100px {
+            padding: 100px;
+        }
+    </style>
 @endsection

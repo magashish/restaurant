@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\RestaurantCategory;
 use DB;
 use App\Models\Restaurant;
 use App\Models\RestaurantMenu;
@@ -32,21 +33,25 @@ class RestaurantController extends Controller
     public function show(Request $request, $id)
     {
         $requestFields = $request->all();
+        $category = '';
         if (isset($requestFields['cat'])) {
-            $data = Restaurant::where(['id' => $id])->whereRaw("categories REGEXP '[[:<:]]" . $requestFields['cat'] . "[[:>:]]'")->with('menu', 'menu.options')->first();
+            $category = $requestFields['cat'];
+            //$data = Restaurant::where(['id' => $id])->orWhereRaw("categories REGEXP '[[:<:]]" . $requestFields['cat'] . "[[:>:]]'")->with('menu', 'menu.options')->first();
+            $data = Restaurant::where(['id' => $id])
+                ->whereHas('menu', function ($q) use($category) {
+                    $q->where('category_id', $category);
+                })
+                ->with('menu', 'menu.options')->first();
         } else {
             $data = Restaurant::where('id', $id)->with('menu', 'menu.options')->first();
         }
+        $restaurantData = Restaurant::where('id', $id)->first();
 
-        $catData = [];
-        if (isset($requestFields['cat'])) {
-            $data->categories ?? "";
-            $cat = json_decode($data->categories ?? "[]");
-            if (!empty($cat)) {
-                $catData = Category::find($cat)->pluck('name', 'id');
-            }
-        }
-        return view('pages.restaurant.show', compact('data', 'catData'));
+        $catData = RestaurantCategory::where('restaurant_id', $id)->with('category_detail')->get();
+
+        $restaurantId = $id;
+
+        return view('pages.restaurant.show', compact('data', 'catData', 'restaurantId', 'restaurantData', 'category'));
     }
 
     public function allrestaurant()

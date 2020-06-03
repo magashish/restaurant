@@ -44,7 +44,8 @@ class RestaurantController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        return view('pages.admin.restaurant.index');
+        $restaurantData = Restaurant::latest()->paginate(1);
+        return view('pages.admin.restaurant.index', ['restaurantData' => $restaurantData ]);
     }
 
     public function create()

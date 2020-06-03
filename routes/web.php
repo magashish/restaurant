@@ -33,19 +33,22 @@ Route::group(['namespace' => 'Admin'], function () {
     Route::post('/admin/login', 'AdminController@loginPost')->name('admin.login');
 
     //Route::group(['middleware' => 'auth:admin'], function () {
-        Route::get('/admin', 'DashboardController@index')->name('admin');
-        Route::get('/admin/dashboard', 'DashboardController@index')->name('admin.dashboard');
-        Route::get('/admin/restaurant', 'RestaurantController@index')->name('restaurant.index');
-        Route::get('/admin/restaurant/create', 'RestaurantController@create')->name('restaurant.create');
-        Route::get('/admin/restaurant/{id}', 'RestaurantController@show')->name('restaurant.show');
-        Route::post('/admin/restaurant', 'RestaurantController@store')->name('restaurant.store');
-        Route::get('/admin/restaurant-menu/{id}', 'RestaurantController@createmenu')->name('restaurantmenu');
-        Route::post('/admin/restaurant-menu-add', 'RestaurantController@addmenu')->name('restaurantmenuadd');
+    Route::get('/admin', 'DashboardController@index')->name('admin');
+    Route::get('/admin/dashboard', 'DashboardController@index')->name('admin.dashboard');
+    Route::get('/admin/restaurant', 'RestaurantController@index')->name('restaurant.index');
+    Route::get('/admin/restaurant/create', 'RestaurantController@create')->name('restaurant.create');
+    Route::get('/admin/restaurant/{id}', 'RestaurantController@show')->name('restaurant.show');
+    Route::post('/admin/restaurant', 'RestaurantController@store')->name('restaurant.store');
+    Route::get('/admin/restaurant-menu/{id}', 'RestaurantController@createmenu')->name('restaurantmenu');
+    Route::post('/admin/restaurant-menu-add', 'RestaurantController@addmenu')->name('restaurantmenuadd');
 
-        Route::get('/admin/category', 'CategoryController@index')->name('category.index');
-        Route::get('/admin/category/create', 'CategoryController@create')->name('category.create');
-        Route::post('/admin/category', 'CategoryController@store')->name('category.store');
-   // });
+    Route::get('/admin/category', 'CategoryController@index')->name('category.index');
+    Route::get('/admin/category/create', 'CategoryController@create')->name('category.create');
+    Route::post('/admin/category', 'CategoryController@store')->name('category.store');
+
+    Route::get('/settings', 'DashboardController@settings')->name('admin.settings');
+    Route::post('/save-settings', 'DashboardController@saveSettings')->name('admin.save.settings');
+    // });
 });
 
 Route::group(['namespace' => 'Front'], function () {
