@@ -33,20 +33,20 @@ class RestaurantController extends Controller
     {
         $requestFields = $request->all();
         if (isset($requestFields['cat'])) {
-            $data = Restaurant::where(['id' => $id])->whereRaw("categories REGEXP '[[:<:]]".$requestFields['cat']."[[:>:]]'")->with('menu', 'menu.options')->first();
+            $data = Restaurant::where(['id' => $id])->whereRaw("categories REGEXP '[[:<:]]" . $requestFields['cat'] . "[[:>:]]'")->with('menu', 'menu.options')->first();
         } else {
             $data = Restaurant::where('id', $id)->with('menu', 'menu.options')->first();
         }
 
         $catData = [];
         if (isset($requestFields['cat'])) {
-        $data->categories ?? "";
-        $cat = json_decode($data->categories ?? "[]");
-		if(!empty($cat)) {
-        $catData = Category::find($cat)->pluck('name','id');
-		 }
+            $data->categories ?? "";
+            $cat = json_decode($data->categories ?? "[]");
+            if (!empty($cat)) {
+                $catData = Category::find($cat)->pluck('name', 'id');
+            }
         }
-       return view('pages.restaurant.show', compact('data', 'catData'));
+        return view('pages.restaurant.show', compact('data', 'catData'));
     }
 
     public function allrestaurant()
