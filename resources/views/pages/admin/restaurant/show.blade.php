@@ -39,16 +39,17 @@
                 <div class="col-lg-12">
                     <div class="container">
                         <div class="content_inner">
-                            <form action="{{ route('restaurant.store') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('restaurant.update') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
+                                <input type="hidden" name="restaurant_id" value="{{ $data['id'] }}">
                                 <div class="form-group">
                                     <label for="name">Name</label>
                                     <input class="form-control" type="text" id="name" name="name"
-                                           value="{{$data['name']}} " required>
+                                           value="{{ $data['name'] }} " required>
                                 </div>
                                 <div class="form-group">
                                     <label for="logo">Logo</label>
-                                    <input type="file" class="form-control-file" id="logo" name="logo" required>
+                                    <input type="file" class="form-control-file" id="logo" name="logo">
                                 </div>
                                 <div class="form-group">
                                     <label for="openinghour" class="radio-inline">Opening Hour</label>
@@ -86,6 +87,59 @@
                                     <label for="desc">Description</label>
                                     <textarea class="form-control" id="desc" rows="3"
                                               name="description">{{$data['description']}}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name">Address 1</label>
+                                    <input class="form-control" type="text" id="addr1" name="addr1" value="{{ $data['addr1'] }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name">Address 2</label>
+                                    <input class="form-control" type="text" id="addr2" name="addr2" value="{{ $data['addr2'] }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name">City</label>
+                                    <input class="form-control" type="text" id="city" name="city" value="{{ $data['city'] }}" required>
+
+                                    <label for="state" class="radio-inline">State</label>
+                                    <select id="state" name="state" style="margin-right:10px;">
+                                        <option value="">--Please Select--</option>
+                                        <option value="california" {{ $data['state'] == "california" ? "selected" : "" }}>California</option>
+                                        <option value="florida" {{ $data['state'] == "florida" ? "selected" : "" }}>Florida</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name">ZipCode</label>
+                                    <input class="form-control" type="text" id="postcode" name="postcode" value="{{ $data['postcode'] }}" required>
+
+                                    <label for="country" class="radio-inline">Country</label>
+                                    <select id="country" name="country" style="margin-right:10px;">
+                                        <option value="US" {{ $data['country'] == "US" ? "selected" : "" }}>US</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name">Phone</label>
+                                    <input class="form-control" type="text" id="phone" name="phone" value="{{ $data['phone'] }}" required>
+                                    <label for="isfeatured" class="radio-inline">Featured</label>
+                                    <select id="isfeatured" name="isfeatured" style="margin-right:10px;">
+                                        <option value="0" {{ $data['isfeatured'] == "0" ? "selected" : "" }}>No</option>
+                                        <option value="1" {{ $data['isfeatured'] == "1" ? "selected" : "" }}>Yes</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name">Categories</label>
+                                    <select id='categories' name='categories[]' class="custom-select" multiple>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->name }}">{{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name">Email</label>
+                                    <input class="form-control" type="email" id="email" name="email" value="{{ $data['email'] }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="desc">Google Map</label>
+                                    <textarea class="form-control" id="gmap" rows="3" name="gmap">{{ $data['gmap'] }}</textarea>
                                 </div>
                                 <input type="submit" class="btn btn-primary" name="update">
                             </form>

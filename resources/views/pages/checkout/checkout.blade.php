@@ -115,15 +115,23 @@
                     <div class="col-lg-4 col-sm-12 checkoutorder">
                         <h3>Your Order</h3>
                         <div class="cart_total">
+                            @php
+                            $deliveryCharge = 0;
+                            $tax = 0;
+                            @endphp
                             <ul>
                                 <li>Subtotal <span>${{ $data['order_total'] }}</span></li>
-                                <li>Tax <span>$0</span></li>
-                                <li>Delivery Charges <span>$10</span></li>
+                                <li>Tax <span>${{ $tax }}</span></li>
+                                <li>Delivery Charges <span>$<span id="delivery-charge">10</span></span></li>
                                 @php
-                                    $finalTotal = $data['order_total'] + 10;
+                                    $finalTotal = $data['order_total'] + $deliveryCharge + $tax;
                                 @endphp
-                                <li>Total <span>${{ $finalTotal }}</span></li>
+                                <li>Total <span>$<span id="final-total">{{ $finalTotal }}</span></span></li>
                             </ul>
+                            <input type="hidden" name="order_total" id="order-total" value="{{ $data['order_total'] }}">
+                            <input type="hidden" name="order_total_final" id="order-total-final" value="{{ $finalTotal }}">
+                            <input type="hidden" name="delivery_charge" id="delivery-charge-hidden" value="0">
+                            <input type="hidden" name="tax" id="tax" value="{{ $tax }}">
                             <div class="paymentmethod">
                                 {{--<img src="{{ asset('images/paymentmethod.jpg') }}">--}}
                                 <h3>Payment Method</h3>
@@ -256,6 +264,33 @@
                     $("#saved-address-container").hide();
 
                     $("#no-saved-address-container").hide();
+                }
+            });
+
+            $.ajax({
+                url: '{{ route('calculate.delivery.charge') }}',
+                method: "post",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    data: {
+                        user: {
+                            lat: "{{ \Auth::user()->lat ?? (Session::get('location')['lat'] ?? "29.5960") }}",
+                            lng: "{{ \Auth::user()->lng ?? (Session::get('location')['lng'] ?? "76.1150") }}",
+                        }
+                    }
+                },
+                success: function (response) {
+                    //window.location.reload();
+                    if(response.success) {
+                        $("#delivery-charge").text(response.delivery_charge);
+                        $("#delivery-charge-hidden").val(response.delivery_charge);
+                        var finalTotal = $("#final-total").text();
+                        finalTotal = parseFloat(finalTotal) + parseFloat(response.delivery_charge);
+                        finalTotal = finalTotal.toFixed(2);
+                        $("#final-total").text(finalTotal);
+
+                        $("#order-total-final").val(finalTotal);
+                    }
                 }
             });
         });

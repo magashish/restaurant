@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\DeliveryCharge;
 use App\Mail\OrderPlcaed;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Restaurant;
 use App\Models\RestaurantMenu;
 use App\Models\ShippingAddress;
 use App\OrderAddress;
@@ -24,12 +26,12 @@ class OrderController extends Controller
         $userId = \Auth::user()->id ?? 0;
         $cartData = [];
 
-        if(\Auth::check()) {
+        if (\Auth::check()) {
             $cartData = Cart::where('user_id', $userId)->get()->toArray();
         } else {
             $cart = Session::get('cart');
 
-            if(!empty($cart)) {
+            if (!empty($cart)) {
                 foreach ($cart as $key => $data) {
                     $cartData[] = [
                         'id' => $key,
@@ -43,7 +45,7 @@ class OrderController extends Controller
             }
         }
 
-        if(count($cartData) > 0) {
+        if (count($cartData) > 0) {
             foreach ($cartData as $cartDatum) {
                 $total += $cartDatum['price'] * $cartDatum['quantity'];
             }
@@ -57,6 +59,72 @@ class OrderController extends Controller
         return redirect()->route('cart');
     }
 
+    public function calculateDeliveryCharge(Request $request)
+    {
+        $response = [];
+        $response['success'] = FALSE;
+
+        $requestFields = $request->all();
+        $userId = \Auth::user()->id ?? 0;
+
+        try {
+            if (\Auth::check()) {
+                $cartData = Cart::where('user_id', $userId)->first();
+                $restaurantMenuId = $cartData->restaurant_menu_id;
+
+            } else {
+                $cart = Session::get('cart');
+                $restaurantMenuId = array_key_first($cart);
+            }
+
+            $restaurantMenuObj = RestaurantMenu::find($restaurantMenuId);
+            $restaurantId = $restaurantMenuObj->restaurant_id;
+            $restaurantObj = Restaurant::find($restaurantId);
+
+            $restaurantLat = $restaurantObj->lat;
+            $restaurantLng = $restaurantObj->lng;
+
+            //Get location from session
+            $sessionLocation = \Session::get('location');
+
+            $userLat = \Auth::user()->lat ?? ($sessionLocation['lat'] ?? $requestFields['data']['user']['lat']);
+            $userLng = \Auth::user()->lng ?? ($sessionLocation['lng'] ?? $requestFields['data']['user']['lng']);
+
+            $location = [
+                "origin" => [
+                    "lat" => $userLat,
+                    "lng" => $userLng,
+                ],
+                "destination" => [
+                    "lat" => $restaurantLat,
+                    "lng" => $restaurantLng,
+                ]
+            ];
+
+            $distanceData = calculateDistance($location);
+
+            if ($distanceData['rows'][0]['elements'][0]['status'] === 'OK') {
+                $distanceArr = $distanceData['rows'][0]['elements'][0]['distance'];
+                $distanceValueArr = explode(" ", $distanceArr['text']);
+                $distance = $distanceValueArr[0];
+                // Convert distance from miles to km
+                $distance = $distance * 1.60934;
+
+                $deliveryChargesObj = DeliveryCharge::whereRaw("$distance between from_location and to_location")->first();
+
+                if ($deliveryChargesObj) {
+                    $response['delivery_charge'] = $deliveryChargesObj->price;
+                    $response['success'] = TRUE;
+                }
+            }
+        } catch (Exception $ex) {
+            $response['error'] = $ex->getMessage() . ' Line No ' . $ex->getLine() . ' in File' . $ex->getFile();
+            $response['success'] = FALSE;
+        }
+
+        return $response;
+    }
+
     public function placeOrder(Request $request)
     {
         $requestFields = $request->all();
@@ -68,24 +136,24 @@ class OrderController extends Controller
         $shippingAddressData = $requestFields['shipping_address'];
 
         $isAthenticated = $request->get('is_authenticated');
-        if($isAthenticated == "false") {
+        if ($isAthenticated == "false") {
             // Register user
             $checkEmailExist = User::where('email', $shippingAddressData['email'])->first();
 
-            if($checkEmailExist) {
+            if ($checkEmailExist) {
                 return redirect()->route('checkout')->with('error', "Account already exist, pease login to continue");
             }
 
             $userObj = new User;
-            $userObj->name = $shippingAddressData['first_name'] . " ". $shippingAddressData['last_name'];
+            $userObj->name = $shippingAddressData['first_name'] . " " . $shippingAddressData['last_name'];
             $userObj->email = $shippingAddressData['email'];
             $userObj->password = bcrypt($shippingAddressData['password']);
-            if($userObj->save()) {
+            if ($userObj->save()) {
                 \Auth::loginUsingId($userObj->id);
 
                 $cart = Session::get('cart');
 
-                if(!empty($cart)) {
+                if (!empty($cart)) {
                     foreach ($cart as $key => $data) {
                         $cartObj = new Cart;
                         $cartObj->user_id = \Auth::user()->id;
@@ -103,7 +171,7 @@ class OrderController extends Controller
 
         // Save shipping address
 
-        if(!empty($shippingAddressData) && isset($requestFields['save_address'])) {
+        if (!empty($shippingAddressData) && isset($requestFields['save_address'])) {
             /*$shippingAddressObj = ShippingAddress::where('user_id', $userId)->first();
             if(!$shippingAddressObj) {
                 $shippingAddressObj = new ShippingAddress;
@@ -133,7 +201,7 @@ class OrderController extends Controller
 
             $orderAddressData = ShippingAddress::where('id', $shippingAddressObj->id)->first()->toArray();
         } else {
-            if(isset($requestFields['address_id'])) {
+            if (isset($requestFields['address_id'])) {
                 $savedAddressObj = ShippingAddress::where('id', $requestFields['address_id'])->first()->toArray();
                 $orderAddressData = $savedAddressObj;
 
@@ -159,13 +227,17 @@ class OrderController extends Controller
         $orderObj = new Order;
         $orderObj->user_id = $userId;
 
-        $latestOrder = Order::orderBy('created_at','DESC')->first();
-        $oid = '#ORDER'.date("ymd").str_pad(($latestOrder->id ?? 0) + 1, 8, "0", STR_PAD_LEFT);
+        $latestOrder = Order::orderBy('created_at', 'DESC')->first();
+        $oid = '#ORDER' . date("ymd") . str_pad(($latestOrder->id ?? 0) + 1, 8, "0", STR_PAD_LEFT);
         $orderObj->oid = $oid;
+        $orderObj->amount = $requestFields['order_total'];
+        $orderObj->final_total = $requestFields['order_total_final'];
+        $orderObj->delivery_charge = $requestFields['delivery_charge'];
+        $orderObj->tax = $requestFields['tax'];
         $orderObj->shipping_address_id = $requestFields['address_id'] ?? (isset($requestFields['save_address']) ? $shippingAddressObj->id : NULL);
         $orderObj->shipping_address = $address;
         $orderObj->billing_address = $address;
-        if($orderObj->save()) {
+        if ($orderObj->save()) {
             // Save order address
             $orderAddressObj = new OrderAddress;
             $orderAddressObj->order_id = $orderObj->id;

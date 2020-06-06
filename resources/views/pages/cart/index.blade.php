@@ -104,7 +104,7 @@
                     <div class="col-lg-12">
                         <div class="cart_table empty-cart-container">
                             <h3>Empty Cart</h3>
-                            <a href="{{ route('restaurant.all') }}" class="btn btn-primary">Continue Shopping</a>
+                            <a href="{{ route('restaurantfront.all') }}" class="btn btn-primary">Continue Shopping</a>
                         </div>
                     </div>
                 </div>

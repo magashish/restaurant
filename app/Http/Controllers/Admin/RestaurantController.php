@@ -44,29 +44,30 @@ class RestaurantController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
-        $restaurantData = Restaurant::latest()->paginate(1);
-        return view('pages.admin.restaurant.index', ['restaurantData' => $restaurantData ]);
+        $restaurantData = Restaurant::latest()->paginate(10);
+        return view('pages.admin.restaurant.index', ['restaurantData' => $restaurantData]);
     }
 
     public function create()
     {
         $categories = Category::all();
-        return view('pages.admin.restaurant.create',compact('categories'));
+        return view('pages.admin.restaurant.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
+        $requestFields = $request->all();
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'logo' => 'required|mimes:jpg.png,jpeg|max:2048',
             'isopen' => 'required',
-            'addr1'  => 'required',
+            'addr1' => 'required',
             'city' => 'required',
             'state' => 'required',
             'postcode' => 'required',
             'country' => 'required',
             'phone' => 'required',
-            'isfeatured'=> 'required'
+            'isfeatured' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -74,19 +75,19 @@ class RestaurantController extends Controller
         }
 
         $file = $request->file('logo');
-		if($file){
-		$fileName = time().'.'.$file->getClientOriginalExtension();
+        if ($file) {
+            $fileName = time() . '.' . $file->getClientOriginalExtension();
 
-		$destinationPaththumb = 'uploads/logos/thumbnail';
-		$img = Image::make($file->getRealPath());
-        $img->resize(150, 90, function ($constraint) {
-            $constraint->aspectRatio();
-        })->save($destinationPaththumb.'/'.$fileName);
+            $destinationPaththumb = 'uploads/logos/thumbnail';
+            $img = Image::make($file->getRealPath());
+            $img->resize(150, 90, function ($constraint) {
+                $constraint->aspectRatio();
+            })->save($destinationPaththumb . '/' . $fileName);
 
-		$destinationPathfull = 'uploads/logos/full';
-		$file->move($destinationPathfull,$fileName);
-		}else{
-			$fileName ="n/a";
+            $destinationPathfull = 'uploads/logos/full';
+            $file->move($destinationPathfull, $fileName);
+        } else {
+            $fileName = "n/a";
         }
 
         // $file = $request->file('logo');
@@ -119,25 +120,138 @@ class RestaurantController extends Controller
         $Restaurant->email = $request->post('email');
         $Restaurant->gmap = $request->post('gmap');
 
+        // Get lat lng
+        $fullAddressArr = [
+            $requestFields['addr1'],
+            $requestFields['addr2'],
+            $requestFields['city'],
+            $requestFields['country']
+        ];
+        $address_tmp = implode(", ", $fullAddressArr);
+        $address_tmp = str_replace(" ", "+", $address_tmp);
+        $res = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" . $address_tmp . "&key=AIzaSyDpavHXELJMJvIHifFPN6tBBiFSXKGpy2g");
+        $address_res = json_decode($res, TRUE);
+        $Restaurant->lat = $address_res['results'][0]['geometry']['location']['lat'];
+        $Restaurant->lng = $address_res['results'][0]['geometry']['location']['lng'];
+
         $Restaurant->save();
         $request->session()->flash('success', 'Restaurant Menu added successfully');
 
         $categories = Category::all();
-        return view('pages.admin.restaurant.create',compact('categories'));
+        return view('pages.admin.restaurant.create', compact('categories'));
     }
 
     public function show($id)
     {
+
+    }
+
+    public function edit($id)
+    {
+        $categories = Category::all();
         $data = Restaurant::find($id);
-        return view('pages.admin.restaurant.show', compact('data'));
+        return view('pages.admin.restaurant.show', compact('data', 'categories'));
+    }
+
+    public function update(Request $request)
+    {
+        $requestFields = $request->all();
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            //'logo' => 'required|mimes:jpg.png,jpeg|max:2048',
+            'isopen' => 'required',
+            'addr1' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'postcode' => 'required',
+            'country' => 'required',
+            'phone' => 'required',
+            'isfeatured' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return redirect(route('restaurant.create'))->withInput()->withErrors($validator);
+        }
+        if (isset($requestFields['restaurant_id'])) {
+            $Restaurant = Restaurant::find($requestFields['restaurant_id']);
+        } else {
+            $Restaurant = NULL;
+        }
+
+        if(!$Restaurant) {
+            return redirect()->route('restaurant.show', [$requestFields['restaurant_id']])->with('error', 'Restaurant not found');
+        }
+
+        $file = $request->file('logo');
+        if ($file) {
+            $fileName = time() . '.' . $file->getClientOriginalExtension();
+
+            $destinationPaththumb = 'uploads/logos/thumbnail';
+            $img = Image::make($file->getRealPath());
+            $img->resize(150, 90, function ($constraint) {
+                $constraint->aspectRatio();
+            })->save($destinationPaththumb . '/' . $fileName);
+
+            $destinationPathfull = 'uploads/logos/full';
+            $file->move($destinationPathfull, $fileName);
+        } else {
+            $fileName = "n/a";
+        }
+
+        // $file = $request->file('logo');
+        // $fileName = time() . '.' . $file->getClientOriginalExtension();
+        // $destinationPath = 'uploads';
+        // $file->move($destinationPath, $fileName);
+
+        $openinghour = $request->post('openinghour');
+        $closinghour = $request->post('closinghour');
+        $categories = $request->post('categories');
+        //dd($categories);
+        $categories = json_encode($categories);
+
+        $Restaurant->name = $request->post('name');
+        $Restaurant->logo = $fileName;
+        $Restaurant->timings = $openinghour . " - " . $closinghour;
+        $Restaurant->isopen = $request->post('isopen');
+        $Restaurant->shortdescription = $request->post('shortdescription');
+        $Restaurant->description = $request->post('description');
+        $Restaurant->addr1 = $request->post('addr1');
+        $Restaurant->addr2 = $request->post('addr2');
+        $Restaurant->city = $request->post('city');
+        $Restaurant->state = $request->post('state');
+        $Restaurant->postcode = $request->post('postcode');
+        $Restaurant->country = $request->post('country');
+        $Restaurant->phone = $request->post('phone');
+        $Restaurant->isfeatured = $request->post('isfeatured');
+        $Restaurant->categories = $categories;
+        $Restaurant->email = $request->post('email');
+        $Restaurant->gmap = $request->post('gmap');
+
+        // Get lat lng
+        $fullAddressArr = [
+            $requestFields['addr1'],
+            $requestFields['addr2'],
+            $requestFields['city'],
+            $requestFields['country']
+        ];
+        $address_tmp = implode(", ", $fullAddressArr);
+        $address_tmp = str_replace(" ", "+", $address_tmp);
+        $res = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" . $address_tmp . "&key=AIzaSyDpavHXELJMJvIHifFPN6tBBiFSXKGpy2g");
+        $address_res = json_decode($res, TRUE);
+        $Restaurant->lat = $address_res['results'][0]['geometry']['location']['lat'];
+        $Restaurant->lng = $address_res['results'][0]['geometry']['location']['lng'];
+
+        $Restaurant->save();
+        return redirect()->route('restaurant.index')->with('success', 'Restaurant updated successfully');
     }
 
     public function createmenu($id)
     {
-        $id= $id;
+        $id = $id;
         $categories = Category::all();
         //dd($categories);
-        return view('pages.admin.restaurant.menucreate', compact('id','categories'));
+        return view('pages.admin.restaurant.menucreate', compact('id', 'categories'));
     }
 
     public function addmenu(Request $request)

@@ -37,8 +37,9 @@ Route::group(['namespace' => 'Admin'], function () {
     Route::get('/admin/dashboard', 'DashboardController@index')->name('admin.dashboard');
     Route::get('/admin/restaurant', 'RestaurantController@index')->name('restaurant.index');
     Route::get('/admin/restaurant/create', 'RestaurantController@create')->name('restaurant.create');
-    Route::get('/admin/restaurant/{id}', 'RestaurantController@show')->name('restaurant.show');
+    Route::get('/admin/restaurant/{id}', 'RestaurantController@edit')->name('restaurant.show');
     Route::post('/admin/restaurant', 'RestaurantController@store')->name('restaurant.store');
+    Route::post('/admin/restaurant-update', 'RestaurantController@update')->name('restaurant.update');
     Route::get('/admin/restaurant-menu/{id}', 'RestaurantController@createmenu')->name('restaurantmenu');
     Route::post('/admin/restaurant-menu-add', 'RestaurantController@addmenu')->name('restaurantmenuadd');
 
@@ -74,6 +75,8 @@ Route::group(['namespace' => 'Front'], function () {
 
     Route::get('/thank-you', 'OrderController@thankYou')->name('thank.you');
     Route::post('/check-same-restaurant', 'CartController@checkSameRestaurant')->name('check-same-restaurant');
+    Route::post('/update-lat-lng', 'UserController@updateLatLng')->name('update.lat.lng');
+    Route::post('/calculate-delivery-charge', 'OrderController@calculateDeliveryCharge')->name('calculate.delivery.charge');
 });
 
 Auth::routes();
