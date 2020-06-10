@@ -56,6 +56,7 @@ Route::group(['namespace' => 'Front'], function () {
     Route::post('/user-login', 'UserController@login')->name('user.login');
 
     Route::get('/', 'HomeController@index')->name('home.index');
+    Route::get('/properties', 'PropertyController@index')->name('property.index');
     Route::get('/search', 'SearchController@index')->name('search');
 
     Route::get('/restaurant/{id}', 'RestaurantController@show')->name('restaurantfront.show');
