@@ -31,6 +31,9 @@ class UserController extends Controller
                     $cartObj->save();
                 }
             }
+
+
+            session(['check_customer_stripe' => $userData->stripe_customer_id]);
             return redirect()->away($requestData['previous_url']);
             return redirect('/');
         } else {

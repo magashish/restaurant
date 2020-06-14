@@ -55,8 +55,8 @@ Route::group(['namespace' => 'Admin'], function () {
 Route::group(['namespace' => 'Front'], function () {
     Route::post('/user-login', 'UserController@login')->name('user.login');
 
-    Route::get('/', 'HomeController@index')->name('home.index');
-    Route::get('/properties', 'PropertyController@index')->name('property.index');
+
+    Route::get('/properties', 'PropertyControllcheckouter@index')->name('property.index');
     Route::get('/search', 'SearchController@index')->name('search');
 
     Route::get('/restaurant/{id}', 'RestaurantController@show')->name('restaurantfront.show');
@@ -78,6 +78,17 @@ Route::group(['namespace' => 'Front'], function () {
     Route::post('/check-same-restaurant', 'CartController@checkSameRestaurant')->name('check-same-restaurant');
     Route::post('/update-lat-lng', 'UserController@updateLatLng')->name('update.lat.lng');
     Route::post('/calculate-delivery-charge', 'OrderController@calculateDeliveryCharge')->name('calculate.delivery.charge');
+
+    Route::group(['middleware' => ['auth:web']], function(){
+        Route::group(['middleware' => ['stripe']], function() {
+            Route::get('/', 'HomeController@index')->name('home.index');
+        });
+
+        Route::get('save', 'CustomerController@form')->name('stripe.form');
+        Route::post('save', 'CustomerController@save')->name('save.customer');
+        Route::get('express', 'SellerController@create')->name('create.express');
+        Route::get('stripe', 'SellerController@save')->name('save.express');
+    });
 });
 
 Auth::routes();

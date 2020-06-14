@@ -11,6 +11,7 @@ use App\Models\Restaurant;
 use App\Models\RestaurantMenu;
 use App\Models\ShippingAddress;
 use App\OrderAddress;
+use App\Services\Stripe\Transaction;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -49,6 +50,9 @@ class OrderController extends Controller
             foreach ($cartData as $cartDatum) {
                 $total += $cartDatum['price'] * $cartDatum['quantity'];
             }
+            $restaurant_menu_id = $cartDatum['restaurant_menu_id'];
+            $restaurant_menu = RestaurantMenu::where('id', $restaurant_menu_id)->first();
+            $data['restaurant'] = $restaurant_menu->restaurant_id;
             $data['order_total'] = $total;
 
             $data['saved_addresses'] = ShippingAddress::where('user_id', $userId)->get();
@@ -136,7 +140,7 @@ class OrderController extends Controller
         $shippingAddressData = $requestFields['shipping_address'];
 
         $isAthenticated = $request->get('is_authenticated');
-        if ($isAthenticated == "false") {
+        if ($isAthenticated == "false" && !is_null($shippingAddressData['email'])) {
             // Register user
             $checkEmailExist = User::where('email', $shippingAddressData['email'])->first();
 
@@ -165,6 +169,13 @@ class OrderController extends Controller
                 }
             }
         }
+
+        $restaurant_id = $requestFields['restaurant_id'];
+
+        $user = User::where(['id' => \Auth::user()->id])->first();
+        $Restaurant = Restaurant::where(['id' => $restaurant_id])->first();
+
+        Transaction::create($user, $Restaurant);
 
         $userId = \Auth::user()->id;
         $email = \Auth::user()->email;

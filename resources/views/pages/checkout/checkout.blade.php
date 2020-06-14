@@ -17,7 +17,9 @@
                 <div class="row">
                     <div class="col-lg-8 col-sm-12">
                         <div class="billingdetail">
+                            @if(is_null(\Auth::user()->name))
                             <h6>Returning customer? <a href="{{ route('login') }}">Click here to login</a></h6><br>
+                            @endif
                             <h3>Billing details</h3>
                             @if(session('error'))
                                 <div class="col-full">
@@ -29,19 +31,20 @@
                             <div id="new-address-container">
                                 <div class="col-half">
                                     <label>First Name<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}" name="shipping_address[first_name]">
+                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}" name="shipping_address[first_name]" required>
+                                    <input type="hidden" name="restaurant_id" value="{{ $data['restaurant'] }}" />
                                 </div>
                                 <div class="col-half">
                                     <label>Last Name<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}" name="shipping_address[last_name]">
+                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}" name="shipping_address[last_name]" required>
                                 </div>
                                 <div class="col-half">
                                     <label>Email Address<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->email ?? '' }}" name="shipping_address[email]">
+                                    <input type="text" value="{{ \Auth::user()->email ?? '' }}" name="shipping_address[email]" required>
                                 </div>
                                 <div class="col-half">
                                     <label>Phone No.<span>*</span></label>
-                                    <input type="text" name="shipping_address[mobile]">
+                                    <input type="text" name="shipping_address[mobile]" required>
                                 </div>
                                 @guest
                                     <input type="hidden" name="is_authenticated" value="false">
@@ -56,19 +59,19 @@
                                 @endguest
                                 <div class="col-full">
                                     <label>Address<span>*</span></label>
-                                    <input type="text" name="shipping_address[address]">
+                                    <input type="text" name="shipping_address[address]" required>
                                 </div>
                                 <div class="col-full">
                                     <label>Town/City<span>*</span></label>
-                                    <input type="text" name="shipping_address[city]">
+                                    <input type="text" name="shipping_address[city]" required>
                                 </div>
                                 <div class="col-half">
                                     <label>State<span>*</span></label>
-                                    <input type="text" name="shipping_address[state]">
+                                    <input type="text" name="shipping_address[state]" required>
                                 </div>
                                 <div class="col-half">
                                     <label>Zip<span>*</span></label>
-                                    <input type="text" name="shipping_address[zip]">
+                                    <input type="text" name="shipping_address[zip]" required>
                                 </div>
                                 <div class="col-full">
                                     <label>Order Notes (optional)</label>
@@ -136,12 +139,16 @@
                                 {{--<img src="{{ asset('images/paymentmethod.jpg') }}">--}}
                                 <h3>Payment Method</h3>
                                 <div class="md-radio md-radio-inline">
-                                    <input id="3" type="radio" name="payment_method" value="cod" checked>
+                                    <input id="3" type="radio" class="radio_check" name="payment_method" value="cod" checked>
                                     <label for="3">COD</label>
                                 </div>
                                 <div class="md-radio md-radio-inline">
-                                    <input id="4" type="radio" name="payment_method" value="paypal">
+                                    <input id="4" type="radio" class="radio_check" name="payment_method" value="paypal">
                                     <label for="4">PayPal</label>
+                                </div>
+                                <div class="md-radio md-radio-inline">
+                                    <input id="5" type="radio" class="radio_check" name="payment_method" value="stripe">
+                                    <label for="5">Stripe</label>
                                 </div>
                             </div>
                             <div class="place_order">
@@ -157,10 +164,79 @@
             </form>
         </div>
     </div>
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Stripe Card details</h4>
+                </div>
+                <div class="modal-body">
+                    <form role="form" method="POST" action="{{route('save.customer')}}">
+                        @csrf
+                        <div class="form-group">
+                            <label for="username">Full name (on the card)</label>
+                            <input type="text" name="name" placeholder="Random Name" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="cardNumber">Card number</label>
+                            <div class="input-group">
+                                <input type="text" name="cc_number" placeholder="Your card number" class="form-control" required>
+                                <div class="input-group-append">
+                    <span class="input-group-text text-muted">
+                                                <i class="fa fa-cc-visa mx-1"></i>
+                                                <i class="fa fa-cc-amex mx-1"></i>
+                                                <i class="fa fa-cc-mastercard mx-1"></i>
+                                            </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <div class="form-group">
+                                    <label><span class="hidden-xs">Expiration</span></label>
+                                    <div class="input-group">
+                                        <input type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==2) return false;"  placeholder="MM" name="month" class="form-control" required>
+                                        <input type="number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==4) return false;" placeholder="YYYY" name="year" class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group mb-4">
+                                    <label data-toggle="tooltip" title="Three-digits code on the back of your card">CVV
+                                        <i class="fa fa-question-circle"></i>
+                                    </label>
+                                    <input type="text" name="cvv" required class="form-control">
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                        <button type="submit" class="subscribe btn btn-primary btn-block rounded-pill shadow-sm"> Confirm  </button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 @endsection
 @section('page_script')
     <script type="text/javascript">
         $(document).ready(function () {
+            @if(is_null(session('check_customer_stripe')))
+                $( "input[type=radio]" ).on( "click", function(e) {
+                    if($(this).val() === 'stripe') {
+                        $('#myModal').modal('show');
+                    }
+                });
+            @endif
             $(".update-cart").click(function (e) {
                 e.preventDefault();
                 var ele = $(this);

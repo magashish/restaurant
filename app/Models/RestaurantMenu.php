@@ -20,4 +20,9 @@ class RestaurantMenu extends Model
         }
         return $value;
     }
+
+    public function restaurant()
+    {
+        return $this->hasOne(Restaurant::class, 'id');
+    }
 }
