@@ -22,7 +22,7 @@ class HasStripeAccount
             if(is_null($user->stripe_connect_id)){
                 return redirect()->route('create.express');
             }
-        } 
+        }
         return $next($request);
     }
 }

@@ -35,12 +35,13 @@ class SellerController extends Controller
         ]);
 
         $session = DB::table('sessions')->where('id', $request->state)->first();
-        if(is_null($session)) {
+        $user = Auth::user();
+        if(is_null($user)) {
             return redirect()->route('restaurantfront.all')->with('error', 'state not found');
         }
 
         $data = Seller::create($request->code);
-        User::find($session->user_id)->update(['stripe_connect_id' => $data->stripe_user_id]);
+        User::find($user->id)->update(['stripe_connect_id' => $data->stripe_user_id]);
         return redirect()->route('restaurantfront.all')->with('success', 'Account Information has been saved');
     }
 
