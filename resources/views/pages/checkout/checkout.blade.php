@@ -283,13 +283,13 @@
                     success: function (response) {
                         console.log(response.tax);
                         $('#tax').val(response.tax);
-                        var order = $('#order-total-final').val();
+                        var order = $('#order-total').val();
                         var tax = response.tax;
 
                         var addTax = parseFloat(order) + parseFloat(tax);
-                        
-                        $('#order-total-final').val(addTax);
-                        $('#final-total').text(addTax);
+
+                        $('#order-total-final').val(addTax.toFixed(2));
+                        $('#final-total').text(addTax.toFixed(2));
                         $('.tax_preview').text(response.tax);
                     },
                     error: function () {
