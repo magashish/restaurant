@@ -35,6 +35,6 @@ class CustomerController extends Controller
 
     	$user = Auth::user();
     	Customer::save($user, $card);
-    	return redirect()->route('restaurantfront.all')->with('success', 'Card has been saved');
+    	return back()->with('success', 'Card has been saved. Now proceed with checkout');
     }
 }

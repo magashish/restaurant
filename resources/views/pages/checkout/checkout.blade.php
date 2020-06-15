@@ -17,7 +17,7 @@
                 <div class="row">
                     <div class="col-lg-8 col-sm-12">
                         <div class="billingdetail">
-                            @if(is_null(\Auth::user()->name))
+                            @if(empty(\Auth::user()->name))
                             <h6>Returning customer? <a href="{{ route('login') }}">Click here to login</a></h6><br>
                             @endif
                             <h3>Billing details</h3>
@@ -230,12 +230,16 @@
 @section('page_script')
     <script type="text/javascript">
         $(document).ready(function () {
-            @if(is_null(session('check_customer_stripe')))
-                $( "input[type=radio]" ).on( "click", function(e) {
-                    if($(this).val() === 'stripe') {
-                        $('#myModal').modal('show');
-                    }
-                });
+            @if(!empty(\Auth::user()->name))
+                @if(empty(session('check_customer_stripe')))
+                    $( "input[type=radio]" ).on( "click", function(e) {
+                        if($(this).val() === 'stripe') {
+                            $('#myModal').modal('show');
+                        }
+                    });
+                @endif
+            @else
+                    window.location = "login";
             @endif
             $(".update-cart").click(function (e) {
                 e.preventDefault();

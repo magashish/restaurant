@@ -92,4 +92,6 @@ Route::group(['namespace' => 'Front'], function () {
 });
 
 Auth::routes();
-Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['namespace' => 'Front'], function () {
+    Route::get('/cart', 'CartController@cart')->name('cart');
+});
