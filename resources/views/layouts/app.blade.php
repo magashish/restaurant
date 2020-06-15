@@ -18,6 +18,8 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/sweetalert2.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/sweet-alert.css') }}" rel="stylesheet" type="text/css">
 </head>
 <body>
     <div id="app">
@@ -95,5 +97,9 @@
             @yield('content')
         </main>
     </div>
+    <!-- Popper.JS -->
+    <script src="{{ asset('assets/js/popper.min.js') }}" ></script>
+    <script src="{{ asset('assets/js/sweetalert2.min.js') }}" ></script>
+    <script src="{{ asset('assets/js/sweet-alert.js') }}" ></script>
 </body>
 </html>

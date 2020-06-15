@@ -20,6 +20,7 @@
                             @if(empty(\Auth::user()->name))
                             <h6>Returning customer? <a href="{{ route('login') }}">Click here to login</a></h6><br>
                             @endif
+                            <h5 style="color: red;" class="warning"></h5>
                             <h3>Billing details</h3>
                             @if(session('error'))
                                 <div class="col-full">
@@ -71,7 +72,7 @@
                                 </div>
                                 <div class="col-half">
                                     <label>Zip<span>*</span></label>
-                                    <input type="text" name="shipping_address[zip]" required>
+                                    <input type="text" name="shipping_address[zip]" class="zipCode" required>
                                 </div>
                                 <div class="col-full">
                                     <label>Order Notes (optional)</label>
@@ -120,11 +121,11 @@
                         <div class="cart_total">
                             @php
                             $deliveryCharge = 0;
-                            $tax = 0;
+                            $tax = empty(session('tax')) ? 0 : session('tax');
                             @endphp
                             <ul>
                                 <li>Subtotal <span>${{ $data['order_total'] }}</span></li>
-                                <li>Tax <span>${{ $tax }}</span></li>
+                                <li>Tax <span class="tax_preview">${{ $tax }}</span></li>
                                 <li>Delivery Charges <span>$<span id="delivery-charge">10</span></span></li>
                                 @php
                                     $finalTotal = $data['order_total'] + $deliveryCharge + $tax;
@@ -152,7 +153,7 @@
                                 </div>
                             </div>
                             <div class="place_order">
-                                <a onclick="document.getElementById('place-order-form').submit()" href="#">Place
+                                <a onclick="check_login('{{ route('place.order') }}')" href="#">Place
                                     Order</a>
                             </div>
                         </div>
@@ -229,6 +230,19 @@
 @endsection
 @section('page_script')
     <script type="text/javascript">
+        function check_login(action) {
+            @if(empty(\Auth::user()->name))
+                swal("Please login/register before placing order");
+            @else
+                if($('input[name="shipping_address[zip]"]').val() !== '' && $('input[name="shipping_address[state]"]').val() !== '' && $('input[name="shipping_address[city]"]').val() !== '' || $('input[name="shipping_address[address]"]').val() !== '' && $('input[name="shipping_address[email]"]').val() !== '') {
+                    document.getElementById('place-order-form').action = action;
+                    document.getElementById('place-order-form').submit();
+                } else {
+                $('.warning').text('Please fill mandatory(*) fields');
+            }
+                /*document.getElementById('place-order-form').submit()*/
+            @endif
+        }
         $(document).ready(function () {
             @if(!empty(\Auth::user()->name))
                 @if(empty(session('check_customer_stripe')))
@@ -238,8 +252,6 @@
                         }
                     });
                 @endif
-            @else
-                    window.location = "login";
             @endif
             $(".update-cart").click(function (e) {
                 e.preventDefault();
@@ -254,6 +266,34 @@
                     },
                     success: function (response) {
                         window.location.reload();
+                    }
+                });
+            });
+
+            $('.zipCode').on('input', function() {
+                var zip = $(this).val();
+                $.ajax({
+                    url: "{{ route('check.tax') }}",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        zip: zip,
+                        _token: '{{ csrf_token() }}',
+                    },
+                    success: function (response) {
+                        console.log(response.tax);
+                        $('#tax').val(response.tax);
+                        var order = $('#order-total-final').val();
+                        var tax = response.tax;
+
+                        var addTax = parseFloat(order) + parseFloat(tax);
+                        
+                        $('#order-total-final').val(addTax);
+                        $('#final-total').text(addTax);
+                        $('.tax_preview').text(response.tax);
+                    },
+                    error: function () {
+
                     }
                 });
             });

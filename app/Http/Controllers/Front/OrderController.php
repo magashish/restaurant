@@ -12,6 +12,7 @@ use App\Models\RestaurantMenu;
 use App\Models\ShippingAddress;
 use App\OrderAddress;
 use App\Services\Stripe\Transaction;
+use App\Tax;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -129,6 +130,15 @@ class OrderController extends Controller
         return $response;
     }
 
+    public function checkTax(Request $request) {
+        $zip = $request->input('zip');
+        $tax = Tax::where('zip', $zip)->first();
+        $payTax = $tax->tax;
+        session(['tax' => $payTax]);
+
+        return json_encode(array('tax' => $payTax));
+    }
+
     public function placeOrder(Request $request)
     {
         $requestFields = $request->all();
@@ -174,8 +184,9 @@ class OrderController extends Controller
 
         $user = User::where(['id' => \Auth::user()->id])->first();
         $Restaurant = Restaurant::where(['id' => $restaurant_id])->first();
-
-        Transaction::create($user, $Restaurant);
+        if($requestFields['payment_method'] === 'stripe') {
+            Transaction::create($user, $Restaurant);
+        }
 
         $userId = \Auth::user()->id;
         $email = \Auth::user()->email;

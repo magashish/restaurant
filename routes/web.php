@@ -70,6 +70,7 @@ Route::group(['namespace' => 'Front'], function () {
     Route::post('/delete-cart-item', 'CartController@deleteCartItem')->name('delete.cart.item');
     Route::get('/checkout', 'OrderController@checkout')->name('checkout');
     Route::post('/place-order', 'OrderController@placeOrder')->name('place.order');
+    Route::post('/check-tax', 'OrderController@checkTax')->name('check.tax');
 
     Route::group(['middleware' => 'auth'], function () {
     });
