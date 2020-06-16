@@ -89,8 +89,8 @@
                                                     @foreach($options as $option)
                                                         @php $new_str = str_replace(' ', '', $option->name); @endphp
                                                         <span>
-                                                    <input type="checkbox" name="itemoption{{ $id }}"
-                                                           id="{{$new_str.'-'.$proddata->id}}" value="{{ $new_str }}"
+                                                    <input type="checkbox" name="itemoption[]"
+                                                           id="{{$new_str.'-'.$proddata->id}}" value="{{ $option->id }}"
                                                            class="menu-option-checkbox">
     											<label for="{{ $new_str.'-'.$proddata->id }}">{{ $option->name }} $<span
                                                         class="menu-option-price">{{ $option->price }}</span></label>
@@ -186,7 +186,7 @@
                 }
                 itemPrice = itemPrice.toFixed(2);
                 itemPriceObj.text(itemPrice);
-                $(".price").val(itemPrice);
+                //$(".price").val(itemPrice);
             });
 
             $(".add-to-cart-submit").on("click", function () {

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\CartExtraItem;
 use App\Models\Cart;
 use App\Models\RestaurantMenu;
+use App\Models\RestaurantMenuOption;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -62,24 +64,40 @@ class CartController extends Controller
 
         if (\Auth::check()) {
             $userId = \Auth::user()->id;
-            $data['data'] = Cart::where('user_id', $userId)->with('product_detail')
+            $data['data'] = Cart::where('user_id', $userId)->with('product_detail', 'menu_options', 'menu_options.menu_option_detail')
                 ->get()->toArray();
+            /*echo "<pre>";
+            print_r($data['data']);die;*/
         } else {
             $cart = Session::get('cart');
             $cartData = [];
+            /*echo "<pre>";
+            print_r($cart);die;*/
 
             if(!empty($cart)) {
                 foreach ($cart as $key => $data) {
+                    $extraItemArr = [];
+                    $data['extra_items'] = $data['extra_items'] ?? [];
+                    foreach ($data['extra_items'] as $extraItemId) {
+                        $extraItemArr[] = [
+                            "menu_option_detail" => RestaurantMenuOption::where('id', $extraItemId)->first()->toArray()
+                        ];
+                    }
+
                     $cartData[] = [
                         'id' => $key,
                         'user_id' => NULL,
                         'restaurant_menu_id' => $key,
                         'price' => $data['price'],
                         'quantity' => $data['quantity'],
-                        'product_detail' => RestaurantMenu::where('id', $key)->first()->toArray()
+                        'product_detail' => RestaurantMenu::where('id', $key)->first()->toArray(),
+                        'menu_options' => $extraItemArr,
                     ];
                 }
                 $data['data'] = $cartData;
+
+                /*echo "<pre>";
+                print_r($cartData);die;*/
             }
         }
 
@@ -222,14 +240,26 @@ class CartController extends Controller
             ])->first();
             if ($cartObj) {
                 $cartObj->quantity = $cartObj->quantity + $requestFields['pqty'];
+                $cartObj->extra_items = json_encode($requestFields['itemoption'] ?? []);
             } else {
                 $cartObj = new Cart;
                 $cartObj->user_id = \Auth::user()->id;
                 $cartObj->restaurant_menu_id = $requestFields['pid'];
                 $cartObj->quantity = $requestFields['pqty'];
                 $cartObj->price = $requestFields['price'];
+                $cartObj->extra_items = json_encode($requestFields['itemoption'] ?? []);
             }
             if ($cartObj->save()) {
+                // Delete old data
+                CartExtraItem::where('cart_id', $cartObj->id)->delete();
+
+                foreach ($requestFields['itemoption'] as $cartOption) {
+                    $cartExtraItemObj = new CartExtraItem;
+                    $cartExtraItemObj->cart_id = $cartObj->id;
+                    $cartExtraItemObj->restaurant_menu_option_id = $cartOption;
+                    $cartExtraItemObj->save();
+                }
+
                 if(isset($requestFields['previous_url']) && !empty($requestFields['previous_url'])) {
                     return redirect()->away($requestFields['previous_url'])->with('success', 'Item added to Cart successfull');
                 } else {
@@ -251,7 +281,8 @@ class CartController extends Controller
                     "name" => $request->post('pname'),
                     "quantity" => $request->post('pqty'),
                     "price" => $request->post('price'),
-                    "photo" => $request->post('image')
+                    "photo" => $request->post('image'),
+                    "extra_items" => $request->post('itemoption'),
                 ];
                 $cart[$prodId] = $product;
             endif;

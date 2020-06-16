@@ -11,13 +11,15 @@
     </div>
 
     <div class="content_sec">
-        <div class="container">
-            <form id="place-order-form" method="post" class="billingform" action="{{ route('place.order') }}">
+        <form id="place-order-form" method="post" class="billingform" action="{{ route('place.order') }}">
+            <div class="container billing-address-container">
                 @csrf
                 <div class="row">
                     <div class="col-lg-8 col-sm-12">
                         <div class="billingdetail">
-                            <h6>Returning customer? <a href="{{ route('login') }}">Click here to login</a></h6><br>
+                            @guest
+                                <h6>Returning customer? <a href="{{ route('login') }}">Click here to login</a></h6><br>
+                            @endguest
                             <h3>Billing details</h3>
                             @if(session('error'))
                                 <div class="col-full">
@@ -29,15 +31,18 @@
                             <div id="new-address-container">
                                 <div class="col-half">
                                     <label>First Name<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}" name="shipping_address[first_name]">
+                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}"
+                                           name="shipping_address[first_name]">
                                 </div>
                                 <div class="col-half">
                                     <label>Last Name<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}" name="shipping_address[last_name]">
+                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}"
+                                           name="shipping_address[last_name]">
                                 </div>
                                 <div class="col-half">
                                     <label>Email Address<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->email ?? '' }}" name="shipping_address[email]">
+                                    <input type="text" value="{{ \Auth::user()->email ?? '' }}"
+                                           name="shipping_address[email]">
                                 </div>
                                 <div class="col-half">
                                     <label>Phone No.<span>*</span></label>
@@ -116,8 +121,8 @@
                         <h3>Your Order</h3>
                         <div class="cart_total">
                             @php
-                            $deliveryCharge = 0;
-                            $tax = 0;
+                                $deliveryCharge = 0;
+                                $tax = 0;
                             @endphp
                             <ul>
                                 <li>Subtotal <span>${{ $data['order_total'] }}</span></li>
@@ -129,7 +134,8 @@
                                 <li>Total <span>$<span id="final-total">{{ $finalTotal }}</span></span></li>
                             </ul>
                             <input type="hidden" name="order_total" id="order-total" value="{{ $data['order_total'] }}">
-                            <input type="hidden" name="order_total_final" id="order-total-final" value="{{ $finalTotal }}">
+                            <input type="hidden" name="order_total_final" id="order-total-final"
+                                   value="{{ $finalTotal }}">
                             <input type="hidden" name="delivery_charge" id="delivery-charge-hidden" value="0">
                             <input type="hidden" name="tax" id="tax" value="{{ $tax }}">
                             <div class="paymentmethod">
@@ -145,8 +151,9 @@
                                 </div>
                             </div>
                             <div class="place_order">
-                                <a onclick="document.getElementById('place-order-form').submit()" href="#">Place
-                                    Order</a>
+                                {{--<a onclick="document.getElementById('place-order-form').submit()" href="#">Place
+                                    Order</a>--}}
+                                <a id="place-order-btn-checkout" href="javascript:void(0)">Continue</a>
                             </div>
                         </div>
                         <div class="special_img">
@@ -154,9 +161,45 @@
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+            <div class="container payment-form-container">
+                <div class="row">
+                    <div class="col-100">
+                        <div class="container">
+                            <form action="/action_page.php">
+
+                                <div class="row">
+                                    <div class="col-50-my">
+                                        <h3>Payment</h3>
+                                        <label for="cname">Name on Card</label>
+                                        <input type="text" id="cname" name="cardname" placeholder="John More Doe">
+                                        <label for="ccnum">Credit card number</label>
+                                        <input type="text" id="ccnum" name="cardnumber" placeholder="1111-2222-3333-4444">
+                                        <label for="expmonth">Exp Month</label>
+                                        <input type="text" id="expmonth" name="expmonth" placeholder="September">
+
+                                        <div class="row">
+                                            <div class="col-50">
+                                                <label for="expyear">Exp Year</label>
+                                                <input type="text" id="expyear" name="expyear" placeholder="2018">
+                                            </div>
+                                            <div class="col-50">
+                                                <label for="cvv">CVV</label>
+                                                <input type="text" id="cvv" name="cvv" placeholder="352">
+                                            </div>
+                                        </div>
+                                        <input type="submit" value="Place Order" class="btn">
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
+
 @endsection
 @section('page_script')
     <script type="text/javascript">
@@ -281,7 +324,7 @@
                 },
                 success: function (response) {
                     //window.location.reload();
-                    if(response.success) {
+                    if (response.success) {
                         $("#delivery-charge").text(response.delivery_charge);
                         $("#delivery-charge-hidden").val(response.delivery_charge);
                         var finalTotal = $("#final-total").text();
@@ -292,6 +335,10 @@
                         $("#order-total-final").val(finalTotal);
                     }
                 }
+            });
+
+            $("#place-order-btn-checkout").on("click", function () {
+                $(".billing-address-container").hide();
             });
         });
     </script>
@@ -314,6 +361,103 @@
 
         input#save-address-checkbox-1 {
             display: none;
+        }
+    </style>
+    <style>
+        .payment-form-container .row {
+            display: -ms-flexbox; /* IE10 */
+            display: flex;
+            -ms-flex-wrap: wrap; /* IE10 */
+            flex-wrap: wrap;
+            margin: 0 -16px;
+        }
+
+        .payment-form-container .col-25 {
+            -ms-flex: 25%; /* IE10 */
+            flex: 25%;
+        }
+
+        .payment-form-container .col-50 {
+            -ms-flex: 50%; /* IE10 */
+            flex: 50%;
+        }
+
+        .payment-form-container .col-50-my {
+            width: 68%;
+            padding: 0% 0% 0% 32%;
+        }
+
+        .payment-form-container .col-75 {
+            -ms-flex: 75%; /* IE10 */
+            flex: 75%;
+        }
+
+        .payment-form-container .col-100 {
+            -ms-flex: 100%; /* IE10 */
+            flex: 100%;
+        }
+
+        .payment-form-container .col-25,
+        .col-50,
+        .col-75 {
+            padding: 0 16px;
+        }
+
+        .payment-form-container .container {
+            background-color: #f2f2f2;
+            padding: 5px 20px 15px 20px;
+            border: 1px solid lightgrey;
+            border-radius: 3px;
+        }
+
+        .payment-form-container input[type=text] {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .payment-form-container label {
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .payment-form-container .icon-container {
+            margin-bottom: 20px;
+            padding: 7px 0;
+            font-size: 24px;
+        }
+
+        .payment-form-container .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            width: 25%;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 17px;
+        }
+
+        .payment-form-container .btn:hover {
+            background-color: #45a049;
+        }
+
+        .payment-form-container span.price {
+            float: right;
+            color: grey;
+        }
+
+        /* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other (and change the direction - make the "cart" column go on top) */
+        @media (max-width: 800px) {
+            .payment-form-container .row {
+                flex-direction: column-reverse;
+            }
+            .payment-form-container .col-25 {
+                margin-bottom: 20px;
+            }
         }
     </style>
 @endsection

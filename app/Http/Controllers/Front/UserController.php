@@ -28,6 +28,7 @@ class UserController extends Controller
                     $cartObj->restaurant_menu_id = $key;
                     $cartObj->price = $data['price'];
                     $cartObj->quantity = $data['quantity'];
+                    $cartObj->extra_items = json_encode($data['extra_items'] ?? []);
                     $cartObj->save();
                 }
             }

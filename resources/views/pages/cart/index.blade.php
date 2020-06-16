@@ -21,11 +21,13 @@
                                     <th>Ordered Dishes</th>
                                     <th>Price</th>
                                     <th>Quatity</th>
+                                    <th>Extra Item</th>
                                     <th>Total</th>
                                     <th>Action</th>
                                 </tr>
 
                                 <?php $total = 0 ?>
+                                <?php $extraItemtotal = 0 ?>
                                 @if(!empty($data['data']))
                                     @foreach($data['data'] as $key => $menu)
                                         @php
@@ -44,7 +46,25 @@
                                                 <input type="number" class="item-quantity" name="quantity"
                                                        value="{{ $menu['quantity'] }}" min="1" max="5">
                                             </td>
-                                            <td class="carttotal">$ {{$menu['price'] * $menu['quantity']}}</td>
+                                            <td>
+                                                @php
+                                                    $menuOptionsTotal = 0;
+                                                @endphp
+                                                @if(count($menu['menu_options']) > 0)
+                                                    @foreach($menu['menu_options'] as $menuOption)
+                                                        @php
+                                                            $menuOptionsTotal += $menuOption['menu_option_detail']['price'];
+                                                        @endphp
+                                                        <span><strong>{{ $menuOption['menu_option_detail']['name'] }}:</strong> ${{ $menuOption['menu_option_detail']['price'] }}</span>
+                                                        <br>
+                                                    @endforeach
+                                                @endif
+                                                @php
+                                                    $total += $menuOptionsTotal;
+                                                @endphp
+                                            </td>
+                                            <td class="carttotal">
+                                                $ {{($menu['price'] * $menu['quantity']) + $menuOptionsTotal}}</td>
                                             <td class="cartremove">
                                                 {{--<button class="btn btn-info btn-sm update-cart" data-id="{{ $key }}"><i
                                                         class="far fa-sync-alt"></i></button>--}}
@@ -82,9 +102,9 @@
                         <div class="cart_total">
                             <h3>Cart Total</h3>
                             <ul>
-                                <li>Subtotal <span>$ {{ $total }}</span></li>
-                                <!--<li>Total <span>${{ $total }}</span></li>-->
-								<li>Delivery and Tax will be calculated at checkout</li>
+                                <li>Subtotal <span>$ {{ $total + $extraItemtotal }}</span></li>
+                            <!--<li>Total <span>${{ $total }}</span></li>-->
+                                <li>Delivery and Tax will be calculated at checkout</li>
                             </ul>
                         <!--<div class="updatecrt">
                        <a href="{{ route('updatecart') }}">Update Cart</a>
@@ -147,7 +167,7 @@
                     },
                     success: function (response) {
                         if (response.success) {
-                            if(response.session_cart) {
+                            if (response.session_cart) {
                                 location.reload();
                             } else {
                                 $(".cart-items-container").html(response.html);
@@ -180,7 +200,7 @@
                                 },
                                 success: function (response) {
                                     if (response.success) {
-                                        if(response.session_cart) {
+                                        if (response.session_cart) {
                                             location.reload();
                                         } else {
                                             $(".cart-items-container").html(response.html);

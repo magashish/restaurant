@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Restaurant;
 use App\Models\RestaurantMenu;
+use App\Models\RestaurantMenuOption;
 use App\Models\ShippingAddress;
 use App\OrderAddress;
 use App\User;
@@ -26,8 +27,16 @@ class OrderController extends Controller
         $userId = \Auth::user()->id ?? 0;
         $cartData = [];
 
+        $cartExtraItemTotal = 0;
+
         if (\Auth::check()) {
-            $cartData = Cart::where('user_id', $userId)->get()->toArray();
+            $cartData = Cart::where('user_id', $userId)->with('product_detail', 'menu_options', 'menu_options.menu_option_detail')->get()->toArray();
+
+            foreach ($cartData as $key => $menu) {
+                foreach ($menu['menu_options'] as $menuOption) {
+                    $cartExtraItemTotal += $menuOption['menu_option_detail']['price'];
+                }
+            }
         } else {
             $cart = Session::get('cart');
 
@@ -41,6 +50,12 @@ class OrderController extends Controller
                         'quantity' => $data['quantity'],
                         'product_detail' => RestaurantMenu::where('id', $key)->first()->toArray()
                     ];
+
+                    $data['extra_items'] = $data['extra_items'] ?? [];
+                    foreach ($data['extra_items'] as $extraItemId) {
+                        $restaurantMenuOptionObj = RestaurantMenuOption::where('id', $extraItemId)->first();
+                        $cartExtraItemTotal += $restaurantMenuOptionObj->price;
+                    }
                 }
             }
         }
@@ -49,7 +64,7 @@ class OrderController extends Controller
             foreach ($cartData as $cartDatum) {
                 $total += $cartDatum['price'] * $cartDatum['quantity'];
             }
-            $data['order_total'] = $total;
+            $data['order_total'] = $total + $cartExtraItemTotal;
 
             $data['saved_addresses'] = ShippingAddress::where('user_id', $userId)->get();
 
@@ -221,6 +236,12 @@ class OrderController extends Controller
 
                 $orderAddressData = $shippingAddressData;
             }
+        }
+
+        // Create customer stripe id if not exist
+        $stripeId = Auth::user()->stripe_customer_id ?? NULL;
+        if(!$stripeId) {
+
         }
 
         // Save order
