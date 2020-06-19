@@ -41,6 +41,23 @@
                         </div>
 
                         <div class="form-group row">
+                            <label for="type" class="col-md-4 col-form-label text-md-right">{{ __('Type') }}</label>
+
+                            <div class="col-md-6">
+                                <select id="type" class="form-control @error('type') is-invalid @enderror" name="type" required>
+                                    <option value="{{ \App\User::CUSTOMER }}">{{ \App\User::CUSTOMER }}</option>
+                                    <option value="{{ \App\User::SELLER }}">{{ \App\User::SELLER }}</option>
+                                </select>
+
+                                @error('type')
+                                <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
                             <div class="col-md-6">

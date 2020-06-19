@@ -49,7 +49,7 @@
                     <li><a href="{{route('restaurantfront.all')}}">Restaurants</a></li>
                     <li><a href="#">Services</a>
                         <ul class="child">
-                            <li><a href="">Real estate</a></li>
+                            <li><a href="{{route('property.index')}}">Real estate</a></li>
                             <li><a href="">Notary Services</a></li>
                         </ul>
                     </li>

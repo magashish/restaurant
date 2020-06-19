@@ -253,11 +253,13 @@ class CartController extends Controller
                 // Delete old data
                 CartExtraItem::where('cart_id', $cartObj->id)->delete();
 
-                foreach ($requestFields['itemoption'] as $cartOption) {
-                    $cartExtraItemObj = new CartExtraItem;
-                    $cartExtraItemObj->cart_id = $cartObj->id;
-                    $cartExtraItemObj->restaurant_menu_option_id = $cartOption;
-                    $cartExtraItemObj->save();
+                if(!empty($requestFields['itemoption'])) {
+                    foreach ($requestFields['itemoption'] as $cartOption) {
+                        $cartExtraItemObj = new CartExtraItem;
+                        $cartExtraItemObj->cart_id = $cartObj->id;
+                        $cartExtraItemObj->restaurant_menu_option_id = $cartOption;
+                        $cartExtraItemObj->save();
+                    }
                 }
 
                 if(isset($requestFields['previous_url']) && !empty($requestFields['previous_url'])) {

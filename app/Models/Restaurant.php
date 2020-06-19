@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Restaurant extends Model
@@ -21,5 +22,10 @@ class Restaurant extends Model
             return asset("uploads/logos/thumbnail/$value");
         }
         return $value;
+    }
+
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'seller_id');
     }
 }
