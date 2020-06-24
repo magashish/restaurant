@@ -9,6 +9,7 @@ use App\User;
 use Hash;
 use Auth;
 use Session;
+use Validator;
 
 class UserController extends Controller
 {
@@ -49,7 +50,7 @@ class UserController extends Controller
 
         $requestFields = $request->except('_token');
         try {
-            if(\Auth::check()) {
+            if (\Auth::check()) {
                 $userObj = User::find(\Auth::user()->id);
                 $userObj->lat = $requestFields['lat'];
                 $userObj->lng = $requestFields['lng'];
@@ -70,5 +71,64 @@ class UserController extends Controller
         }
 
         return $response;
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $requestFields = $request->all();
+
+        $userObj = User::find(\Auth::user()->id);
+        $userObj->first_name = $requestFields['first_name'] ?? "";
+        $userObj->last_name = $requestFields['last_name'] ?? "";
+        $userObj->email = $requestFields['email'] ?? "";
+        $userObj->mobile = $requestFields['mobile'] ?? "";
+        $userObj->city = $requestFields['city'] ?? "";
+        $userObj->state = $requestFields['state'] ?? "";
+        $userObj->country = $requestFields['country'] ?? "";
+        $userObj->zip = $requestFields['zip'] ?? "";
+        $userObj->address = $requestFields['address'] ?? "";
+
+        if ($userObj->save()) {
+            return redirect()->route('account')->with('success', 'Profile updated successfully');
+        }
+        return redirect()->route('account')->with('error', GLOBAL_ERROR_MSG);
+    }
+
+    public function changePassword()
+    {
+        $data['page'] = "change-password";
+        return view('pages.account.change-password')->with(compact('data'));
+    }
+
+    public function updatePasswordPost(Request $request)
+    {
+        $response = [];
+        $response['success'] = FALSE;
+        $requestData = $request->all();
+        $userId = \Auth::user()->id;
+        $oldPassword = $request->get('old_password');
+        $password = $request->get('password');
+        try {
+            $rules = [
+                'old_password' => 'required',
+                'password' => 'required|confirmed',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return redirect()->back()->with('error', implode(" ", $validator->messages()->all()));
+            }
+            $userObj = User::where('id', $userId)->first();
+            if (Hash::check($oldPassword, $userObj->password)) {
+                $userObj->password = bcrypt($password);
+                if ($userObj->save()) {
+                    return redirect()->route('change.password')->with('success', "Passsword changed successfully");
+                }
+            } else {
+                return redirect()->route('change.password')->with('error', 'Wrong old password');
+            }
+        } catch (\Exception $e) {
+
+        }
+        return redirect()->back()->with('error', GLOBAL_ERROR_MSG);
     }
 }

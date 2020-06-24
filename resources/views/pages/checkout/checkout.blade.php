@@ -46,7 +46,8 @@
                                 </div>
                                 <div class="col-half">
                                     <label>Phone No.<span>*</span></label>
-                                    <input type="text" name="shipping_address[mobile]" required>
+                                    <input type="text" name="shipping_address[mobile]"
+                                           value="{{ \Auth::user()->mobile ?? '' }}" required>
                                 </div>
                                 @guest
                                     <input type="hidden" name="is_authenticated" value="false">
@@ -61,19 +62,23 @@
                                 @endguest
                                 <div class="col-full">
                                     <label>Address<span>*</span></label>
-                                    <input type="text" name="shipping_address[address]" required>
+                                    <input type="text" name="shipping_address[address]"
+                                           value="{{ \Auth::user()->address ?? '' }}" required>
                                 </div>
                                 <div class="col-full">
                                     <label>Town/City<span>*</span></label>
-                                    <input type="text" name="shipping_address[city]" required>
+                                    <input type="text" name="shipping_address[city]"
+                                           value="{{ \Auth::user()->city ?? '' }}" required>
                                 </div>
                                 <div class="col-half">
                                     <label>State<span>*</span></label>
-                                    <input type="text" name="shipping_address[state]" required>
+                                    <input type="text" name="shipping_address[state]"
+                                           value="{{ \Auth::user()->state ?? '' }}" required>
                                 </div>
                                 <div class="col-half">
                                     <label>Zip<span>*</span></label>
-                                    <input type="text" name="shipping_address[zip]" class="zipCode" required>
+                                    <input type="text" name="shipping_address[zip]"
+                                           value="{{ \Auth::user()->zip ?? '' }}" class="zipCode" required>
                                 </div>
                                 <div class="col-full">
                                     <label>Order Notes (optional)</label>
@@ -122,9 +127,9 @@
                         <div class="cart_total">
                             @php
                                 $deliveryCharge = 0;
-                                $tax = 0;
-                            $deliveryCharge = 0;
-                            $tax = empty(session('tax')) ? 0 : session('tax');
+                                $tax = $zipTax ?? 0;
+                                $deliveryCharge = 0;
+                                //$tax = empty(session('tax')) ? 0 : session('tax');
                             @endphp
                             <ul>
                                 <li>Subtotal <span>${{ $data['order_total'] }}</span></li>
@@ -144,11 +149,13 @@
                                 {{--<img src="{{ asset('images/paymentmethod.jpg') }}">--}}
                                 <h3>Self Pickup</h3>
                                 <div class="md-radio md-radio-inline">
-                                    <input id="self_pickup_yes" type="radio" class="radio_check" name="self_pickup" value="yes">
+                                    <input id="self_pickup_yes" type="radio" class="radio_check" name="self_pickup"
+                                           value="yes">
                                     <label for="self_pickup_yes">Yes</label>
                                 </div>
                                 <div class="md-radio md-radio-inline">
-                                    <input id="self_pickup_no" type="radio" class="radio_check" name="self_pickup" value="no" checked>
+                                    <input id="self_pickup_no" type="radio" class="radio_check" name="self_pickup"
+                                           value="no" checked>
                                     <label for="self_pickup_no">No</label>
                                 </div>
                                 <br>
@@ -415,11 +422,13 @@
                         var order = $('#order-total').val();
                         var tax = response.tax;
 
-                        var addTax = parseFloat(order) + parseFloat(tax);
+                        var delivery_charges = $("#delivery-charge-hidden").val();
+
+                        var addTax = parseFloat(order) + parseFloat(tax) + parseFloat(delivery_charges);
 
                         $('#order-total-final').val(addTax.toFixed(2));
                         $('#final-total').text(addTax.toFixed(2));
-                        $('.tax_preview').text(response.tax);
+                        $('.tax_preview').text("$" + response.tax);
                     },
                     error: function () {
 
@@ -550,7 +559,7 @@
                 if (paymentMethod == "stripe") {
                     $("#stripe-payment-modal").find('input:text').val('');
                     $("#stripe-payment-modal").modal('show');
-                } else if(paymentMethod == "cod") {
+                } else if (paymentMethod == "cod") {
                     $("#place-order-form").submit();
                 }
             });
@@ -563,7 +572,7 @@
 
                 delivery_charge_hidden = parseFloat(delivery_charge_hidden);
 
-                if(self_delivery == "yes") {
+                if (self_delivery == "yes") {
                     var finalPrice = final_total - delivery_charge_hidden;
                     finalPrice = finalPrice.toFixed(2);
 
@@ -703,6 +712,7 @@
                 margin-bottom: 20px;
             }
         }
+
         .md-radio.md-radio-inline {
             width: 50%;
             float: left;

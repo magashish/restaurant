@@ -78,7 +78,17 @@ class OrderController extends Controller
 
             $data['saved_addresses'] = ShippingAddress::where('user_id', $userId)->get();
 
-            return view('pages.checkout.checkout')->with(compact('data'));
+            $zip = \Auth::user()->zip ?? NULL;
+            $zipTax = NULL;
+            if($zip) {
+                $taxObj = Tax::where('zip', $zip)->first();
+
+                if($taxObj) {
+                    $zipTax = $taxObj->tax;
+                }
+            }
+
+            return view('pages.checkout.checkout')->with(compact('data', 'zipTax'));
         }
 
         return redirect()->route('cart');
@@ -378,5 +388,25 @@ class OrderController extends Controller
     {
         $oid = $request->get('oid') ?? "";
         return view('pages.thank-you')->with(compact('oid'));
+    }
+
+    public function myOrders(Request $request)
+    {
+        $data = [];
+        $data['page'] = "my-orders";
+        $data['orders'] = Order::where('user_id', \Auth::user()->id)->orderBy('created_at', 'DESC')->with('order_item', 'order_item.item_detail')->get();
+        //dd($data['orders']);
+
+        return view('pages.account.my-orders')->with(compact('data'));
+    }
+
+    public function orderDetail($oid)
+    {
+        $data = [];
+        $data['page'] = "my-orders";
+        $order = Order::where('oid', "#" . $oid)->with('order_item', 'order_item.item_detail')->first();
+        //dd($order);
+
+        return view('pages.account.order-detail')->with(compact('data', 'order'));
     }
 }

@@ -2,6 +2,12 @@
 <html>
 <head>
     @include('includes.head')
+    <style>
+        .list-group-profile-sidebar.list-group-item.active {
+            background-color: #b10700;
+            border-color: #b10700;
+        }
+    </style>
     @yield('page_style')
 </head>
 <body>

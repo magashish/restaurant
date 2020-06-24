@@ -21,7 +21,7 @@
                     @else
                         {{--<div class="login"><a href="{{route('login')}}"><i
                                     class="fas fa-sign-in-alt"></i> {{ __('Login') }}</a></div>--}}
-                        <div class="login"><a href="javascript:void(0)"> {{ Auth::user()->name }}</a></div>
+                        <div class="login"><a href="{{ route('account') }}"> My Account</a></div>
                         <div class="login"><a href="{{ route('cart') }}"> <i class="fa fa-shopping-cart" aria-hidden="true"></i>Cart</a></div>
                         <div class="signup"><a href="{{ route('logout') }}" onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();"><i

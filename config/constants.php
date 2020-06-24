@@ -1,5 +1,7 @@
 <?php
 
+defined('GLOBAL_ERROR_MSG') OR define('GLOBAL_ERROR_MSG', "Ooos! some error occured, please try again");
+
 defined('GOOGLE_MAP_API_KEY') OR define('GOOGLE_MAP_API_KEY', "AIzaSyDpavHXELJMJvIHifFPN6tBBiFSXKGpy2g");
 
 

@@ -90,6 +90,17 @@ Route::group(['namespace' => 'Front'], function () {
         Route::get('express', 'SellerController@create')->name('create.express');
         Route::get('stripe', 'SellerController@save')->name('save.express');
     //});
+
+    Route::get('/account', 'AccountController@account')->name('account');
+
+    Route::post('/update-profile', 'UserController@updateProfile')->name('update.profile');
+    Route::get('/change-password', 'UserController@changePassword')->name('change.password');
+    Route::post('/update-password-post', 'UserController@updatePasswordPost')->name('update.password.post');
+    Route::get('/my-orders', 'OrderController@myOrders')->name('my.orders');
+    Route::get('/order-detail/{oid}', 'OrderController@orderDetail')->name('order.detail');
+
+    Route::get('/saved-address', 'AccountController@savedAddress')->name('saved.address');
+    Route::get('/delete-address/{id}', 'AccountController@deleteAddress')->name('delete.address');
 });
 
 Auth::routes();
