@@ -47,14 +47,14 @@ Route::group(['namespace' => 'Admin'], function () {
     Route::get('/admin/category/create', 'CategoryController@create')->name('category.create');
     Route::post('/admin/category', 'CategoryController@store')->name('category.store');
 
-    Route::get('/settings', 'DashboardController@settings')->name('admin.settings');
+    Route::any('/settings', 'DashboardController@settings')->name('admin.settings');
     Route::post('/save-settings', 'DashboardController@saveSettings')->name('admin.save.settings');
     // });
 });
 
 Route::group(['namespace' => 'Front'], function () {
     Route::post('/user-login', 'UserController@login')->name('user.login');
-
+    Route::post('/user-register', 'UserController@register')->name('user.register');
 
     Route::get('/properties', 'PropertyControllcheckouter@index')->name('property.index');
     Route::get('/search', 'SearchController@index')->name('search');
@@ -84,6 +84,7 @@ Route::group(['namespace' => 'Front'], function () {
         //Route::group(['middleware' => ['stripe']], function() {
             Route::get('/', 'HomeController@index')->name('home.index');
         //});
+        Route::get('/seller/dashboard', 'SellerController@dashboard')->name('seller.dashboard');
 
         Route::get('save', 'CustomerController@form')->name('stripe.form');
         Route::post('save', 'CustomerController@save')->name('save.customer');
@@ -92,7 +93,11 @@ Route::group(['namespace' => 'Front'], function () {
     //});
 
     Route::get('/account', 'AccountController@account')->name('account');
-
+    Route::get('/seller/account', 'AccountController@sellerAccount')->name('seller.account');
+    Route::post('/seller/update-profile','UserController@updateSellerProfile')->name('seller.update');;
+    Route::get('/link-bank-account','SellerController@getaccountdetail')->name('seller.connect');
+    Route::any('/seller/store-stripe-account-details','SellerController@storestripedetail')->name('seller.storeconnect');
+    Route::any('/seller/delete-stripe-account','SellerController@deletestripeaccount');
     Route::post('/update-profile', 'UserController@updateProfile')->name('update.profile');
     Route::get('/change-password', 'UserController@changePassword')->name('change.password');
     Route::post('/update-password-post', 'UserController@updatePasswordPost')->name('update.password.post');

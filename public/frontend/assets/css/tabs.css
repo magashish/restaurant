@@ -1,0 +1,107 @@
+* {
+	margin : 0;
+	padding: 0;
+}
+
+body {
+	font: 14px Helvetica, Sans-Serif;
+}
+
+#page-wrap {
+	width : 700px;
+	margin: 25px auto;
+}
+
+
+.ui-tabs {
+	zoom: 1;
+}
+
+.ui-tabs .ui-tabs-nav {
+	border-bottom: 1px solid #FF6767;
+	list-style   : none;
+	position     : relative;
+	overflow     : hidden;
+}
+
+.ui-tabs .ui-tabs-nav li {
+	position           : relative;
+	float              : left;
+	border             : 1px solid #FF6767;
+	border-bottom-width: 0 !important;
+	margin             : 0 2px -1px 0;
+	background         : #FF6767;
+}
+
+.ui-tabs .ui-tabs-nav li a {
+	float          : left;
+	text-decoration: none;
+	padding        : 10px 25px;
+	color          : #fff;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+	padding-bottom     : 1px;
+	border-bottom-width: 0;
+	background         : white;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a,
+.ui-tabs .ui-tabs-nav li.ui-state-disabled a,
+.ui-tabs .ui-tabs-nav li.ui-state-processing a {
+	color : #333;
+	cursor: text;
+}
+
+.ui-tabs .ui-tabs-nav li a,
+.ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a {
+	cursor: pointer;
+}
+
+/* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
+.ui-tabs .ui-tabs-panel {
+	padding     : 20px;
+	display     : block;
+	border-width: 0;
+	background  : none;
+	border      : 1px solid #ccc;
+	border-top  : none;
+	position    : relative;
+	min-height  : 200px;
+}
+
+.ui-tabs .ui-tabs-hide {
+	display: none !important;
+}
+
+
+
+
+a.mover {
+	background     : #FF6767;
+	color          : #fff;
+	padding        : 10px 25px;
+	position       : absolute;
+	font-weight    : bold;
+	text-decoration: none;
+}
+
+.next-tab {
+	bottom                        : 0;
+	right                         : 0;
+	-moz-border-radius-topleft    : 10px;
+	-webkit-border-top-left-radius: 10px;
+}
+
+.prev-tab {
+	bottom                         : 0;
+	left                           : 0;
+	-moz-border-radius-topright    : 10px;
+	-webkit-border-top-right-radius: 10px;
+}
+
+@media only screen and (max-width: 480px) {
+	.ui-tabs .ui-tabs-nav li a {
+		padding: 10px 15px;
+	}
+}

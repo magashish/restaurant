@@ -1,0 +1,12 @@
+<svg id="coin_2_" data-name="coin(2)" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+  <g id="Group_112" data-name="Group 112">
+    <g id="Group_111" data-name="Group 111">
+      <path id="Path_91" data-name="Path 91" d="M17.071,2.929A10,10,0,0,0,2.929,17.071,10,10,0,0,0,17.071,2.929ZM10,18.828A8.828,8.828,0,1,1,18.828,10,8.838,8.838,0,0,1,10,18.828Z" fill="#434343"/>
+    </g>
+  </g>
+  <g id="Group_114" data-name="Group 114" transform="translate(7.523 5.013)">
+    <g id="Group_113" data-name="Group 113">
+      <path id="Path_92" data-name="Path 92" d="M179.713,100.92h-1a1.037,1.037,0,1,1,0-2.075h2.008a.469.469,0,0,0,0-.937H179.68V96.87a.469.469,0,1,0-.937,0v1.038h-.033a1.975,1.975,0,1,0,0,3.95h1a1.037,1.037,0,0,1,0,2.075H177.7a.469.469,0,0,0,0,.938h1.037v1.038a.469.469,0,0,0,.938,0V104.87h.033a1.975,1.975,0,0,0,0-3.95Z" transform="translate(-176.734 -96.401)" fill="#434343"/>
+    </g>
+  </g>
+</svg>

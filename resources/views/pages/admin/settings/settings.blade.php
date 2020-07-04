@@ -39,27 +39,41 @@
                 <div class="col-lg-12">
 
                         <div class="">
-                            <form action="{{ route('admin.save.settings') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('admin.settings') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <h5>Tax Setting</h5>
                                 <div class="form-group col-lg-6">
                                     <label for="name">Tax</label>
-                                    <input class="form-control" type="text" name="settings[tax]" value="{{ $settings['tax'] ?? '' }}" required>
+                                    <input class="form-control" type="text" name="tax" value="{{ $settingObj->tax ?? '' }}" required>
                                 </div>
-                                <h5>Email Setting</h5>
+                                <!-- <h5>Email Setting</h5>
                                 <div class="form-group col-lg-6">
                                     <label for="name">Email</label>
-                                    <input class="form-control" type="text" name="settings[mail][username]" value="{{ $settings['mail']['username'] ?? '' }}" required>
+                                    <input class="form-control" type="text" name="username" value="{{$settingObj->name ?? '' }}" required>
                                 </div>
                                 <div class="form-group col-lg-6">
                                     <label for="name">Password</label>
-                                    <input class="form-control" type="text" name="settings[mail][password]" value="{{ $settings['mail']['password'] ?? '' }}" required>
+                                    <input class="form-control" type="text" name="password" value="{{ $settingObj->password ?? '' }}" required>
+                                </div> -->
+                                <h5>Stripe Keys</h5>
+                                <div class="form-group col-lg-6">
+                                    <label for="name">Secret Key</label>
+                                    <input class="form-control" type="text" name="stripe_s_key" value="{{$settingObj->stripe_s_key ?? '' }}" required>
                                 </div>
-                                <h5>Delivery Charges</h5>
+                                <div class="form-group col-lg-6">
+                                    <label for="name">Public Key</label>
+                                    <input class="form-control" type="text" name="stripe_p_key" value="{{ $settingObj->stripe_p_key ?? '' }}" required>
+                                </div>
+                                <h5>Google Key</h5>
+                                <div class="form-group col-lg-6">
+                                    <!-- <label for="name">Secret Key</label> -->
+                                    <input class="form-control" type="text" name="google_key" value="{{$settingObj->google_key ?? '' }}" required>
+                                </div>
+                                <!-- <h5>Delivery Charges</h5>
                                 <div class="form-group col-lg-6">
                                     <label for="name">Password</label>
-                                    <input class="form-control" type="text" name="settings[mail][password]" value="{{ $settings['mail']['password'] ?? '' }}" required>
-                                </div>
+                                    <input class="form-control" type="text" name="settings[mail][password]" value="{{ $settingObj->password ?? '' }}" required>
+                                </div> -->
                                 <input type="submit" class="btn btn-primary">
                             </form>
                         </div>

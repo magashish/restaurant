@@ -11,7 +11,7 @@
     </div>
 
     <div class="content_sec">
-        <form id="place-order-form" method="post" class="billingform" action="{{ route('place.order') }}">
+        <!-- <form id="place-order-form" method="post" class="billingform" action="{{ route('place.order') }}"> -->
             <div class="container billing-address-container">
                 @csrf
                 <div class="row">
@@ -31,58 +31,60 @@
                             <div id="new-address-container">
                                 <div class="col-half">
                                     <label>First Name<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}"
+                                    <input type="text" id="fName" value="{{ \Auth::user()->name ?? '' }}"
                                            name="shipping_address[first_name]">
                                 </div>
                                 <div class="col-half">
                                     <label>Last Name<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->name ?? '' }}"
+                                    <input type="text" id="lName" value="{{ \Auth::user()->name ?? '' }}"
                                            name="shipping_address[last_name]">
                                 </div>
                                 <div class="col-half">
                                     <label>Email Address<span>*</span></label>
-                                    <input type="text" value="{{ \Auth::user()->email ?? '' }}"
+                                    <input type="text" id="email" value="{{ \Auth::user()->email ?? '' }}"
                                            name="shipping_address[email]">
                                 </div>
                                 <div class="col-half">
                                     <label>Phone No.<span>*</span></label>
-                                    <input type="text" name="shipping_address[mobile]"
+                                    <input type="text" id="mobile" name="shipping_address[mobile]"
                                            value="{{ \Auth::user()->mobile ?? '' }}" required>
                                 </div>
                                 @guest
-                                    <input type="hidden" name="is_authenticated" value="false">
+                                    <input type="hidden" id="is_authenticated" name="is_authenticated" value="false">
                                     <div class="col-half">
                                         <label>Password<span>*</span></label>
-                                        <input type="password" name="shipping_address[password]">
+                                        <input type="password" id="password" name="shipping_address[password]">
+                                        
                                     </div>
                                     <div class="col-half">
                                         <label>Password Confirmation<span>*</span></label>
-                                        <input type="password" name="shipping_address[password_confirmation]">
+                                        <input type="password" id="password_confirmation" name="shipping_address[password_confirmation]">
+                                        
                                     </div>
                                 @endguest
                                 <div class="col-full">
                                     <label>Address<span>*</span></label>
-                                    <input type="text" name="shipping_address[address]"
+                                    <input type="text" id="address" name="shipping_address[address]"
                                            value="{{ \Auth::user()->address ?? '' }}" required>
                                 </div>
                                 <div class="col-full">
                                     <label>Town/City<span>*</span></label>
-                                    <input type="text" name="shipping_address[city]"
+                                    <input type="text" id="city" name="shipping_address[city]"
                                            value="{{ \Auth::user()->city ?? '' }}" required>
                                 </div>
                                 <div class="col-half">
                                     <label>State<span>*</span></label>
-                                    <input type="text" name="shipping_address[state]"
+                                    <input type="text" id="state" name="shipping_address[state]"
                                            value="{{ \Auth::user()->state ?? '' }}" required>
                                 </div>
                                 <div class="col-half">
                                     <label>Zip<span>*</span></label>
-                                    <input type="text" name="shipping_address[zip]"
+                                    <input type="text" id="zip" name="shipping_address[zip]"
                                            value="{{ \Auth::user()->zip ?? '' }}" class="zipCode" required>
                                 </div>
                                 <div class="col-full">
                                     <label>Order Notes (optional)</label>
-                                    <textarea name="shipping_address['notes']"></textarea>
+                                    <textarea name="shipping_address['notes']" id="notes"></textarea>
                                 </div>
                                 <div class="col-full save-address-checkbox">
                                     <input type="checkbox" id="save-address-checkbox-1" name="save_address"
@@ -132,8 +134,8 @@
                                 //$tax = empty(session('tax')) ? 0 : session('tax');
                             @endphp
                             <ul>
-                                <li>Subtotal <span>${{ $data['order_total'] }}</span></li>
-                                <li>Tax <span class="tax_preview">${{ $tax }}</span></li>
+                                <li>Subtotal <span id="subTotals">${{ $data['order_total'] }}</span></li>
+                                <li>Tax <span class="tax_preview" id="tax2">${{ $tax }}</span></li>
                                 <li>Delivery Charges <span>$<span id="delivery-charge">0</span></span></li>
                                 @php
                                     $finalTotal = $data['order_total'] + $deliveryCharge + $tax;
@@ -146,43 +148,38 @@
                             <input type="hidden" name="delivery_charge" id="delivery-charge-hidden" value="0">
                             <input type="hidden" name="tax" id="tax" value="{{ $tax }}">
                             <div class="paymentmethod">
-                                {{--<img src="{{ asset('images/paymentmethod.jpg') }}">--}}
                                 <h3>Self Pickup</h3>
                                 <div class="md-radio md-radio-inline">
-                                    <input id="self_pickup_yes" type="radio" class="radio_check" name="self_pickup"
+                                    <input id="self_pickup" type="radio" class="radio_check" name="self_pickup"
                                            value="yes">
-                                    <label for="self_pickup_yes">Yes</label>
+                                    <label for="self_pickup">Yes</label>
                                 </div>
                                 <div class="md-radio md-radio-inline">
-                                    <input id="self_pickup_no" type="radio" class="radio_check" name="self_pickup"
+                                    <input id="self_pickup" type="radio" class="radio_check" name="self_pickup"
                                            value="no" checked>
-                                    <label for="self_pickup_no">No</label>
+                                    <label for="self_pickup">No</label>
                                 </div>
                                 <br>
                                 <span><strong>Note:</strong> If yes then delivery charges will remove</span>
                             </div>
                             <div class="paymentmethod">
-                                {{--<img src="{{ asset('images/paymentmethod.jpg') }}">--}}
+                                
                                 <h3>Payment Method</h3>
                                 <div class="md-radio md-radio-inline">
-                                    <input id="3" type="radio" class="radio_check" name="payment_method" value="cod"
+                                    <input id="3" type="radio" id="payment_method" class="radio_check" name="payment_method" value="cod"
                                            checked>
                                     <label for="3">COD</label>
                                 </div>
-                                {{--<div class="md-radio md-radio-inline">
-                                    <input id="4" type="radio" class="radio_check" name="payment_method" value="paypal">
-                                    <label for="4">PayPal</label>
-                                </div>--}}
+                                
                                 <div class="md-radio md-radio-inline">
-                                    <input id="5" type="radio" class="radio_check" name="payment_method" value="stripe">
+                                    <input id="5" type="radio" id="payment_method" class="radio_check" name="payment_method" value="stripe">
                                     <label for="5">Stripe</label>
                                 </div>
                             </div>
                             <div class="place_order">
-                                {{--<a onclick="document.getElementById('place-order-form').submit()" href="#">Place
-                                    Order</a>--}}
+                             
                                 <a id="place-order-btn-checkout" href="javascript:void(0)">Continue</a>
-                                {{--<a onclick="check_login('{{ route('place.order') }}')" href="#">Place Order</a>--}}
+
                             </div>
                         </div>
                         <div class="special_img">
@@ -191,179 +188,141 @@
                     </div>
                 </div>
             </div>
-            {{--<div class="container payment-form-container">
-                <div class="row">
-                    <div class="col-100">
-                        <div class="container">
-                            <form action="/action_page.php">
-
-                                <div class="row">
-                                    <div class="col-50-my">
-                                        <h3>Payment</h3>
-                                        <label for="cname">Name on Card</label>
-                                        <input type="text" id="cname" name="cardname" placeholder="John More Doe">
-                                        <label for="ccnum">Credit card number</label>
-                                        <input type="text" id="ccnum" name="cc_number"
-                                               placeholder="1111-2222-3333-4444">
-                                        <label for="expmonth">Exp Month</label>
-                                        <input type="text" id="expmonth" name="month" placeholder="September">
-
-                                        <div class="row">
-                                            <div class="col-50">
-                                                <label for="expyear">Exp Year</label>
-                                                <input type="text" id="expyear" name="year" placeholder="2018">
-                                            </div>
-                                            <div class="col-50">
-                                                <label for="cvv">CVV</label>
-                                                <input type="text" id="cvv" name="cvv" placeholder="352">
-                                            </div>
-                                        </div>
-                                        <input type="submit" value="Place Order" id="submit-checkout-payment-form"
-                                               class="btn">
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>--}}
+          
             <div id="stripe-payment-modal" class="modal fade" role="dialog">
                 <div class="modal-dialog">
-
                     <!-- Modal content-->
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Stripe Card details</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-                                <label for="username">Full name (on the card)</label>
-                                <input type="text" name="name" placeholder="Name" required
-                                       class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="cardNumber">Card number</label>
-                                <div class="input-group">
-                                    <input type="text" name="cc_number" placeholder="Your card number"
-                                           class="form-control"
-                                           required>
-                                    <div class="input-group-append">
-                                            <span class="input-group-text text-muted">
-                                                <i class="fa fa-cc-visa mx-1"></i>
-                                                <i class="fa fa-cc-amex mx-1"></i>
-                                                <i class="fa fa-cc-mastercard mx-1"></i>
-                                            </span>
-                                    </div>
+                            @if (Session::has('success'))
+                                <div class="alert alert-success text-center">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-8">
-                                    <div class="form-group">
-                                        <label><span class="hidden-xs">Expiration</span></label>
-                                        <div class="input-group">
-                                            <input type="number" pattern="/^-?\d+\.?\d*$/"
-                                                   placeholder="MM"
-                                                   name="month" class="form-control" required>
-                                            <input type="number" pattern="/^-?\d+\.?\d*$/"
-                                                   placeholder="YYYY"
-                                                   name="year" class="form-control" required>
+                            @endif
+                            
+                            <form action="{{ '/place-order' }}" method="POST">
+                                <div class="form-group">
+                                    <label for="username">Full name (on the card)</label>
+                                    <input type="text" name="name" placeholder="Name" required
+                                        class="form-control" id="card-name"> 
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardNumber">Card number</label>
+                                    <div class="input-group">
+                                        <input type="text" name="cc_number" placeholder="Your card number"
+                                            class="form-control" id="card-number"
+                                            required>
+                                        <div class="input-group-append">
+                                                <span class="input-group-text text-muted">
+                                                    <i class="fa fa-cc-visa"></i>
+                                                    <i class="fa fa-cc-amex"></i>
+                                                    <i class="fa fa-cc-mastercard"></i>
+                                                </span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
-                                    <div class="form-group mb-4">
-                                        <label data-toggle="tooltip"
-                                               title="Three-digits code on the back of your card">CVV
-                                            <i class="fa fa-question-circle"></i>
-                                        </label>
-                                        <input type="text" name="cvv" required class="form-control">
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <div class="form-group">
+                                            <label><span class="hidden-xs">Expiration</span></label>
+                                            <div class="input-group">
+                                                <input type="number" pattern="/^-?\d+\.?\d*$/"
+                                                    placeholder="MM" id="card-expiry-month"
+                                                    name="month" class="form-control" required>
+                                                <input type="number" pattern="/^-?\d+\.?\d*$/"
+                                                    placeholder="YYYY" id="card-expiry-year"
+                                                    name="year" class="form-control" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group mb-4">
+                                            <label data-toggle="tooltip"
+                                                title="Three-digits code on the back of your card">CVV
+                                                <i class="fa fa-question-circle"></i>
+                                            </label>
+                                            <input type="text" id="card-cvc" name="cvv" required class="form-control">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <button type="submit"
-                                    class="subscribe btn btn-primary btn-block rounded-pill shadow-sm">
-                                Confirm
-                            </button>
+                                 <!-- <div class='form-row'>
+                                        <div class='col-md-12 error form-group hide'>
+                                            <div class='alert-danger alert errmsg'>Please correct the errors and try again.</div>
+                                        </div>
+                                 </div> -->
+                                <button type="submit" id="filldetails"
+                                        class="subscribe btn btn-primary btn-block rounded-pill shadow-sm">
+                                    Confirm
+                                </button>
+                            </form>
                         </div>
-                        <div class="modal-footer">
+                        <!-- <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
-        </form>
-    </div>
-    <!-- Modal -->
-    {{--<div id="myModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
+        <!-- </form> -->
 
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Stripe Card details</h4>
-                </div>
-                <div class="modal-body">
-                    <form role="form" method="POST" action="{{route('save.customer')}}">
+
+        <div class="modal" tabindex="-1" role="dialog" id="cod-payment-modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action="{{ '/place-order' }}" method="POST">
                         @csrf
-                        <div class="form-group">
-                            <label for="username">Full name (on the card)</label>
-                            <input type="text" name="name" placeholder="Random Name" required class="form-control">
+                        <div class="modal-header">
+                            <h5 class="modal-title">COD Confirmation</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-                        <div class="form-group">
-                            <label for="cardNumber">Card number</label>
-                            <div class="input-group">
-                                <input type="text" name="cc_number" placeholder="Your card number" class="form-control"
-                                       required>
-                                <div class="input-group-append">
-                    <span class="input-group-text text-muted">
-                                                <i class="fa fa-cc-visa mx-1"></i>
-                                                <i class="fa fa-cc-amex mx-1"></i>
-                                                <i class="fa fa-cc-mastercard mx-1"></i>
-                                            </span>
-                                </div>
-                            </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to choose this method of payment?</p>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-8">
-                                <div class="form-group">
-                                    <label><span class="hidden-xs">Expiration</span></label>
-                                    <div class="input-group">
-                                        <input type="number" pattern="/^-?\d+\.?\d*$/"
-                                               onKeyPress="if(this.value.length==2) return false;" placeholder="MM"
-                                               name="month" class="form-control" required>
-                                        <input type="number" pattern="/^-?\d+\.?\d*$/"
-                                               onKeyPress="if(this.value.length==4) return false;" placeholder="YYYY"
-                                               name="year" class="form-control" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="form-group mb-4">
-                                    <label data-toggle="tooltip" title="Three-digits code on the back of your card">CVV
-                                        <i class="fa fa-question-circle"></i>
-                                    </label>
-                                    <input type="text" name="cvv" required class="form-control">
-                                </div>
-                            </div>
-
-
+                        <input type = "hidden" data-id="" id="confirmCOD" >
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success confirm_delete" onclick="opencodconfirmation();" id="confirm-cod">Confirm</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                         </div>
-                        <button type="submit" class="subscribe btn btn-primary btn-block rounded-pill shadow-sm">
-                            Confirm
-                        </button>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+
+        <div class="myModals" tabindex="-1" role="dialog" id="cod-payment-modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Sorry</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="vc"> </p>
+                        </div>
+                        <input type = "hidden" data-id="" id="confirmCOD" >
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
                 </div>
             </div>
-
         </div>
-    </div>--}}
+
+       
+
+    </div>
+   
 @endsection
 @section('page_script')
+<script src="https://js.stripe.com/v2/"></script>
+<script src="https://js.stripe.com/v3/"></script>
     <script type="text/javascript">
         function check_login(action) {
             @if(empty(\Auth::user()->name))
@@ -379,6 +338,69 @@
             @endif
         }
 
+        function opencodconfirmation()
+        {
+        //   alert('in');
+            var first_name = $("#fName").val();
+            var last_name = $("#lName").val();
+            var email = $("#email").val();
+            var mobile = $("#mobile").val();
+            var is_authenticated =$("#is_authenticated").val();
+            var password = $("#password").val();
+            var password_confirmation = $("#password_confirmation").val();
+            var address = $("#address").val();
+            var city = $("#city").val();
+            var state = $("#state").val();
+            var zip = $("#zip").val();
+            var notes = document.getElementById('notes').value;
+            var save_address = $("input[name='save_address']:checked").val();
+            var address_count = $("#saved-address-count").val();
+            var address_id = $("input[name='address_id']:checked").val();
+            var order_total = $("#order-total").val();
+            var order_total_final = $("#order-total-final").val();
+            var delivery_charge_hidden = $("#delivery-charge-hidden").val();
+            var tax = $("#tax").val();
+            var self_pickup = $("#self_pickup").val();
+            var paymentMethod = $("input[name='payment_method']:checked").val();
+            var shipping_address = [];
+            shipping_address.push(first_name);
+            shipping_address.push(last_name);
+            shipping_address.push(email);
+            shipping_address.push(mobile);
+            shipping_address.push(password);
+            shipping_address.push(password_confirmation);
+            shipping_address.push(address);
+            shipping_address.push(city);
+            shipping_address.push(state);
+            shipping_address.push(zip);
+            shipping_address.push(notes);
+            console.log(shipping_address);
+            $.ajax({
+                        type:'POST',
+                        url:'/place-order',
+                        data:{"_token": $("input[name='_token']").val(),is_authenticated:is_authenticated,shipping_address:shipping_address,save_address:save_address,address_count:address_count,address_id:address_id,order_total:order_total,order_total_final:order_total_final,delivery_charge_hidden:delivery_charge_hidden,tax:tax,self_pickup:self_pickup,paymentMethod}, 
+                        success:function(response){
+                            if(response.status == 'error') {
+                            alert(response.message);
+                            // document.getElementById("vc").innerHTML =response.message;
+                            // $('#myModals').modal('show');
+                            location.reload();
+                            }
+                            if(response.status == 'success') {
+                            alert(response.message);
+                            window.location.href = "/thank-you";
+                            }
+                        },
+                        complete:function(data){
+                            $("#confirm-cod").html('Submit');
+                            $("#confirm-cod").removeAttr("disabled");
+                            },
+                        error: function(data, errorThrown)
+                        {
+                        alert('error');
+                        }
+                    });
+      }
         $(document).ready(function () {
             @if(!empty(\Auth::user()->name))
             @if(empty(session('check_customer_stripe')))
@@ -491,20 +513,140 @@
                     });
             });
 
-            /*$(".remove-from-cart").click(function (e) {
+            
+
+            $('#filldetails').on('click', function(e)
+            {
                 e.preventDefault();
-                var ele = $(this);
-                if (confirm("Are you sure")) {
-                    $.ajax({
-                        url: '{{ url('remove-from-cart') }}',
-                        method: "DELETE",
-                        data: {_token: '{{ csrf_token() }}', id: ele.attr("data-id")},
-                        success: function (response) {
-                            window.location.reload();
+                $('.has-error').removeClass('has-error');
+                $('.error').addClass('hide')
+                valid = true;
+                if(document.getElementById('card-name').value=='')
+                {
+                document.getElementById('card-name').parentElement.className = "has-error";
+                $('.errmsg').html('Please enter your card name');
+                $('.hide').removeClass('hide');
+                valid = false;
+                return false;
+                }
+                else if(document.getElementById('card-number').value=='')
+                {
+                document.getElementById('card-number').parentElement.className = "has-error";
+                $('.errmsg').html('Please enter your card number');
+                $('.hide').removeClass('hide');
+                valid = false;
+                return false;
+                }
+                else if(document.getElementById('card-cvc').value=='')
+                {
+                document.getElementById('card-cvc').parentElement.className = "has-error";
+                $('.errmsg').html('Please enter your card CVV number');
+                $('.hide').removeClass('hide');
+                valid = false;
+                return false;
+                }
+                else if(document.getElementById('card-expiry-month').value=='')
+                {
+                document.getElementById('card-expiry-month').parentElement.className = "has-error";
+                $('.errmsg').html('Please enter your card Expiry Month : eg: 01');
+                $('.hide').removeClass('hide');
+                valid = false;
+                return false;
+                }
+                else if(document.getElementById('card-expiry-year').value=='')
+                {
+                document.getElementById('card-expiry-year').parentElement.className = "has-error";
+                $('.errmsg').html('Please enter your card Expiry Year : eg: 2021');
+                $('.hide').removeClass('hide');
+                valid = false;
+                return false;
+                }
+                
+                //=== If no error then call stripe function ======================
+                if(valid==true)
+                {
+                $("#filldetails").html('<span class="spinner"><i class="fa fa-spinner fa-spin"></i></span> Loading ...');
+                $("#filldetails").attr('disabled','disabled');
+                Stripe.setPublishableKey('<?php echo $stripe->stripe_p_key ?>');
+                Stripe.createToken({
+                    number: $('#card-number').val(),
+                    cvc: $('#card-cvc').val(),
+                    exp_month: $('#card-expiry-month').val(),
+                    exp_year: $('#card-expiry-year').val()
+                    }, stripeResponseHandler);
+                }
+
+                function stripeResponseHandler(status, response)
+                {
+                    if (response.error) {
+                            $("#filldetails").html('Submit');
+                            $("#filldetails").removeAttr("disabled");
+                            $('.error').removeClass('hide').find('.alert').text(response.error.message);
+                    } else {
+                        var token = response.id;
+                        var card_name = $("#card-name").val();
+                        var first_name = $("#fName").val();
+                        var last_name = $("#lName").val();
+                        var email = $("#email").val();
+                        var mobile = $("#mobile").val();
+                        var is_authenticated =$("#is_authenticated").val();
+                        var password = $("#password").val();
+                        var password_confirmation = $("#password_confirmation").val();
+                        var address = $("#address").val();
+                        var city = $("#city").val();
+                        var state = $("#state").val();
+                        var zip = $("#zip").val();
+                        var notes = document.getElementById('notes').value;
+                        var save_address = $("input[name='save_address']:checked").val();
+                        var address_count = $("#saved-address-count").val();
+                        var address_id = $("input[name='address_id']:checked").val();
+                        var order_total = $("#order-total").val();
+                        var order_total_final = $("#order-total-final").val();
+                        var delivery_charge_hidden = $("#delivery-charge-hidden").val();
+                        var tax = $("#tax").val();
+                        var self_pickup = $("#self_pickup").val();
+                        var paymentMethod = $("input[name='payment_method']:checked").val();
+                        var shipping_address = [];
+                        shipping_address.push(first_name);
+                        shipping_address.push(last_name);
+                        shipping_address.push(email);
+                        shipping_address.push(mobile);
+                        shipping_address.push(password);
+                        shipping_address.push(password_confirmation);
+                        shipping_address.push(address);
+                        shipping_address.push(city);
+                        shipping_address.push(state);
+                        shipping_address.push(zip);
+                        shipping_address.push(notes);
+                        $.ajax({
+                        type:'POST',
+                        url:'/place-order',
+                        data:{"_token": $("input[name='_token']").val(),stripetoken:token,is_authenticated:is_authenticated,shipping_address:shipping_address,save_address:save_address,address_count:address_count,address_id:address_id,order_total:order_total,order_total_final:order_total_final,delivery_charge_hidden:delivery_charge_hidden,tax:tax,self_pickup:self_pickup,paymentMethod}, 
+                        success:function(response){
+                            if(response.status == 'error') {
+                            alert(response.message);
+                            // document.getElementById("vc").innerHTML =response.message;
+                            // $('#myModals').modal('show');
+                            location.reload();
+                            }
+                            if(response.status == 'success') {
+                            alert(response.message);
+                            window.location.href = "/thank-you";
+                            }
+                        },
+                        complete:function(data){
+                            $("#filldetails").html('Submit');
+                            $("#filldetails").removeAttr("disabled");
+                            },
+                        error: function(response, errorThrown)
+                        {
+                        alert('error');
                         }
                     });
+                    }
                 }
-            });*/
+                return false;
+            });
 
             $("#shipdiff").on("change", function () {
                 const savedAddressCount = $("#saved-address-count").val();
@@ -556,11 +698,15 @@
                 //$(".billing-address-container").hide();
 
                 var paymentMethod = $("input[name='payment_method']:checked").val();
+                // alert(paymentMethod);
                 if (paymentMethod == "stripe") {
-                    $("#stripe-payment-modal").find('input:text').val('');
+                    // alert('stripe');
+                    // $("#stripe-payment-modal").find('input:text').val('');
                     $("#stripe-payment-modal").modal('show');
                 } else if (paymentMethod == "cod") {
-                    $("#place-order-form").submit();
+                    // $("#place-order-form").submit();
+                    // alert('cod');
+                    $("#cod-payment-modal").modal('show');
                 }
             });
 

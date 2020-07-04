@@ -58,7 +58,7 @@
                 </ul>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{url('/settings')}}" class="nav-link">
                     <i class="nav-icon fas fa-cogs" aria-hidden="true"></i>
                     <p>
                         Settings

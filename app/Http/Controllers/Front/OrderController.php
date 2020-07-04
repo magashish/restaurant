@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Auth;
 use Mail;
 use Session;
 use DB;
+use Stripe;
+use App\SiteSetting;
 
 class OrderController extends Controller
 {
@@ -34,7 +36,8 @@ class OrderController extends Controller
         $cartData = [];
 
         $cartExtraItemTotal = 0;
-
+        $stripe = SiteSetting::first();
+        
         if (\Auth::check()) {
             $cartData = Cart::where('user_id', $userId)->with('product_detail', 'menu_options', 'menu_options.menu_option_detail')->get()->toArray();
 
@@ -87,8 +90,8 @@ class OrderController extends Controller
                     $zipTax = $taxObj->tax;
                 }
             }
-
-            return view('pages.checkout.checkout')->with(compact('data', 'zipTax'));
+            // dd($data);
+            return view('pages.checkout.checkout')->with(compact('data', 'zipTax','stripe'));
         }
 
         return redirect()->route('cart');
@@ -96,6 +99,7 @@ class OrderController extends Controller
 
     public function calculateDeliveryCharge(Request $request)
     {
+       
         $response = [];
         $response['success'] = FALSE;
 
@@ -135,9 +139,10 @@ class OrderController extends Controller
                     "lng" => $restaurantLng,
                 ]
             ];
-
-            $distanceData = calculateDistance($location);
-
+            $admin_setting = SiteSetting::where('id',1)->first();
+            $g_key = $admin_setting['google_key'];
+            $distanceData = calculateDistance($location,$g_key);
+            // dd($distanceData);
             if ($distanceData['rows'][0]['elements'][0]['status'] === 'OK') {
                 $distanceArr = $distanceData['rows'][0]['elements'][0]['distance'];
                 $distanceValueArr = explode(" ", $distanceArr['text']);
@@ -172,216 +177,342 @@ class OrderController extends Controller
 
     public function placeOrder(Request $request)
     {
-        $requestFields = $request->all();
-        $address = "";
-        $orderAddressData = [];
-        /*echo "<pre>";
-        print_r($requestFields);die;*/
-
-        DB::beginTransaction();
-
-        try {
-            $this->validate($request, [
-                //'name' => 'required',
-                'cc_number' => 'required',
-                'month' => 'required',
-                'year' => 'required',
-                'cvv' => 'required'
-            ]);
-
-            $card = [
-                'card' => [
-                    'number' => $request->cc_number,
-                    'exp_month' => $request->month,
-                    'exp_year' => $request->year,
-                    'cvc' => $request->cvv
-                ]
-            ];
-
-            $shippingAddressData = $requestFields['shipping_address'];
-
-            $isAthenticated = $request->get('is_authenticated');
-            if ($isAthenticated == "false" && !is_null($shippingAddressData['email'])) {
-                // Register user
-                $checkEmailExist = User::where('email', $shippingAddressData['email'])->first();
-
-                if ($checkEmailExist) {
-                    return redirect()->route('checkout')->with('error', "Account already exist, pease login to continue");
-                }
-
-                $userObj = new User;
-                $userObj->name = $shippingAddressData['first_name'] . " " . $shippingAddressData['last_name'];
-                $userObj->email = $shippingAddressData['email'];
-                $userObj->password = bcrypt($shippingAddressData['password']);
-                if ($userObj->save()) {
-                    \Auth::loginUsingId($userObj->id);
-
-                    $cart = Session::get('cart');
-
-                    if (!empty($cart)) {
-                        foreach ($cart as $key => $data) {
-                            $cartObj = new Cart;
-                            $cartObj->user_id = \Auth::user()->id;
-                            $cartObj->restaurant_menu_id = $key;
-                            $cartObj->price = $data['price'];
-                            $cartObj->quantity = $data['quantity'];
-                            $cartObj->save();
+        if($request->ajax())
+        {
+            $requestFields = $request->all();
+            $address = "";
+            $orderAddressData = [];
+            DB::beginTransaction();
+    
+            try {
+               
+                $shippingAddressData = $requestFields['shipping_address'];
+                $isAthenticated = $request->get('is_authenticated');
+                if ($isAthenticated == "false" && !is_null($shippingAddressData['2'])) {
+                    // Register user
+                  
+                    $checkEmailExist = User::where('email', $shippingAddressData['2'])->first();
+    
+                    if ($checkEmailExist) {
+                        // return redirect()->route('checkout')->with('error', "Account already exist, pease login to continue");
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Account already exist'
+                        ]);  
+                        echo $response;
+                        exit();
+                    }
+    
+                    $userObj = new User;
+                    $userObj->name = $shippingAddressData['0'] . " " . $shippingAddressData['1'];
+                    $userObj->email = $shippingAddressData['2'];
+                    $userObj->password = bcrypt($shippingAddressData['4']);
+                    if ($userObj->save()) {
+                        \Auth::loginUsingId($userObj->id);
+    
+                        $cart = Session::get('cart');
+    
+                        if (!empty($cart)) {
+                            foreach ($cart as $key => $data) {
+                                $cartObj = new Cart;
+                                $cartObj->user_id = \Auth::user()->id;
+                                $cartObj->restaurant_menu_id = $key;
+                                $cartObj->price = $data['price'];
+                                $cartObj->quantity = $data['quantity'];
+                                $cartObj->save();
+                            }
                         }
                     }
                 }
-            }
-
-            /*$restaurant_id = $requestFields['restaurant_id'];
-
-            $user = User::where(['id' => \Auth::user()->id])->first();
-            $Restaurant = Restaurant::where(['id' => $restaurant_id])->first();
-            if($requestFields['payment_method'] === 'stripe') {
-                Transaction::create($user, $Restaurant);
-            }*/
-
-            $userId = \Auth::user()->id;
-            $email = \Auth::user()->email;
-
-            // Create customer stripe id if not exist
-            $stripeId = \Auth::user()->stripe_customer_id ?? NULL;
-            if (!$stripeId && $requestFields['payment_method'] === 'stripe') {
+                $userId = \Auth::user()->id;
+                $username = \Auth::user()->first_name;
+                $email = \Auth::user()->email;
+                $stripe = SiteSetting::first();
+                Stripe\Stripe::setApiKey($stripe->stripe_s_key);
+                // Create customer stripe id if not exist
+                $stripeId = \Auth::user()->stripe_customer_id ?? NULL;
                 $user = Auth::user();
-                $customerResponse = Customer::save($user, $card);
-                if (!$customerResponse) {
-                    return redirect()->back();
+                if (!$stripeId && $requestFields['paymentMethod'] === 'stripe') {
+                   
+                    // $customerResponse = Customer::save($user, $card);
+                    try {
+                        $customerResponse = \Stripe\Customer::create([
+                            "description" => $user->email,
+                            "source" => $request->stripetoken, // obtained with Stripe.js
+                        ]);
+                        } catch(\Stripe\Exception\CardException $e) {
+                        return response()->json([
+                        'status' => 'error',
+                        'message' => 'Your payment has been declined. Please check with your credit card company or try another card',
+                        ]);
+                        } catch(\Stripe\Exception\RateLimitException $e) {
+                        return response()->json([
+                        'status' => 'error',
+                        'message' => $e->getMessage(),
+                        ]);
+                        } catch (\Stripe\Exception\InvalidRequestException $e) {
+                        return response()->json([
+                        'status' => 'error',
+                        'message' => $e->getMessage(),
+                        ]);
+                        } catch (\Stripe\Exception\AuthenticationException $e) {
+                        return response()->json([
+                        'status' => 'error',
+                        'message' => $e->getMessage(),
+                        ]);
+                        } catch (\Stripe\Exception\ApiConnectionException $e) {
+                        return response()->json([
+                        'status' => 'error',
+                        'message' => $e->getMessage(),
+                        ]);
+                        } catch (\Stripe\Exception\ApiErrorException $e) {
+                        return response()->json([
+                        'status' => 'error',
+                        'message' => $e->getMessage(),
+                        ]);
+                    }
+                    if (!$customerResponse) {
+                        // return redirect()->back();
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Please try after some time'
+                        ]);  
+                        echo $response;
+                        exit();
+                    }
+                    $user->stripe_customer_id = $customerResponse['id'];
+                    $user->card_token = $customerResponse['default_source'];
+                    // $user->save();
                 }
-            }
-            $cartObjResId = Cart::where('user_id', $userId)->first();
-            $restaurantMenuId = $cartObjResId->restaurant_menu_id;
-            $restaurantMenuObj = RestaurantMenu::find($restaurantMenuId);
-            $restaurantId = $restaurantMenuObj->restaurant_id;
-
-            $restaurantObj = Restaurant::find($restaurantId);
-            $sellerId = $restaurant->seller->stripe_connecet_id ?? NULL;
-            if (!$sellerId && $requestFields['payment_method'] === 'stripe') {
-                $customerResponse = Seller::create($restaurantObj);
-                if (!$customerResponse) {
-                    return redirect()->back();
+                $cartObjResId = Cart::where('user_id', $userId)->first();
+                
+                $restaurantMenuId = $cartObjResId->restaurant_menu_id;
+                
+                $restaurantMenuObj = RestaurantMenu::find($restaurantMenuId);
+                
+                $restaurantId = $restaurantMenuObj->restaurant_id;
+    
+                $restaurantObj = Restaurant::find($restaurantId);
+              
+                $seller_details = User::where('id',$restaurantObj['seller_id'])->first();
+                $seller_stripe_connect_id = $seller_details['stripe_connect_id'];
+                //$sellerId = $restaurant->seller->stripe_connecet_id ?? NULL;
+                if (!$seller_stripe_connect_id && $requestFields['paymentMethod'] === 'stripe') {
+                    // $customerResponse = Seller::create($restaurantObj);
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'Stripe Payments are not applicable for this restraunt'
+                        ]);  
+                        echo $response;
+                        exit();
                 }
-            }
-
-            // Save shipping address
-
-            if (!empty($shippingAddressData) && isset($requestFields['save_address'])) {
-                /*$shippingAddressObj = ShippingAddress::where('user_id', $userId)->first();
-                if(!$shippingAddressObj) {
+    
+                // Save shipping address
+                if (!empty($shippingAddressData) && isset($requestFields['save_address'])) {
                     $shippingAddressObj = new ShippingAddress;
                     $shippingAddressObj->user_id = $userId;
-                    $shippingAddressObj->first_name = $shippingAddressData['first_name'];
-                    $shippingAddressObj->last_name = $shippingAddressData['last_name'];
-                    $shippingAddressObj->email = $shippingAddressData['email'];
-                    $shippingAddressObj->mobile = $shippingAddressData['mobile'];
-                    $shippingAddressObj->address = $shippingAddressData['address'];
-                    $shippingAddressObj->city = $shippingAddressData['city'];
-                    $shippingAddressObj->state = $shippingAddressData['state'];
-                    $shippingAddressObj->zip = $shippingAddressData['zip'];
+                    $shippingAddressObj->first_name = $shippingAddressData['0'];
+                    $shippingAddressObj->last_name = $shippingAddressData['1'];
+                    $shippingAddressObj->email = $shippingAddressData['2'];
+                    $shippingAddressObj->mobile = $shippingAddressData['3'];
+                    $shippingAddressObj->address = $shippingAddressData['6'];
+                    $shippingAddressObj->city = $shippingAddressData['7'];
+                    $shippingAddressObj->state = $shippingAddressData['8'];
+                    $shippingAddressObj->zip = $shippingAddressData['9'];
                     $shippingAddressObj->save();
-                }*/
-
-                $shippingAddressObj = new ShippingAddress;
-                $shippingAddressObj->user_id = $userId;
-                $shippingAddressObj->first_name = $shippingAddressData['first_name'];
-                $shippingAddressObj->last_name = $shippingAddressData['last_name'];
-                $shippingAddressObj->email = $shippingAddressData['email'];
-                $shippingAddressObj->mobile = $shippingAddressData['mobile'];
-                $shippingAddressObj->address = $shippingAddressData['address'];
-                $shippingAddressObj->city = $shippingAddressData['city'];
-                $shippingAddressObj->state = $shippingAddressData['state'];
-                $shippingAddressObj->zip = $shippingAddressData['zip'];
-                $shippingAddressObj->save();
-
-                $orderAddressData = ShippingAddress::where('id', $shippingAddressObj->id)->first()->toArray();
-            } else {
-                if (isset($requestFields['address_id'])) {
-                    $savedAddressObj = ShippingAddress::where('id', $requestFields['address_id'])->first()->toArray();
-                    $orderAddressData = $savedAddressObj;
-
-                    $address .= $savedAddressObj['first_name'] . " " . $savedAddressObj['last_name'] . ", ";
-                    $address .= $savedAddressObj['address'] ?? "";
-                    $address .= $savedAddressObj['city'] ?? "";
-                    $address .= $savedAddressObj['state'] ?? "";
-                    $address .= $savedAddressObj['zip'] ?? "";
-                    $address .= $savedAddressObj['mobile'] ?? "";
+                    $orderAddressData = ShippingAddress::where('id', $shippingAddressObj->id)->first()->toArray();
+                     // Save order
+                    $orderObj = new Order;
+                    $orderObj->user_id = $userId;
+                    $latestOrder = Order::orderBy('created_at', 'DESC')->first();
+                    $oid = '#ORDER' . date("ymd") . str_pad(($latestOrder->id ?? 0) + 1, 8, "0", STR_PAD_LEFT);
+                    $orderObj->oid = $oid;
+                    $orderObj->amount = $requestFields['order_total'];
+                    $orderObj->final_total = $requestFields['order_total_final'];
+                    $orderObj->delivery_charge = $requestFields['delivery_charge_hidden'];
+                    $orderObj->tax = $requestFields['tax'];
+                    $orderObj->shipping_address_id = $requestFields['address_id'] ?? (isset($requestFields['save_address']) ? $shippingAddressObj->id : NULL);
+                    $orderObj->shipping_address = $address;
+                    $orderObj->billing_address = $address;
+                    if ($orderObj->save()) {
+                        // Save order address
+                        $orderAddressObj = new OrderAddress;
+                        $orderAddressObj->order_id = $orderObj->id;
+                        $orderAddressObj->first_name = $orderAddressData['first_name'] ?? "";
+                        $orderAddressObj->last_name = $orderAddressData['last_name'] ?? "";
+                        $orderAddressObj->email = $orderAddressData['email'] ?? "";
+                        $orderAddressObj->mobile = $orderAddressData['mobile'] ?? "";
+                        $orderAddressObj->address = $orderAddressData['address'] ?? "";
+                        $orderAddressObj->city = $orderAddressData['city'] ?? "";
+                        $orderAddressObj->state = $orderAddressData['state'] ?? "";
+                        $orderAddressObj->zip = $orderAddressData['zip'] ?? "";
+                        $orderAddressObj->save();
+                       
+                    }
+    
                 } else {
-                    $address .= $shippingAddressData['first_name'] . " " . $shippingAddressData['last_name'] . ", ";
-                    $address .= $shippingAddressData['address'] ?? "";
-                    $address .= $shippingAddressData['city'] ?? "";
-                    $address .= $shippingAddressData['state'] ?? "";
-                    $address .= $shippingAddressData['zip'] ?? "";
-                    $address .= $shippingAddressData['mobile'] ?? "";
-
-                    $orderAddressData = $shippingAddressData;
+                    if (isset($requestFields['address_id'])) {
+                   
+                        $savedAddressObj = ShippingAddress::where('id', $requestFields['address_id'])->first()->toArray();
+                        $orderAddressData = $savedAddressObj;
+                        $address .= $savedAddressObj['first_name'] . " " . $savedAddressObj['last_name'] . ", ";
+                        $address .= $savedAddressObj['address'] ?? "";
+                        $address .= $savedAddressObj['city'] ?? "";
+                        $address .= $savedAddressObj['state'] ?? "";
+                        $address .= $savedAddressObj['zip'] ?? "";
+                        $address .= $savedAddressObj['mobile'] ?? "";
+    
+                            // Save order
+                        $orderObj = new Order;
+                        $orderObj->user_id = $userId;
+                        $latestOrder = Order::orderBy('created_at', 'DESC')->first();
+                        $oid = '#ORDER' . date("ymd") . str_pad(($latestOrder->id ?? 0) + 1, 8, "0", STR_PAD_LEFT);
+                        $orderObj->oid = $oid;
+                        $orderObj->amount = $requestFields['order_total'];
+                        $orderObj->final_total = $requestFields['order_total_final'];
+                        $orderObj->delivery_charge = $requestFields['delivery_charge_hidden'];
+                        $orderObj->tax = $requestFields['tax'];
+                        $orderObj->shipping_address_id = $requestFields['address_id'] ?? (isset($requestFields['save_address']) ? $shippingAddressObj->id : NULL);
+                        $orderObj->shipping_address = $address;
+                        $orderObj->billing_address = $address;
+                        if ($orderObj->save()) {
+                            // Save order address
+                            $orderAddressObj = new OrderAddress;
+                            $orderAddressObj->order_id = $orderObj->id;
+                            $orderAddressObj->first_name = $orderAddressData['first_name'] ?? "";
+                            $orderAddressObj->last_name = $orderAddressData['last_name'] ?? "";
+                            $orderAddressObj->email = $orderAddressData['email'] ?? "";
+                            $orderAddressObj->mobile = $orderAddressData['mobile'] ?? "";
+                            $orderAddressObj->address = $orderAddressData['address'] ?? "";
+                            $orderAddressObj->city = $orderAddressData['city'] ?? "";
+                            $orderAddressObj->state = $orderAddressData['state'] ?? "";
+                            $orderAddressObj->zip = $orderAddressData['zip'] ?? "";
+                            $orderAddressObj->save();
+                        }
+    
+                    } else {
+                        $address .= $shippingAddressData['0'] . " " . $shippingAddressData['1'] . ", ";
+                        $address .= $shippingAddressData['6'] ?? "";
+                        $address .= $shippingAddressData['7'] ?? "";
+                        $address .= $shippingAddressData['8'] ?? "";
+                        $address .= $shippingAddressData['9'] ?? "";
+                        $address .= $shippingAddressData['3'] ?? "";
+                        $orderAddressData = $shippingAddressData;
+                         // Save order
+                        $orderObj = new Order;
+                        $orderObj->user_id = $userId;
+                        $latestOrder = Order::orderBy('created_at', 'DESC')->first();
+                        $oid = '#ORDER' . date("ymd") . str_pad(($latestOrder->id ?? 0) + 1, 8, "0", STR_PAD_LEFT);
+                        $orderObj->oid = $oid;
+                        $orderObj->amount = $requestFields['order_total'];
+                        $orderObj->final_total = $requestFields['order_total_final'];
+                        $orderObj->delivery_charge = $requestFields['delivery_charge_hidden'];
+                        $orderObj->tax = $requestFields['tax'];
+                        $orderObj->shipping_address_id = $requestFields['address_id'] ?? (isset($requestFields['save_address']) ? $shippingAddressObj->id : NULL);
+                        $orderObj->shipping_address = $address;
+                        $orderObj->billing_address = $address;
+                        if ($orderObj->save()) {
+                            // Save order address
+                            $orderAddressObj = new OrderAddress;
+                            $orderAddressObj->order_id = $orderObj->id;
+                            $orderAddressObj->first_name = $orderAddressData['0'] ?? "";
+                            $orderAddressObj->last_name = $orderAddressData['1'] ?? "";
+                            $orderAddressObj->email = $orderAddressData['2'] ?? "";
+                            $orderAddressObj->mobile = $orderAddressData['3'] ?? "";
+                            $orderAddressObj->address = $orderAddressData['6'] ?? "";
+                            $orderAddressObj->city = $orderAddressData['7'] ?? "";
+                            $orderAddressObj->state = $orderAddressData['8'] ?? "";
+                            $orderAddressObj->zip = $orderAddressData['9'] ?? "";
+                            $orderAddressObj->save();
+                        }
+                    }
                 }
+    
+                // Save order item
+                $cartItem = Cart::where('user_id', $userId)->get();
+                foreach ($cartItem as $item) {
+                    $orderItemObj = new OrderItem;
+                    $orderItemObj->order_id = $orderObj->id;
+                    $orderItemObj->restaurant_menu_id = $item->restaurant_menu_id;
+                    $orderItemObj->price = $item->price;
+                    $orderItemObj->quantity = $item->quantity;
+                    $orderItemObj->save();
+                }
+    
+                Cart::where('user_id', $userId)->delete();
+    
+                // Make payment
+                $userObj = User::find($userId);
+                $seller_amount = $requestFields['order_total'] + $requestFields['tax'];
+                //Transaction::create($orderObj->id, $restaurantObj->id, $userId);
+                if ($requestFields['paymentMethod'] === 'stripe')
+                {
+                    try {
+                        $Charge = \Stripe\PaymentIntent::create([
+                        'amount' => $requestFields['order_total_final'] * 100,
+                        'currency' => 'usd',
+                        'customer' => $user->stripe_customer_id,
+                        'payment_method' => $user->card_token,
+                        'confirmation_method' => 'automatic',
+                        "description" => 'Test Payment by Dev Team',
+                        'confirm' => true,
+                        'application_fee_amount' => '20',
+                        'transfer_data' => [
+                        'destination' => $seller_details['stripe_connect_id'],
+                        ],
+                    ]);
+                    } catch(\Stripe\Exception\CardException $e) {
+                    return response()->json([
+                    'status' => 'error',
+                    'message' => 'Your payment has been declined. Please check with your credit card company or try another card',
+                    ]);
+                    } catch(\Stripe\Exception\RateLimitException $e) {
+                    return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                    ]);
+                    } catch (\Stripe\Exception\InvalidRequestException $e) {
+                    return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                    ]);
+                    } catch (\Stripe\Exception\AuthenticationException $e) {
+                    return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                    ]);
+                    } catch (\Stripe\Exception\ApiConnectionException $e) {
+                    return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                    ]);
+                    } catch (\Stripe\Exception\ApiErrorException $e) {
+                    return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                    ]);
+                    }
+                }
+              
+                // Commit Transaction
+                DB::commit();
+                // Send mail
+                $orderData = Order::where('id', $orderObj->id)->with('order_item')->first();
+                // Mail::to($email)->send(new OrderPlcaed($orderData));
+                // return redirect()->route('thank.you', ['oid' => $orderObj->oid]);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Order Placed Successfully'
+                ]);  
+                echo $response;
+                exit();
+            } catch (\Exception $e) {
+                // Rollback Transaction
+                DB::rollback();
+                echo $e->getMessage() . ' Line No ' . $e->getLine() . ' in File' . $e->getFile();die;
             }
-
-            // Save order
-            $orderObj = new Order;
-            $orderObj->user_id = $userId;
-
-            $latestOrder = Order::orderBy('created_at', 'DESC')->first();
-            $oid = '#ORDER' . date("ymd") . str_pad(($latestOrder->id ?? 0) + 1, 8, "0", STR_PAD_LEFT);
-            $orderObj->oid = $oid;
-            $orderObj->amount = $requestFields['order_total'];
-            $orderObj->final_total = $requestFields['order_total_final'];
-            $orderObj->delivery_charge = $requestFields['delivery_charge'];
-            $orderObj->tax = $requestFields['tax'];
-            $orderObj->shipping_address_id = $requestFields['address_id'] ?? (isset($requestFields['save_address']) ? $shippingAddressObj->id : NULL);
-            $orderObj->shipping_address = $address;
-            $orderObj->billing_address = $address;
-            if ($orderObj->save()) {
-                // Save order address
-                $orderAddressObj = new OrderAddress;
-                $orderAddressObj->order_id = $orderObj->id;
-                $orderAddressObj->first_name = $orderAddressData['first_name'] ?? "";
-                $orderAddressObj->last_name = $orderAddressData['last_name'] ?? "";
-                $orderAddressObj->email = $orderAddressData['email'] ?? "";
-                $orderAddressObj->mobile = $orderAddressData['mobile'] ?? "";
-                $orderAddressObj->address = $orderAddressData['address'] ?? "";
-                $orderAddressObj->city = $orderAddressData['city'] ?? "";
-                $orderAddressObj->state = $orderAddressData['state'] ?? "";
-                $orderAddressObj->zip = $orderAddressData['zip'] ?? "";
-                $orderAddressObj->save();
-
-
-            }
-
-            // Save order item
-            $cartItem = Cart::where('user_id', $userId)->get();
-
-            foreach ($cartItem as $item) {
-                $orderItemObj = new OrderItem;
-                $orderItemObj->order_id = $orderObj->id;
-                $orderItemObj->restaurant_menu_id = $item->restaurant_menu_id;
-                $orderItemObj->price = $item->price;
-                $orderItemObj->quantity = $item->quantity;
-                $orderItemObj->save();
-            }
-            Cart::where('user_id', $userId)->delete();
-
-            // Make payment
-            $userObj = User::find($userId);
-            Transaction::create($orderObj->id, $restaurantObj->id, $userId);
-
-            // Commit Transaction
-            DB::commit();
-
-            // Send mail
-            $orderData = Order::where('id', $orderObj->id)->with('order_item')->first();
-            Mail::to($email)->send(new OrderPlcaed($orderData));
-
-            return redirect()->route('thank.you', ['oid' => $orderObj->oid]);
-        } catch (\Exception $e) {
-            // Rollback Transaction
-            DB::rollback();
-            //return redirect()->route('checkout');
-            echo $e->getMessage() . ' Line No ' . $e->getLine() . ' in File' . $e->getFile();die;
         }
-        //return redirect()->route('checkout');
+       
     }
 
     public function thankYou(Request $request)

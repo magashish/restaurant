@@ -9,9 +9,10 @@
                 <div class="card-header">{{ __('Register') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
+                {{--<form method="POST" action="{{ route('register') }}">--}}
+                        <form method="POST" action="{{ route('user.register') }}">
                         @csrf
-
+                        <input type="hidden" name="previous_url" value="{{ url()->previous() }}">
                         <div class="form-group row">
                             <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
 
@@ -44,10 +45,10 @@
                             <label for="type" class="col-md-4 col-form-label text-md-right">{{ __('Type') }}</label>
 
                             <div class="col-md-6">
-                                <select id="type" class="form-control @error('type') is-invalid @enderror" name="type" required>
-                                    <option value="{{ \App\User::CUSTOMER }}">{{ \App\User::CUSTOMER }}</option>
-                                    <option value="{{ \App\User::SELLER }}">{{ \App\User::SELLER }}</option>
-                                </select>
+                            <select id="type" class="form-control @error('type') is-invalid @enderror" name="type" >
+                                    <option value="1">{{ \App\User::CUSTOMER }}</option>
+                                    <option value="2">{{ \App\User::SELLER }}</option>
+                            </select>
 
                                 @error('type')
                                 <span class="invalid-feedback" role="alert">

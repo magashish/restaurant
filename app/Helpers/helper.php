@@ -1,17 +1,20 @@
 <?php
 if (!function_exists('getGamesFromBetconstruct')) {
-    function calculateDistance($locationData = [])
+    function calculateDistance($locationData = [],$key)
     {
+       
         $originLat = $locationData['origin']['lat'];
         $originLng = $locationData['origin']['lng'];
         $destinationLat = $locationData['destination']['lat'];
         $destinationLng = $locationData['destination']['lng'];
+        //return $originLat;
         $url = "https://maps.googleapis.com/maps/api/distancematrix/json?"
             . "origins=$originLat,$originLng"
             . "&"
             . "destinations=$destinationLat,$destinationLng"
             . "&"
-            . "key=" . GOOGLE_MAP_API_KEY;
+            . "key=$key";
+           
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

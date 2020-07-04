@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Models\ShippingAddress;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Auth;
 
 class AccountController extends Controller
 {
@@ -14,6 +15,12 @@ class AccountController extends Controller
         return view('pages.account.index')->with(compact('data'));
     }
 
+    public function sellerAccount()
+    {
+        // dd(Auth::user()->email);
+        return view('pages.seller.account');
+    }
+    
     public function savedAddress()
     {
         $data['page'] = "saved-address";

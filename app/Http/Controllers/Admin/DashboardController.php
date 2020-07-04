@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\SiteSetting;
+use DB;
 
 class DashboardController extends Controller
 {
@@ -13,14 +15,21 @@ class DashboardController extends Controller
         return view('pages.admin.dashboard');
     }
 
-    public function settings()
+    public function settings(Request $request)
     {
-        $settingObj = Setting::first();
-        $settings = json_decode($settingObj->settings, true);
-        return view('pages.admin.settings.settings')->with(compact('settings'));
+        $settingObj = SiteSetting::first();
+        if($request->isMethod('post'))
+        {
+            $data = $request->all();
+            DB::table('site_settings')->where('id',1)->update([
+                'stripe_s_key' => $data['stripe_s_key'],
+                'stripe_p_key' => $data['stripe_p_key'],
+                'google_key' => $data['google_key']
+            ]);
+            return redirect()->route('admin.settings');
+        }
+        return view('pages.admin.settings.settings')->with(compact('settingObj'));
     }
-
-
 
     public function saveSettings(Request $request)
     {
