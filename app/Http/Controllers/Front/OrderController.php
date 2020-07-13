@@ -90,7 +90,7 @@ class OrderController extends Controller
                     $zipTax = $taxObj->tax;
                 }
             }
-            // dd($data);
+          
             return view('pages.checkout.checkout')->with(compact('data', 'zipTax','stripe'));
         }
 
@@ -99,13 +99,10 @@ class OrderController extends Controller
 
     public function calculateDeliveryCharge(Request $request)
     {
-       
-        $response = [];
-        $response['success'] = FALSE;
-
+    
         $requestFields = $request->all();
+       
         $userId = \Auth::user()->id ?? 0;
-
         try {
             if (\Auth::check()) {
                 $cartData = Cart::where('user_id', $userId)->first();
@@ -122,13 +119,22 @@ class OrderController extends Controller
 
             $restaurantLat = $restaurantObj->lat;
             $restaurantLng = $restaurantObj->lng;
-
+          
             //Get location from session
             $sessionLocation = \Session::get('location');
-
             $userLat = \Auth::user()->lat ?? ($sessionLocation['lat'] ?? $requestFields['data']['user']['lat']);
             $userLng = \Auth::user()->lng ?? ($sessionLocation['lng'] ?? $requestFields['data']['user']['lng']);
-
+           
+            if($userLat == 0)
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'delivery_charge' => 0,
+                    'message' => 'User do not have lat and long'
+                ]);  
+                echo $response;
+                exit();
+            }
             $location = [
                 "origin" => [
                     "lat" => $userLat,
@@ -142,19 +148,60 @@ class OrderController extends Controller
             $admin_setting = SiteSetting::where('id',1)->first();
             $g_key = $admin_setting['google_key'];
             $distanceData = calculateDistance($location,$g_key);
-            // dd($distanceData);
             if ($distanceData['rows'][0]['elements'][0]['status'] === 'OK') {
+               
                 $distanceArr = $distanceData['rows'][0]['elements'][0]['distance'];
                 $distanceValueArr = explode(" ", $distanceArr['text']);
                 $distance = $distanceValueArr[0];
-                // Convert distance from miles to km
-                $distance = $distance * 1.60934;
-
-                $deliveryChargesObj = DeliveryCharge::whereRaw("$distance between from_location and to_location")->first();
-
-                if ($deliveryChargesObj) {
-                    $response['delivery_charge'] = $deliveryChargesObj->price;
-                    $response['success'] = TRUE;
+                if($distanceValueArr[1] == 'm')
+                {
+                    $b = str_replace( ',', '', $distance);
+                    $distance = $b;
+                    // Convert distance from m to miles
+                    $distance = $distance * 0.0006213712;
+                }
+                elseif($distanceValueArr[1] == 'km')
+                {
+                    $b = str_replace( ',', '', $distance);
+                    $distance = $b;
+                    // Convert distance from km to miles
+                    $distance = $distance * 0.621371;
+                }
+                if($distance > 20)
+                {
+                    return response()->json([
+                        'status' => 'error',
+                        'delivery_charge' => 0,
+                        'message' => 'This restraunt can not serve you at your location'
+                    ]);  
+                    echo $response;
+                    exit();
+                }
+               
+               $get_delivery = DeliveryCharge::all();
+               $price = 0;
+               foreach($get_delivery as $key=> $delivery)
+               {
+                   $dis = $delivery['distance'];
+                  
+                   $dis_exp = explode("-", $dis);
+                   
+                   $float1 = (float)$dis_exp[0];
+                   $float2 = (float)$dis_exp[1];
+                   if(($float1<=$distance) && $float2>=$distance )
+                   {
+                        $price = $delivery['price'];
+                        break;
+                   }
+               }
+                if ($get_delivery) {
+                    return response()->json([
+                        'status' => 'success',
+                        'delivery_charge' => $price,
+                        'message' => 'Delivery Price Fetched Successfully'
+                    ]);  
+                    echo $response;
+                    exit();
                 }
             }
         } catch (Exception $ex) {
@@ -162,17 +209,209 @@ class OrderController extends Controller
             $response['success'] = FALSE;
         }
 
-        return $response;
+    }
+
+    public function inputcalculateDeliveryCharge(Request $request)
+    {
+    
+        $requestFields = $request->all();
+       
+        if($requestFields['data']['user']['address'] == null)
+        {
+          
+            return response()->json([
+                'status' => 'error',
+                'delivery_charge' => 0,
+                'message' => 'User do not have lat and long'
+            ]);  
+            echo $response;
+            exit();
+        }
+        $userId = \Auth::user()->id ?? 0;
+        try {
+            if (\Auth::check()) {
+                $cartData = Cart::where('user_id', $userId)->first();
+                $restaurantMenuId = $cartData->restaurant_menu_id;
+
+            } else {
+                $cart = Session::get('cart');
+                $restaurantMenuId = array_key_first($cart);
+            }
+
+            $restaurantMenuObj = RestaurantMenu::find($restaurantMenuId);
+            $restaurantId = $restaurantMenuObj->restaurant_id;
+            $restaurantObj = Restaurant::find($restaurantId);
+
+            $restaurantLat = $restaurantObj->lat;
+            $restaurantLng = $restaurantObj->lng;
+           
+            //Get location from session
+            $sessionLocation = \Session::get('location');
+            // Get lat lng
+        $fullAddressArr = [
+            $requestFields['data']['user']['address'],
+         
+            $requestFields['data']['user']['city'],
+            $requestFields['data']['user']['state'],
+            $requestFields['data']['user']['country'],
+        ];
+       
+        $address_tmp = implode(", ", $fullAddressArr);
+        $address_tmp = str_replace(" ", "+", $address_tmp);
+       
+        $res = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" . $address_tmp . "&key=AIzaSyDpavHXELJMJvIHifFPN6tBBiFSXKGpy2g");
+        $address_res = json_decode($res, TRUE);
+       
+        $userLat = $address_res['results'][0]['geometry']['location']['lat'];
+        $userLng = $address_res['results'][0]['geometry']['location']['lng'];
+           
+            if($userLat == 0)
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'delivery_charge' => 0,
+                    'message' => 'User do not have lat and long'
+                ]);  
+                echo $response;
+                exit();
+            }
+            $location = [
+                "origin" => [
+                    "lat" => $userLat,
+                    "lng" => $userLng,
+                ],
+                "destination" => [
+                    "lat" => $restaurantLat,
+                    "lng" => $restaurantLng,
+                ]
+            ];
+            $admin_setting = SiteSetting::where('id',1)->first();
+            $g_key = $admin_setting['google_key'];
+            $distanceData = calculateDistance($location,$g_key);
+            if ($distanceData['rows'][0]['elements'][0]['status'] === 'OK') {
+               
+                $distanceArr = $distanceData['rows'][0]['elements'][0]['distance'];
+                $distanceValueArr = explode(" ", $distanceArr['text']);
+                $distance = $distanceValueArr[0];
+                if($distanceValueArr[1] == 'm')
+                {
+                    $b = str_replace( ',', '', $distance);
+                    $distance = $b;
+                    // Convert distance from m to miles
+                    $distance = $distance * 0.0006213712;
+                    
+                }
+                elseif($distanceValueArr[1] == 'km')
+                {
+                    $b = str_replace( ',', '', $distance);
+                    $distance = $b;
+                    // Convert distance from km to miles
+                    $distance = $distance * 0.621371;
+                }
+               
+                if($distance > 20)
+                {
+                    return response()->json([
+                        'status' => 'error',
+                        'delivery_charge' => 0,
+                        'message' => 'This restraunt can not serve you at your location'
+                    ]);  
+                    echo $response;
+                    exit();
+                }
+               $get_delivery = DeliveryCharge::all();
+               $price = 0;
+               foreach($get_delivery as $key=> $delivery)
+               {
+                   $dis = $delivery['distance'];
+                  
+                   $dis_exp = explode("-", $dis);
+               
+                   $float1 = (float)$dis_exp[0];
+                   $float2 = (float)$dis_exp[1];
+                   
+                   if(($float1<=$distance) && $float2>=$distance )
+                   {
+                        $price = $delivery['price'];
+                        
+                        break;
+                   }
+               }
+                if ($get_delivery) {
+                    return response()->json([
+                        'status' => 'success',
+                        'delivery_charge' => $price,
+                        'message' => 'Delivery Price Fetched Successfully'
+                    ]);  
+                    echo $response;
+                    exit();
+                }
+            }
+        } catch (Exception $ex) {
+            $response['error'] = $ex->getMessage() . ' Line No ' . $ex->getLine() . ' in File' . $ex->getFile();
+            $response['success'] = FALSE;
+        }
+
     }
 
     public function checkTax(Request $request)
     {
-        $zip = $request->input('zip');
+      
+        $requestFields = $request->all();
+        
+        $zip = \Auth::user()->zip ?? ($sessionLocation['zip'] ?? $requestFields['data']['zip']);
+        
         $tax = Tax::where('zip', $zip)->first();
-        $payTax = $tax->tax;
-        session(['tax' => $payTax]);
+       
+        if(!$tax)
+        {
+            return response()->json([
+                'status' => 'error',
+                'tax' => 0
+            ]); 
+            echo $response;
+            exit(); 
+        }else{
+            $payTax = $tax->tax;
+            session(['tax' => $payTax]);
+            return response()->json([
+                'status' => 'success',
+                'tax' => $payTax
+            ]); 
+            echo $response;
+            exit();
+        }
+       
+    }
 
-        return json_encode(array('tax' => $payTax));
+    public function inputcheckTax(Request $request)
+    {
+      
+        $requestFields = $request->all();
+        
+        $zip = $requestFields['zip'];
+       
+        $tax = Tax::where('zip', $zip)->first();
+        
+        if(!$tax)
+        {
+            return response()->json([
+                'status' => 'error',
+                'tax' => 0
+            ]); 
+            echo $response;
+            exit(); 
+        }else{
+            $payTax = $tax->tax;
+            session(['tax' => $payTax]);
+            return response()->json([
+                'status' => 'success',
+                'tax' => $payTax
+            ]); 
+            echo $response;
+            exit();
+        }
+        
     }
 
     public function placeOrder(Request $request)
@@ -180,6 +419,7 @@ class OrderController extends Controller
         if($request->ajax())
         {
             $requestFields = $request->all();
+            // dd($requestFields);
             $address = "";
             $orderAddressData = [];
             DB::beginTransaction();
@@ -197,7 +437,7 @@ class OrderController extends Controller
                         // return redirect()->route('checkout')->with('error', "Account already exist, pease login to continue");
                         return response()->json([
                             'status' => 'error',
-                            'message' => 'Account already exist'
+                            'message' => 'This Email already exists,Please try with a different email address'
                         ]);  
                         echo $response;
                         exit();
@@ -502,7 +742,8 @@ class OrderController extends Controller
                 // return redirect()->route('thank.you', ['oid' => $orderObj->oid]);
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Order Placed Successfully'
+                    'oid' =>  $orderObj->oid,
+                    'message' => 'Your Order has been placed Successfully'
                 ]);  
                 echo $response;
                 exit();

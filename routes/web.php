@@ -48,7 +48,13 @@ Route::group(['namespace' => 'Admin'], function () {
     Route::post('/admin/category', 'CategoryController@store')->name('category.store');
 
     Route::any('/settings', 'DashboardController@settings')->name('admin.settings');
-    Route::post('/save-settings', 'DashboardController@saveSettings')->name('admin.save.settings');
+    Route::any('/settings', 'DashboardController@settings')->name('admin.settings');
+    Route::get('/admin/set-delivery-charges', 'DashboardController@deliveryCharges')->name('setdeliverycharge');
+    Route::post('/admin/post-delivery-charges', 'DashboardController@postDeliveryCharges')->name('postdeliverycharge');
+    Route::get('/admin/view-delivery-charges', 'DashboardController@viewDeliveryCharges')->name('delivery.prices');
+    Route::any('/admin/edit-delivery-charges/{id}', 'DashboardController@editDeliveryCharges')->name('delivery.edit');
+    Route::any('/admin/update-delivery-charges/{id}', 'DashboardController@editDeliveryCharges')->name('delivery.update');
+
     // });
 });
 
@@ -71,6 +77,7 @@ Route::group(['namespace' => 'Front'], function () {
     Route::get('/checkout', 'OrderController@checkout')->name('checkout');
     Route::post('/place-order', 'OrderController@placeOrder')->name('place.order');
     Route::post('/check-tax', 'OrderController@checkTax')->name('check.tax');
+    Route::post('/input-check-tax', 'OrderController@inputcheckTax')->name('input.check.tax');
 
     Route::group(['middleware' => 'auth'], function () {
     });
@@ -79,6 +86,7 @@ Route::group(['namespace' => 'Front'], function () {
     Route::post('/check-same-restaurant', 'CartController@checkSameRestaurant')->name('check-same-restaurant');
     Route::post('/update-lat-lng', 'UserController@updateLatLng')->name('update.lat.lng');
     Route::post('/calculate-delivery-charge', 'OrderController@calculateDeliveryCharge')->name('calculate.delivery.charge');
+    Route::post('/input-calculate-delivery-charge', 'OrderController@inputcalculateDeliveryCharge')->name('input.calculate.delivery.charge');
 
    // Route::group(['middleware' => ['auth:web']], function(){
         //Route::group(['middleware' => ['stripe']], function() {

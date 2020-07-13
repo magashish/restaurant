@@ -12,6 +12,7 @@ use \Illuminate\Support\Facades\Validator;
 use Session;
 use DataTables;
 use Image;
+use App\User;
 
 class RestaurantController extends Controller
 {
@@ -51,7 +52,8 @@ class RestaurantController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('pages.admin.restaurant.create', compact('categories'));
+        $seller_data = User::where('type','2')->get();
+        return view('pages.admin.restaurant.create', compact('categories','seller_data'));
     }
 
     public function store(Request $request)
@@ -63,6 +65,9 @@ class RestaurantController extends Controller
             'isopen' => 'required',
             'addr1' => 'required',
             'city' => 'required',
+            'seller' => 'required',
+            'address_latitude' => 'required',
+            'address_longitude' => 'required',
             'state' => 'required',
             'postcode' => 'required',
             'country' => 'required',
@@ -73,7 +78,7 @@ class RestaurantController extends Controller
         if ($validator->fails()) {
             return redirect(route('restaurant.create'))->withInput()->withErrors($validator);
         }
-
+        $seller_data = User::where('type','2')->get();
         $file = $request->file('logo');
         if ($file) {
             $fileName = time() . '.' . $file->getClientOriginalExtension();
@@ -106,12 +111,16 @@ class RestaurantController extends Controller
         $Restaurant->logo = $fileName;
         $Restaurant->timings = $openinghour . " - " . $closinghour;
         $Restaurant->isopen = $request->post('isopen');
+        $Restaurant->seller_id = $request->post('seller');
         $Restaurant->shortdescription = $request->post('shortdescription');
         $Restaurant->description = $request->post('description');
         $Restaurant->addr1 = $request->post('addr1');
-        $Restaurant->addr2 = $request->post('addr2');
+       // $Restaurant->addr2 = $request->post('addr2');
+        $Restaurant->lat = $request->post('address_latitude');
+        $Restaurant->lng = $request->post('address_longitude');
         $Restaurant->city = $request->post('city');
         $Restaurant->state = $request->post('state');
+        $Restaurant->county = $request->post('county');
         $Restaurant->postcode = $request->post('postcode');
         $Restaurant->country = $request->post('country');
         $Restaurant->phone = $request->post('phone');
@@ -121,24 +130,24 @@ class RestaurantController extends Controller
         $Restaurant->gmap = $request->post('gmap');
 
         // Get lat lng
-        $fullAddressArr = [
-            $requestFields['addr1'],
-            $requestFields['addr2'],
-            $requestFields['city'],
-            $requestFields['country']
-        ];
-        $address_tmp = implode(", ", $fullAddressArr);
-        $address_tmp = str_replace(" ", "+", $address_tmp);
-        $res = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" . $address_tmp . "&key=AIzaSyDpavHXELJMJvIHifFPN6tBBiFSXKGpy2g");
-        $address_res = json_decode($res, TRUE);
-        $Restaurant->lat = $address_res['results'][0]['geometry']['location']['lat'];
-        $Restaurant->lng = $address_res['results'][0]['geometry']['location']['lng'];
-
+        // $fullAddressArr = [
+        //     $requestFields['addr1'],
+        //     $requestFields['addr2'],
+        //     $requestFields['city'],
+        //     $requestFields['country']
+        // ];
+        // $address_tmp = implode(", ", $fullAddressArr);
+        // $address_tmp = str_replace(" ", "+", $address_tmp);
+        // $res = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" . $address_tmp . "&key=AIzaSyDpavHXELJMJvIHifFPN6tBBiFSXKGpy2g");
+        // $address_res = json_decode($res, TRUE);
+        // $Restaurant->lat = $address_res['results'][0]['geometry']['location']['lat'];
+        // $Restaurant->lng = $address_res['results'][0]['geometry']['location']['lng'];
+            // dd($Restaurant);
         $Restaurant->save();
         $request->session()->flash('success', 'Restaurant Menu added successfully');
 
         $categories = Category::all();
-        return view('pages.admin.restaurant.create', compact('categories'));
+        return view('pages.admin.restaurant.create', compact('categories','seller_data'));
     }
 
     public function show($id)
@@ -149,14 +158,15 @@ class RestaurantController extends Controller
     public function edit($id)
     {
         $categories = Category::all();
+        $seller_data = User::where('type','2')->get();
         $data = Restaurant::find($id);
-        return view('pages.admin.restaurant.show', compact('data', 'categories'));
+        return view('pages.admin.restaurant.show', compact('data', 'categories','seller_data'));
     }
 
     public function update(Request $request)
     {
         $requestFields = $request->all();
-
+        // dd($requestFields);
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             //'logo' => 'required|mimes:jpg.png,jpeg|max:2048',
@@ -217,7 +227,8 @@ class RestaurantController extends Controller
         $Restaurant->shortdescription = $request->post('shortdescription');
         $Restaurant->description = $request->post('description');
         $Restaurant->addr1 = $request->post('addr1');
-        $Restaurant->addr2 = $request->post('addr2');
+        // $Restaurant->addr2 = $request->post('addr2');
+        $Restaurant->seller_id = $request->post('seller');
         $Restaurant->city = $request->post('city');
         $Restaurant->state = $request->post('state');
         $Restaurant->postcode = $request->post('postcode');
@@ -229,18 +240,18 @@ class RestaurantController extends Controller
         $Restaurant->gmap = $request->post('gmap');
 
         // Get lat lng
-        $fullAddressArr = [
-            $requestFields['addr1'],
-            $requestFields['addr2'],
-            $requestFields['city'],
-            $requestFields['country']
-        ];
-        $address_tmp = implode(", ", $fullAddressArr);
-        $address_tmp = str_replace(" ", "+", $address_tmp);
-        $res = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" . $address_tmp . "&key=AIzaSyDpavHXELJMJvIHifFPN6tBBiFSXKGpy2g");
-        $address_res = json_decode($res, TRUE);
-        $Restaurant->lat = $address_res['results'][0]['geometry']['location']['lat'];
-        $Restaurant->lng = $address_res['results'][0]['geometry']['location']['lng'];
+        // $fullAddressArr = [
+        //     $requestFields['addr1'],
+        //     $requestFields['addr2'],
+        //     $requestFields['city'],
+        //     $requestFields['country']
+        // ];
+        // $address_tmp = implode(", ", $fullAddressArr);
+        // $address_tmp = str_replace(" ", "+", $address_tmp);
+        // $res = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" . $address_tmp . "&key=AIzaSyDpavHXELJMJvIHifFPN6tBBiFSXKGpy2g");
+        // $address_res = json_decode($res, TRUE);
+        // $Restaurant->lat = $address_res['results'][0]['geometry']['location']['lat'];
+        // $Restaurant->lng = $address_res['results'][0]['geometry']['location']['lng'];
 
         $Restaurant->save();
         return redirect()->route('restaurant.index')->with('success', 'Restaurant updated successfully');

@@ -13,6 +13,20 @@
                         <form method="POST" action="{{ route('user.register') }}">
                         @csrf
                         <input type="hidden" name="previous_url" value="{{ url()->previous() }}">
+                        @if(session('error'))
+                            <div class="col-full">
+                                <div class="alert alert-danger" role="alert">
+                                    {{ session('error') }}
+                                </div>
+                            </div>
+                        @endif
+                         @if(session('success'))
+                            <div class="col-full">
+                                <div class="alert alert-success" role="alert">
+                                    {{ session('success') }}
+                                </div>
+                            </div>
+                        @endif
                         <div class="form-group row">
                             <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
 

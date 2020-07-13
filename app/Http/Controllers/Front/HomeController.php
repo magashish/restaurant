@@ -12,7 +12,9 @@ use Log;
 class HomeController extends Controller
 {
     public function index(){
+       
     $restaurants = Restaurant::where('isfeatured', 1)->take(5)->get();
+    // dd($restaurants);
     return view('pages.home',compact('restaurants'));
     }
 }

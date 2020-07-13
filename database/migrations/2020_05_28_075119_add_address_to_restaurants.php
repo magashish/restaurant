@@ -15,7 +15,7 @@ class AddAddressToRestaurants extends Migration
     {
         Schema::table('restaurants', function (Blueprint $table) {
             $table->string('addr1')->after('description');
-			$table->string('addr2')->after('description');
+			$table->string('addr2')->after('description')->nullable();
 			$table->string('city')->after('description');
 			$table->string('state')->after('description');
 			$table->string('postcode')->after('description');

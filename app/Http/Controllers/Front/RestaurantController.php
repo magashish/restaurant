@@ -32,9 +32,11 @@ class RestaurantController extends Controller
 
     public function show(Request $request, $id)
     {
+        // dd('in');
         $requestFields = $request->all();
         $category = '';
         if (isset($requestFields['cat'])) {
+            // dd('in');
             $category = $requestFields['cat'];
             //$data = Restaurant::where(['id' => $id])->orWhereRaw("categories REGEXP '[[:<:]]" . $requestFields['cat'] . "[[:>:]]'")->with('menu', 'menu.options')->first();
             $data = Restaurant::where(['id' => $id])
@@ -43,14 +45,16 @@ class RestaurantController extends Controller
                 })
                 ->with('menu', 'menu.options')->first();
         } else {
+            // dd('out');
             $data = Restaurant::where('id', $id)->with('menu', 'menu.options')->first();
+            // dd($data);
         }
         $restaurantData = Restaurant::where('id', $id)->first();
 
         $catData = RestaurantCategory::where('restaurant_id', $id)->with('category_detail')->get();
 
         $restaurantId = $id;
-
+        // dd($catData);
         return view('pages.restaurant.show', compact('data', 'catData', 'restaurantId', 'restaurantData', 'category'));
     }
 

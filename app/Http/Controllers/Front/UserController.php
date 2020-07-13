@@ -16,7 +16,6 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        // dd('in');
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users',
@@ -35,13 +34,13 @@ class UserController extends Controller
                     $strMessage .= $strValidMsg;
                 }
             }
-         return redirect()->back()->with('error', $strMessage);
+         return redirect()->back()->withInput()->with('error', $strMessage);
         }
             $data = $request->all();
-           
+        //    dd($data);
             try{
                     $register = new User();
-                    $register->name = $data['name'];
+                    $register->first_name = $data['name'];
                     $register->email = $data['email'];
                     $register->type = $data['type'];
                     $register->name = $data['name'];
@@ -52,7 +51,8 @@ class UserController extends Controller
                    
             }
             catch(\Illuminate\Database\QueryException $ex){
-                return response()->json(['success'=> false, 'error'=> $ex->getMessage()]);
+                // return response()->json(['success'=> false, 'error'=> $ex->getMessage()]);
+                return redirect()->back()->withInput()->with('error', $ex->getMessage());
             }
     }
 
@@ -168,18 +168,21 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         $requestFields = $request->all();
-
+        // dd($requestFields);
         $userObj = User::find(\Auth::user()->id);
         $userObj->first_name = $requestFields['first_name'] ?? "";
         $userObj->last_name = $requestFields['last_name'] ?? "";
         $userObj->email = $requestFields['email'] ?? "";
         $userObj->mobile = $requestFields['mobile'] ?? "";
         $userObj->city = $requestFields['city'] ?? "";
+        $userObj->lat = $requestFields['address_latitude'] ?? "";
+        $userObj->lng = $requestFields['address_longitude'] ?? "";
+        $userObj->county = $requestFields['county'] ?? "";
         $userObj->state = $requestFields['state'] ?? "";
         $userObj->country = $requestFields['country'] ?? "";
         $userObj->zip = $requestFields['zip'] ?? "";
         $userObj->address = $requestFields['address'] ?? "";
-
+        // dd($userObj);
         if ($userObj->save()) {
             return redirect()->route('account')->with('success', 'Profile updated successfully');
         }

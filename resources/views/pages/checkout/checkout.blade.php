@@ -4,7 +4,7 @@
         <div class="container">
             <div class="row">
                 <div class='col-md-12 col-sm-12'>
-                    <div class="page-title"><h2>Checkout</h2></div>
+                    <div class="page-title"><h2 id="booking_heading">Checkout</h2></div>
                 </div>
             </div>
         </div>
@@ -21,6 +21,15 @@
                                 <h6>Returning customer? <a href="{{ route('login') }}">Click here to login</a></h6><br>
                             @endguest
                             <h3>Billing details</h3>
+                            @if(Session::has('success'))
+                                <div class="row">
+                                    <div class="col-sm-6 col-md-4 col-md-offset-4 col-sm-offset-3">
+                                    <div id="charge-message" class="alert alert-success">
+                                        {{  Session::get('success') }}
+                                    </div>
+                                    </div>
+                                </div>
+                            @endif
                             @if(session('error'))
                                 <div class="col-full">
                                     <div class="alert alert-danger" role="alert">
@@ -36,7 +45,7 @@
                                 </div>
                                 <div class="col-half">
                                     <label>Last Name<span>*</span></label>
-                                    <input type="text" id="lName" value="{{ \Auth::user()->name ?? '' }}"
+                                    <input type="text" id="lName" value="{{ \Auth::user()->last_name ?? '' }}"
                                            name="shipping_address[last_name]">
                                 </div>
                                 <div class="col-half">
@@ -64,9 +73,9 @@
                                 @endguest
                                 <div class="col-full">
                                     <label>Address<span>*</span></label>
-                                    <input type="text" id="address" name="shipping_address[address]"
-                                           value="{{ \Auth::user()->address ?? '' }}" required>
+                                        <input type="text" class="address" id="address" name="shipping_address[address]" required  value="{{ \Auth::user()->address ?? '' }}">
                                 </div>
+                                
                                 <div class="col-full">
                                     <label>Town/City<span>*</span></label>
                                     <input type="text" id="city" name="shipping_address[city]"
@@ -76,6 +85,11 @@
                                     <label>State<span>*</span></label>
                                     <input type="text" id="state" name="shipping_address[state]"
                                            value="{{ \Auth::user()->state ?? '' }}" required>
+                                </div>
+                                <div class="col-half">
+                                    <label>Country<span>*</span></label>
+                                    <input type="text" id="country" name="shipping_address[country]"
+                                           value="{{ \Auth::user()->country ?? '' }}" required>
                                 </div>
                                 <div class="col-half">
                                     <label>Zip<span>*</span></label>
@@ -134,8 +148,8 @@
                                 //$tax = empty(session('tax')) ? 0 : session('tax');
                             @endphp
                             <ul>
-                                <li>Subtotal <span id="subTotals">${{ $data['order_total'] }}</span></li>
-                                <li>Tax <span class="tax_preview" id="tax2">${{ $tax }}</span></li>
+                                <li>Subtotal <span>${{ $data['order_total'] }}</span></li>
+                                <li>Tax <span class="tax_preview">${{ $tax }}</span></li>
                                 <li>Delivery Charges <span>$<span id="delivery-charge">0</span></span></li>
                                 @php
                                     $finalTotal = $data['order_total'] + $deliveryCharge + $tax;
@@ -261,9 +275,6 @@
                                 </button>
                             </form>
                         </div>
-                        <!-- <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -294,28 +305,37 @@
             </div>
         </div>
 
-
-        <div class="myModals" tabindex="-1" role="dialog" id="cod-payment-modal">
-            <div class="modal-dialog" role="document">
+       
+        <div class="modal fade" id="ignismyModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog">
                 <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Sorry</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                            </button>
+                    <div class="modal-header">
+                        <button type="button" class="close" onclick="opencartpage();" aria-label=""><span>×</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="thank-you-pop">
+                            <img src="http://goactionstations.co.uk/wp-content/uploads/2017/03/Green-Round-Tick.png" alt="">
+                            <h1>Thank You!</h1>
+                            <p id="vc">Your submission is received and we will contact you soon</p>
+                            <h3 class="cupon-pop" id="oid">Your Id: <span>12345</span></h3>
                         </div>
-                        <div class="modal-body">
-                            <p id="vc"> </p>
-                        </div>
-                        <input type = "hidden" data-id="" id="confirmCOD" >
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-       
+        <div id="errorModal" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-confirm">
+                <div class="modal-content">
+                    <div class="modal-header"></div>
+                    <div class="modal-body text-center">
+                        <h4>Ooops!</h4>	
+                        <p id ="vcs">Something went wrong. File was not uploaded.</p>
+                        <button class="btn btn-success" data-dismiss="modal" onclick="reloadpage();">Try Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>    
 
     </div>
    
@@ -323,6 +343,7 @@
 @section('page_script')
 <script src="https://js.stripe.com/v2/"></script>
 <script src="https://js.stripe.com/v3/"></script>
+
     <script type="text/javascript">
         function check_login(action) {
             @if(empty(\Auth::user()->name))
@@ -338,9 +359,17 @@
             @endif
         }
 
+        function opencartpage()
+        {
+             window.location.href = "/cart";
+        }
+
+        function reloadpage()
+        {
+            location.reload();
+        }
         function opencodconfirmation()
         {
-        //   alert('in');
             var first_name = $("#fName").val();
             var last_name = $("#lName").val();
             var email = $("#email").val();
@@ -381,14 +410,17 @@
                         data:{"_token": $("input[name='_token']").val(),is_authenticated:is_authenticated,shipping_address:shipping_address,save_address:save_address,address_count:address_count,address_id:address_id,order_total:order_total,order_total_final:order_total_final,delivery_charge_hidden:delivery_charge_hidden,tax:tax,self_pickup:self_pickup,paymentMethod}, 
                         success:function(response){
                             if(response.status == 'error') {
-                            alert(response.message);
-                            // document.getElementById("vc").innerHTML =response.message;
-                            // $('#myModals').modal('show');
-                            location.reload();
+                            $('#cod-payment-modal').modal('hide');
+                            document.getElementById("vcs").innerHTML =response.message;
+                            $('#errorModal').modal('show');
+                            // location.reload();
                             }
                             if(response.status == 'success') {
-                            alert(response.message);
-                            window.location.href = "/thank-you";
+                            $('#cod-payment-modal').modal('hide');
+                            document.getElementById("vc").innerHTML =response.message;
+                            document.getElementById("oid").innerHTML = 'Your Order Id is ' + response.oid;
+                            $('#ignismyModal').modal('show');
+                            // window.location.href = "/cart";
                             }
                         },
                         complete:function(data){
@@ -400,7 +432,8 @@
                         alert('error');
                         }
                     });
-      }
+        }
+
         $(document).ready(function () {
             @if(!empty(\Auth::user()->name))
             @if(empty(session('check_customer_stripe')))
@@ -431,7 +464,7 @@
             $('.zipCode').on('input', function () {
                 var zip = $(this).val();
                 $.ajax({
-                    url: "{{ route('check.tax') }}",
+                    url: "{{ route('input.check.tax') }}",
                     type: "POST",
                     dataType: "JSON",
                     data: {
@@ -455,6 +488,79 @@
                     error: function () {
 
                     }
+                });
+            });
+
+            $('.address').on('input', function () {
+              var address =  document.getElementById('address').value;
+              var city =  document.getElementById('city').value;
+              var state = document.getElementById('state').value;
+              var country = document.getElementById('country').value;
+                $.ajax({
+                    url: "{{ route('input.calculate.delivery.charge') }}",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        data: {
+                        user: {
+                            address : address,
+                            city : city,
+                            state : state,
+                            country : country
+                        }
+                    }  
+                    },
+                    success: function (response) {
+                    console.log(response.delivery_charge);
+                    if (response.delivery_charge != 0 ) {
+                        $("#delivery-charge").text(response.delivery_charge);
+                        $("#delivery-charge-hidden").val(response.delivery_charge);
+                        var order = $('#order-total').val();
+                        
+                        var delivery_charge = response.delivery_charge;
+                        
+                        var tax = $("#tax").val();
+                        
+                        var finalTotal = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
+                       
+                        $('#order-total-final').val(finalTotal.toFixed(2));
+                        $('#final-total').text(finalTotal.toFixed(2));
+                        
+                    }
+                    else if(response.message = 'User do not have lat and long'){
+                       
+                        $('#delivery-charge-hidden').val(response.delivery_charge);
+                        var order = $('#order-total').val();
+                       
+                        var delivery_charge = response.delivery_charge;
+                        
+                        var tax = $("#tax").val();
+                        
+                        var adddeliveryCharge = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
+                      
+                        $('#order-total-final').val(adddeliveryCharge.toFixed(2));
+                        $('#final-total').text(adddeliveryCharge.toFixed(2));
+                        $('#delivery-charge').text(response.delivery_charge);
+                    }
+                    else{
+                        $('#delivery-charge-hidden').val(response.delivery_charge);
+                        var order = $('#order-total').val();
+                       
+                        var delivery_charge = response.delivery_charge;
+                      
+                        var tax = $("#tax").val();
+                       
+                        var adddeliveryCharge = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
+                        
+                        $('#order-total-final').val(adddeliveryCharge.toFixed(2));
+                        $('#final-total').text(adddeliveryCharge.toFixed(2));
+                        $('#delivery-charge').text(response.delivery_charge);
+                    }
+                    
+                   
+                }
+                   
                 });
             });
 
@@ -512,8 +618,6 @@
                         }
                     });
             });
-
-            
 
             $('#filldetails').on('click', function(e)
             {
@@ -624,14 +728,17 @@
                         data:{"_token": $("input[name='_token']").val(),stripetoken:token,is_authenticated:is_authenticated,shipping_address:shipping_address,save_address:save_address,address_count:address_count,address_id:address_id,order_total:order_total,order_total_final:order_total_final,delivery_charge_hidden:delivery_charge_hidden,tax:tax,self_pickup:self_pickup,paymentMethod}, 
                         success:function(response){
                             if(response.status == 'error') {
-                            alert(response.message);
-                            // document.getElementById("vc").innerHTML =response.message;
-                            // $('#myModals').modal('show');
-                            location.reload();
+                            $('#stripe-payment-modal').modal('hide');
+                            document.getElementById("vcs").innerHTML = response.message;
+                            $('#errorModal').modal('show');
+                            // location.reload();
                             }
                             if(response.status == 'success') {
-                            alert(response.message);
-                            window.location.href = "/thank-you";
+                            $('#stripe-payment-modal').modal('hide')
+                            document.getElementById("vc").innerHTML =response.message;
+                            document.getElementById("oid").innerHTML = 'Your Order Id is ' + response.oid;
+                            $('#ignismyModal').modal('show')
+                            // window.location.href = "/thank-you";
                             }
                         },
                         complete:function(data){
@@ -674,38 +781,66 @@
                     _token: '{{ csrf_token() }}',
                     data: {
                         user: {
-                            lat: "{{ \Auth::user()->lat ?? (Session::get('location')['lat'] ?? "29.5960") }}",
-                            lng: "{{ \Auth::user()->lng ?? (Session::get('location')['lng'] ?? "76.1150") }}",
+                            lat: "{{ \Auth::user()->lat ?? (Session::get('location')['lat'] ?? "0") }}",
+                            lng: "{{ \Auth::user()->lng ?? (Session::get('location')['lng'] ?? "0") }}",
                         }
                     }
                 },
                 success: function (response) {
-                    //window.location.reload();
-                    if (response.success) {
+                    // alert(response.message);
+                    if (response.delivery_charge != 0 ) {
                         $("#delivery-charge").text(response.delivery_charge);
                         $("#delivery-charge-hidden").val(response.delivery_charge);
                         var finalTotal = $("#final-total").text();
                         finalTotal = parseFloat(finalTotal) + parseFloat(response.delivery_charge);
                         finalTotal = finalTotal.toFixed(2);
                         $("#final-total").text(finalTotal);
-
                         $("#order-total-final").val(finalTotal);
+                      
+                    }
+                    else{
+                        alert(response.message);
+                        //$("#booking_heading").html('<div class="alert alert-danger">This restraunt can not serve you at your location</div>');
+
                     }
                 }
             });
 
+            $.ajax({
+                    url: "{{ route('check.tax') }}",
+                    type: "POST",
+                    dataType: "JSON",
+                    data: {
+                        zip: "{{ \Auth::user()->zip }}",
+                        _token: '{{ csrf_token() }}',
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        $('#tax').val(response.tax);
+                        var order = $('#order-total').val();
+                        var tax = response.tax;
+
+                        var delivery_charges = $("#delivery-charge-hidden").val();
+
+                        var addTax = parseFloat(order) + parseFloat(tax) + parseFloat(delivery_charges);
+
+                        $('#order-total-final').val(addTax.toFixed(2));
+                        $('#final-total').text(addTax.toFixed(2));
+                        $('.tax_preview').text("$" + response.tax);
+                    },
+                    error: function () {
+
+                    }
+            });
+
             $("#place-order-btn-checkout").on("click", function () {
                 //$(".billing-address-container").hide();
-
                 var paymentMethod = $("input[name='payment_method']:checked").val();
-                // alert(paymentMethod);
                 if (paymentMethod == "stripe") {
-                    // alert('stripe');
                     // $("#stripe-payment-modal").find('input:text').val('');
                     $("#stripe-payment-modal").modal('show');
                 } else if (paymentMethod == "cod") {
                     // $("#place-order-form").submit();
-                    // alert('cod');
                     $("#cod-payment-modal").modal('show');
                 }
             });
@@ -743,6 +878,146 @@
 @endsection
 @section('page_style')
     <style>
+
+body {
+		font-family: 'Varela Round', sans-serif;
+	}
+	.modal-confirm {		
+		color: #434e65;
+		width: 525px;
+		margin: 30px auto;
+	}
+	.modal-confirm .modal-content {
+		padding: 20px;
+		font-size: 16px;
+		border-radius: 5px;
+		border: none;
+	}
+	.modal-confirm .modal-header {
+		background: #e85e6c;
+		border-bottom: none;   
+        position: relative;
+		text-align: center;
+		margin: -20px -20px 0;
+		border-radius: 5px 5px 0 0;
+		padding: 35px;
+	}
+	.modal-confirm h4 {
+		text-align: center;
+		font-size: 36px;
+		margin: 10px 0;
+	}
+	.modal-confirm .form-control, .modal-confirm .btn {
+		min-height: 40px;
+		border-radius: 3px; 
+	}
+	.modal-confirm .close {
+        position: absolute;
+		top: 15px;
+		right: 15px;
+		color: #fff;
+		text-shadow: none;
+		opacity: 0.5;
+	}
+	.modal-confirm .close:hover {
+		opacity: 0.8;
+	}
+	.modal-confirm .icon-box {
+		color: #fff;		
+		width: 95px;
+		height: 95px;
+		display: inline-block;
+		border-radius: 50%;
+		z-index: 9;
+		border: 5px solid #fff;
+		padding: 15px;
+		text-align: center;
+	}
+	.modal-confirm .icon-box i {
+		font-size: 58px;
+		margin: -2px 0 0 -2px;
+	}
+	.modal-confirm.modal-dialog {
+		margin-top: 80px;
+	}
+    .modal-confirm .btn {
+        color: #fff;
+        border-radius: 4px;
+		background: #eeb711;
+		text-decoration: none;
+		transition: all 0.4s;
+        line-height: normal;
+		border-radius: 30px;
+		margin-top: 10px;
+		padding: 6px 20px;
+		min-width: 150px;
+        border: none;
+    }
+	.modal-confirm .btn:hover, .modal-confirm .btn:focus {
+		background: #eda645;
+		outline: none;
+	}
+	.trigger-btn {
+		display: inline-block;
+		margin: 100px auto;
+	}
+        /*--thank you pop starts here--*/
+        .thank-you-pop{
+            width:100%;
+            padding:20px;
+            text-align:center;
+        }
+        .thank-you-pop img{
+            width:76px;
+            height:auto;
+            margin:0 auto;
+            display:block;
+            margin-bottom:25px;
+        }
+
+        .thank-you-pop h1{
+            font-size: 42px;
+            margin-bottom: 25px;
+            color:#5C5C5C;
+        }
+        .thank-you-pop p{
+            font-size: 20px;
+            margin-bottom: 27px;
+            color:#5C5C5C;
+        }
+        .thank-you-pop h3.cupon-pop{
+            font-size: 25px;
+            margin-bottom: 40px;
+            color:#222;
+            display:inline-block;
+            text-align:center;
+            padding:10px 20px;
+            border:2px dashed #222;
+            clear:both;
+            font-weight:normal;
+        }
+        .thank-you-pop h3.cupon-pop span{
+            color:#03A9F4;
+        }
+        .thank-you-pop a{
+            display: inline-block;
+            margin: 0 auto;
+            padding: 9px 20px;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 14px;
+            background-color: #8BC34A;
+            border-radius: 17px;
+        }
+        .thank-you-pop a i{
+            margin-right:5px;
+            color:#fff;
+        }
+        #ignismyModal .modal-header{
+            border:0px;
+        }
+        /*--thank you pop ends here--*/
+
         .empty-cart-container {
             text-align: center;
         }
