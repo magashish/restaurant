@@ -35,20 +35,34 @@ Route::group(['namespace' => 'Admin'], function () {
     //Route::group(['middleware' => 'auth:admin'], function () {
     Route::get('/admin', 'DashboardController@index')->name('admin');
     Route::get('/admin/dashboard', 'DashboardController@index')->name('admin.dashboard');
+
     Route::get('/admin/restaurant', 'RestaurantController@index')->name('restaurant.index');
     Route::get('/admin/restaurant/create', 'RestaurantController@create')->name('restaurant.create');
     Route::get('/admin/restaurant/{id}', 'RestaurantController@edit')->name('restaurant.show');
     Route::post('/admin/restaurant', 'RestaurantController@store')->name('restaurant.store');
     Route::post('/admin/restaurant-update', 'RestaurantController@update')->name('restaurant.update');
+    Route::any('/admin/restaurant-delete/{id}', 'RestaurantController@deleteRestraunt')->name('restaurant.delete');
+    
     Route::get('/admin/restaurant-menu/{id}', 'RestaurantController@createmenu')->name('restaurantmenu');
     Route::post('/admin/restaurant-menu-add', 'RestaurantController@addmenu')->name('restaurantmenuadd');
 
     Route::get('/admin/category', 'CategoryController@index')->name('category.index');
     Route::get('/admin/category/create', 'CategoryController@create')->name('category.create');
     Route::post('/admin/category', 'CategoryController@store')->name('category.store');
+    Route::any('/admin/category-edit/{id}', 'CategoryController@editCategory')->name('category.edit');
+    Route::any('/admin/category-update/{id}', 'CategoryController@editCategory')->name('category.update');
+    Route::any('/admin/category-delete/{id}', 'CategoryController@deleteCategory')->name('category.delete');
 
+    // Route::any('/settings', 'DashboardController@settings')->name('admin.settings');
     Route::any('/settings', 'DashboardController@settings')->name('admin.settings');
-    Route::any('/settings', 'DashboardController@settings')->name('admin.settings');
+
+    Route::any('/users', 'UserController@getUsers')->name('admin.users');
+    Route::any('/user-details/{id}', 'UserController@userDetails')->name('admin.user.detail');
+    Route::any('/users-delete/{id}', 'UserController@deleteUsers')->name('admin.user.delete');
+
+    Route::any('/orders', 'OrderController@getOrders')->name('admin.order');
+    Route::any('/order-detail/{id}', 'OrderController@orderDetail')->name('admin.order.detail');
+    
     Route::get('/admin/set-delivery-charges', 'DashboardController@deliveryCharges')->name('setdeliverycharge');
     Route::post('/admin/post-delivery-charges', 'DashboardController@postDeliveryCharges')->name('postdeliverycharge');
     Route::get('/admin/view-delivery-charges', 'DashboardController@viewDeliveryCharges')->name('delivery.prices');

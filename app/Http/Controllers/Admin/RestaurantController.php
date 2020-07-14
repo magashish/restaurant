@@ -12,6 +12,7 @@ use \Illuminate\Support\Facades\Validator;
 use Session;
 use DataTables;
 use Image;
+use DB;
 use App\User;
 
 class RestaurantController extends Controller
@@ -142,9 +143,8 @@ class RestaurantController extends Controller
         // $address_res = json_decode($res, TRUE);
         // $Restaurant->lat = $address_res['results'][0]['geometry']['location']['lat'];
         // $Restaurant->lng = $address_res['results'][0]['geometry']['location']['lng'];
-            // dd($Restaurant);
         $Restaurant->save();
-        $request->session()->flash('success', 'Restaurant Menu added successfully');
+        $request->session()->flash('success', 'Restaurant added successfully');
 
         $categories = Category::all();
         return view('pages.admin.restaurant.create', compact('categories','seller_data'));
@@ -257,17 +257,22 @@ class RestaurantController extends Controller
         return redirect()->route('restaurant.index')->with('success', 'Restaurant updated successfully');
     }
 
+    public function deleteRestraunt(Request $request,$id)
+    {
+        // dd($id);
+        DB::table('restaurants')->where('id',$id)->delete();
+        return redirect()->back()->with('success','Restraunt Deleted Successfully');
+    }
+
     public function createmenu($id)
     {
         $id = $id;
         $categories = Category::all();
-        //dd($categories);
         return view('pages.admin.restaurant.menucreate', compact('id', 'categories'));
     }
 
     public function addmenu(Request $request)
     {
-        //dd($request->all());
         $validator = Validator::make($request->all(), [
             'restaurant_id' => 'required',
             'price' => 'required',
@@ -287,7 +292,7 @@ class RestaurantController extends Controller
         $RestaurantMenu->restaurant_id = $request->post('restaurant_id');
         $RestaurantMenu->dishname = $request->post('dishname');
         $RestaurantMenu->image = $fileName;
-        $RestaurantMenu->category = $request->post('category');
+        $RestaurantMenu->category_id = $request->post('category');
         $RestaurantMenu->status = '1';
         $RestaurantMenu->price = $request->post('price');
         $RestaurantMenu->itemoption = $itemoption;

@@ -24,9 +24,9 @@
                  with font-awesome or any other icon font library -->
             <li class="nav-item has-treeview">
                 <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-chart-pie"></i>
+                    <i class="fas fa-hamburger"></i>
                     <p>
-                        Restaurants
+                        Restaurant Management
                         <i class="right fas fa-angle-left"></i>
                     </p>
                 </a>
@@ -43,6 +43,18 @@
                             <p>View Restaurants</p>
                         </a>
                     </li>
+                </ul>
+            </li>
+
+            <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                    <i class="fa fa-list-alt"></i>
+                    <p>
+                       Category Management
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
                     <li class="nav-item">
                         <a href="{{ route('category.create') }}" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
@@ -57,17 +69,28 @@
                     </li>
                 </ul>
             </li>
+
             <li class="nav-item">
-                <a href="{{url('/settings')}}" class="nav-link">
-                    <i class="nav-icon fas fa-cogs" aria-hidden="true"></i>
+                <a href="{{url('/users')}}" class="nav-link">
+                    <i class="fa fa-users" aria-hidden="true"></i>
                     <p>
-                        Settings
+                        User Management
                     </p>
                 </a>
             </li>
+
+            <li class="nav-item">
+                <a href="{{url('/orders')}}" class="nav-link">
+                    <i class="fa fa-first-order" aria-hidden="true"></i>
+                    <p>
+                        Order Management
+                    </p>
+                </a>
+            </li>
+
             <li class="nav-item has-treeview">
                 <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-chart-pie"></i>
+                    <i class="fa fa-motorcycle"></i>
                     <p>
                         Delivery Prices
                         <i class="right fas fa-angle-left"></i>
@@ -88,6 +111,16 @@
                     </li>
                 </ul>
             </li>
+
+            <li class="nav-item">
+                <a href="{{url('/settings')}}" class="nav-link">
+                    <i class="nav-icon fas fa-cogs" aria-hidden="true"></i>
+                    <p>
+                        Settings
+                    </p>
+                </a>
+            </li>
+
         </ul>
     </nav>
     <!-- /.sidebar-menu -->

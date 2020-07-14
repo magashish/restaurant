@@ -9,23 +9,15 @@ use \Illuminate\Support\Facades\Validator;
 use Session;
 use DataTables;
 use Image;
+use DB;
 
 class CategoryController extends Controller
 {
 	public function index(Request $request)
     {
-		if ($request->ajax()) {
-            $data = Restaurant::latest()->get();
-            return Datatables::of($data)
-                    ->addIndexColumn()
-                    ->addColumn('action', function($row){   
-                            return '<a href="/admin/category/'.$row->id.'" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
-									   <button class="btn btn-xs btn-delete" data-remote="javascript:void(0)"><i class="fa fa-trash"></i></button>';
-                    })
-                    ->rawColumns(['action'])
-                    ->make(true);
-        } 
-        return view('pages.admin.category.index');
+        $categories = Category::orderBy('created_at','desc')->paginate(10);
+        // dd($categories);
+        return view('pages.admin.category.index',compact('categories'));
     }
 	
 	 public function create()
@@ -67,5 +59,44 @@ class CategoryController extends Controller
 	    $request->session()->flash('success', 'Category Menu added successfully');
 		
         return view('pages.admin.category.create');
+    }
+
+    public function editCategory(Request $request,$id)
+    {
+        $category_detail = Category::where('id',$id)->first();
+        if($request->isMethod('post'))
+        {
+            $file = $request->file('catimg');
+            if($file){
+            $fileName = time().'.'.$file->getClientOriginalExtension();
+            
+            $destinationPaththumb = 'uploads/categories/thumbnail';
+            $img = Image::make($file->getRealPath());
+            $img->resize(200, 200, function ($constraint) {
+                $constraint->aspectRatio();
+            })->save($destinationPaththumb.'/'.$fileName);
+            
+            $destinationPathfull = 'uploads/categories/full';
+            $file->move($destinationPathfull,$fileName);
+            }else{
+                $fileName ="n/a";
+            }
+        
+            $data = $request->all();
+            DB::table('categories')->where('id',$id)->update([
+                'name' => $data['name'],
+                'description' => $data['description'],
+                'catimg' => $fileName,
+                'status' => $data['status']
+            ]);
+            return redirect()->back()->with('success','Category Updated Successfully');
+        }
+        return view('pages.admin.category.edit',compact('category_detail'));
+    }
+
+    public function deleteCategory($id)
+    {
+        DB::table('categories')->where('id',$id)->delete();
+        return redirect()->back()->with('success','Category Deleted Succesfully');
     }
 }

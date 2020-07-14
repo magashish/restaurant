@@ -5,12 +5,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">Create Restaurants</h1>
+                    <h1 class="m-0 text-dark">Add Restaurant Menu</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Restaurants</li>
+                        <li class="breadcrumb-item active">Restaurant Management</li>
                     </ol>
                 </div><!-- /.col -->
                 @if(Session::has('success'))
@@ -42,7 +42,7 @@
                             <form action="{{ route('restaurantmenuadd') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group">
-                                    <label for="name">Name</label>
+                                    <label for="name">Dish Name</label>
                                     <input class="form-control" type="hidden" id="restaurant_id" value="{{$id}}"
                                            name="restaurant_id">
                                     <input class="form-control" type="text" id="name" name="dishname" required>

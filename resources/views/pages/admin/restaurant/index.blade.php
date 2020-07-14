@@ -50,8 +50,10 @@
                                                class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
                                             <a href="{{ route('restaurantmenu', $restaurant->id) }}"
                                                class="btn btn-xs btn-primary"><i class="fa fa-eye"></i></a>
-                                            <button class="btn btn-xs btn-delete" data-remote="javascript:void(0)"><i
-                                                    class="fa fa-trash"></i></button>
+                                            <a href="{{ route('restaurant.delete', $restaurant->id) }}"
+                                            class="btn btn-xs btn-primary"><i class="fa fa-trash"></i></a>
+                                            <!-- <button class="btn btn-xs btn-delete" data-remote="javascript:void(0)"><i
+                                                    class="fa fa-trash"></i></button> -->
                                         </td>
                                     </tr>
                                 @endforeach

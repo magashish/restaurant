@@ -5,19 +5,19 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">View Categories</h1>
+                    <h1 class="m-0 text-dark">Users</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Category Management</li>
+                        <li class="breadcrumb-item active">Users</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->
-    			@if(Session::has('success'))
+    @if(Session::has('success'))
                               <div style="width:100%" class="alert alert-success" role="alert">
                                 {{ Session::get('success') }}
                               </div>
@@ -43,35 +43,42 @@
                             <tr>
                                 <th>No</th>
                                 <th>Name</th>
-                                <th>Description</th>
-                                <th>Image</th>
-								<th>Status</th>
+                                <th>Email</th>
+                                <th>Type</th>
+                                <th>Contact Number</th>
+                                <th>Joined Date</th>
                                 <th width="100px">Action</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @if(!empty($categories))
-                                @foreach($categories as $key => $category)
+                            @if(!empty($users))
+                                @foreach($users as $key => $user)
+                                
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
-                                        <td>{{ $category->name }}</td>
-                                        <td>{{ $category->description }}</td>
-                                        <td>{{ $category->catimg }}</td>
-										<td>{{ $category->status }}</td>
+                                        <td>{{ $user->name }}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ $user->type }}</td>
+                                        @if($user->mobile != '')
+                                        <td>{{ $user->mobile }}</td>
+                                        @else
+                                        <td>Not Added</td>
+                                        @endif
+                                        <td>{{ $user->created_at }}</td>
                                         <td>
-											<a href="{{ route('category.edit', $category->id) }}"
-                                               class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
-                                            
-                                            <a href="{{ route('category.delete', $category->id) }}"
-                                            class="btn btn-xs btn-primary"><i class="fa fa-trash"></i></a>
-                                       </td>
+                                            <!-- <a href="{{ route('admin.user.detail', $user->id) }}"
+                                               class="btn btn-xs btn-primary"><i class="fa fa-eye"></i></a> -->
+                                            <a href="{{ route('admin.user.delete', $user->id) }}"
+                                               class="btn btn-xs btn-primary"><i class="fa fa-trash"></i></a>
+                                           
+                                        </td>
                                     </tr>
                                 @endforeach
                             @endif
                             </tbody>
                         </table>
                         <div class="text-right my-float-right">
-                            {{ $categories->links() }}
+                            {{ $users->links() }}
                         </div>
                     </div>
                 </div>
