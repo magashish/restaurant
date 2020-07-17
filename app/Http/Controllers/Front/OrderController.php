@@ -427,6 +427,7 @@ class OrderController extends Controller
             try {
                
                 $shippingAddressData = $requestFields['shipping_address'];
+                
                 $isAthenticated = $request->get('is_authenticated');
                 if ($isAthenticated == "false" && !is_null($shippingAddressData['2'])) {
                     // Register user
@@ -531,10 +532,11 @@ class OrderController extends Controller
                 $restaurantMenuObj = RestaurantMenu::find($restaurantMenuId);
                 
                 $restaurantId = $restaurantMenuObj->restaurant_id;
-    
+                
                 $restaurantObj = Restaurant::find($restaurantId);
-              
+               
                 $seller_details = User::where('id',$restaurantObj['seller_id'])->first();
+                
                 $seller_stripe_connect_id = $seller_details['stripe_connect_id'];
                 //$sellerId = $restaurant->seller->stripe_connecet_id ?? NULL;
                 if (!$seller_stripe_connect_id && $requestFields['paymentMethod'] === 'stripe') {
@@ -561,9 +563,13 @@ class OrderController extends Controller
                     $shippingAddressObj->zip = $shippingAddressData['9'];
                     $shippingAddressObj->save();
                     $orderAddressData = ShippingAddress::where('id', $shippingAddressObj->id)->first()->toArray();
-                     // Save order
+                    //  Save order
+                    //  dd($address);
                     $orderObj = new Order;
                     $orderObj->user_id = $userId;
+                    $orderObj->seller_id = $restaurantObj['seller_id'];
+                    $orderObj->restraunt_id = $restaurantId;
+                    $orderObj->status = 'RECEIVED';
                     $latestOrder = Order::orderBy('created_at', 'DESC')->first();
                     $oid = '#ORDER' . date("ymd") . str_pad(($latestOrder->id ?? 0) + 1, 8, "0", STR_PAD_LEFT);
                     $orderObj->oid = $oid;
@@ -603,8 +609,12 @@ class OrderController extends Controller
                         $address .= $savedAddressObj['mobile'] ?? "";
     
                             // Save order
+                            // dd($address);
                         $orderObj = new Order;
                         $orderObj->user_id = $userId;
+                        $orderObj->seller_id = $restaurantObj['seller_id'];
+                        $orderObj->restraunt_id = $restaurantId;
+                        $orderObj->status = 'RECEIVED';
                         $latestOrder = Order::orderBy('created_at', 'DESC')->first();
                         $oid = '#ORDER' . date("ymd") . str_pad(($latestOrder->id ?? 0) + 1, 8, "0", STR_PAD_LEFT);
                         $orderObj->oid = $oid;
@@ -631,16 +641,22 @@ class OrderController extends Controller
                         }
     
                     } else {
+                        //dd($shippingAddressData);
                         $address .= $shippingAddressData['0'] . " " . $shippingAddressData['1'] . ", ";
-                        $address .= $shippingAddressData['6'] ?? "";
-                        $address .= $shippingAddressData['7'] ?? "";
-                        $address .= $shippingAddressData['8'] ?? "";
+                        $address .= $shippingAddressData['6'] . ", " ?? "";
+                        // dd($shippingAddressData['9']);
+                        // $address .= $shippingAddressData['7'] ?? "";
+                        // $address .= $shippingAddressData['8'] ?? "";
                         $address .= $shippingAddressData['9'] ?? "";
-                        $address .= $shippingAddressData['3'] ?? "";
+                        // $address .= $shippingAddressData['3'] ?? "";
                         $orderAddressData = $shippingAddressData;
+                        // dd($address);
                          // Save order
                         $orderObj = new Order;
                         $orderObj->user_id = $userId;
+                        $orderObj->seller_id = $restaurantObj['seller_id'];
+                        $orderObj->status = 'RECEIVED';
+                        $orderObj->restraunt_id = $restaurantId;
                         $latestOrder = Order::orderBy('created_at', 'DESC')->first();
                         $oid = '#ORDER' . date("ymd") . str_pad(($latestOrder->id ?? 0) + 1, 8, "0", STR_PAD_LEFT);
                         $orderObj->oid = $oid;

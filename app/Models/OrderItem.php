@@ -10,4 +10,9 @@ class OrderItem extends Model
     {
         return $this->belongsTo(RestaurantMenu::class, 'restaurant_menu_id');
     }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id');
+    }
 }

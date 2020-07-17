@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Restaurant;
+use App\Models\Order;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -45,6 +46,10 @@ class User extends Authenticatable
 
     public function payments() {
         return $this->hasMany(Payment::class, 'customer_id', 'id');
+    }
+
+    public function orders() {
+        return $this->hasMany(Order::class, 'user_id');
     }
 
    

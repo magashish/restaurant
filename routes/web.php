@@ -53,7 +53,6 @@ Route::group(['namespace' => 'Admin'], function () {
     Route::any('/admin/category-update/{id}', 'CategoryController@editCategory')->name('category.update');
     Route::any('/admin/category-delete/{id}', 'CategoryController@deleteCategory')->name('category.delete');
 
-    // Route::any('/settings', 'DashboardController@settings')->name('admin.settings');
     Route::any('/settings', 'DashboardController@settings')->name('admin.settings');
 
     Route::any('/users', 'UserController@getUsers')->name('admin.users');
@@ -118,6 +117,10 @@ Route::group(['namespace' => 'Front'], function () {
     Route::get('/seller/account', 'AccountController@sellerAccount')->name('seller.account');
     Route::post('/seller/update-profile','UserController@updateSellerProfile')->name('seller.update');;
     Route::get('/link-bank-account','SellerController@getaccountdetail')->name('seller.connect');
+    Route::get('/seller/orders','SellerController@sellerOrders')->name('seller.orders');
+    Route::get('/seller/view-order-details/{id}','SellerController@viewDetails')->name('order.details');
+    Route::post('/seller/vieworderdetails','SellerController@orderDetails')->name('seller.order.details');
+    Route::post('/seller/changeOrderStatus','SellerController@changeStatus')->name('seller.changeorder.status');
     Route::any('/seller/store-stripe-account-details','SellerController@storestripedetail')->name('seller.storeconnect');
     Route::any('/seller/delete-stripe-account','SellerController@deletestripeaccount');
     Route::post('/update-profile', 'UserController@updateProfile')->name('update.profile');

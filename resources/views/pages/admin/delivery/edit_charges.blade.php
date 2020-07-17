@@ -39,10 +39,14 @@
           <div class="col-lg-12">
             <div class="container">
 			 <div class="content_inner">
+          <div class="form-group">
+						<label for="name">Distance(in miles)</label>
+						<input class="form-control" type="text" readonly id="distance" name="distance" value="{{$get_price_detail->distance}}">
+					</div>
 				<form action="{{ url('/admin/update-delivery-charges/'.$get_price_detail->id) }}" method="POST" enctype="multipart/form-data">
 				   @csrf
                    
-                    <div class="form-group">
+          <div class="form-group">
 						<label for="name">Price</label>
 						<input class="form-control" type="text" id="price" name="price" value="{{$get_price_detail->price}}" required>
 					</div>
