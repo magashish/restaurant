@@ -322,6 +322,11 @@
                 });
     });
 
+   $('#ordersummary').on('hidden.bs.modal', function () {
+    //    $(".tbody").remove();
+       location.reload();
+    });
+
     $(document).on('click','body .vieworderdetails',function(){
         var id = $(this).data("id");
         var restraunt_id = $(this).data("restid");
@@ -331,6 +336,8 @@
         var final_total = $(this).data("total");
         var tax = $(this).data("tax");
         var delivery_charge = $(this).data("delivery");
+        // alert(id);
+        // $(".tbody").show();
             $.ajax({
 
                 type:'POST',
@@ -353,11 +360,8 @@
                     $("#delivery_fees").html(data.delivery_charge);
                     $("#order_total").html(data.order_total);
                     $("#subtotal").html(data.final_total);
-
                     $('#ordersummary').modal('show');
-                    //   $('#ordersummary').on('hidden.bs.modal', function () {
-                    //         $(".tbody").remove();
-                    //     })
+                   
                 },
                 error: function(data, errorThrown)
                 {
