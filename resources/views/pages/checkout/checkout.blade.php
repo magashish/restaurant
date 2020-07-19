@@ -70,12 +70,7 @@
                                         <input type="password" id="password_confirmation" name="shipping_address[password_confirmation]">
                                         
                                     </div>
-                                @endguest
-                                <div class="col-full">
-                                    <label>Address<span>*</span></label>
-                                        <input type="text" class="address" id="address" name="shipping_address[address]" required  value="{{ \Auth::user()->address ?? '' }}">
-                                </div>
-                                
+                                @endguest 
                                 <div class="col-full">
                                     <label>Town/City<span>*</span></label>
                                     <input type="text" id="city" name="shipping_address[city]"
@@ -90,6 +85,10 @@
                                     <label>Country<span>*</span></label>
                                     <input type="text" id="country" name="shipping_address[country]"
                                            value="{{ \Auth::user()->country ?? '' }}" required>
+                                </div>
+                                <div class="col-full">
+                                    <label>Address<span>*</span></label>
+                                        <input type="text" class="address" id="address" name="shipping_address[address]" required  value="{{ \Auth::user()->address ?? '' }}">
                                 </div>
                                 <div class="col-half">
                                     <label>Zip<span>*</span></label>
@@ -512,7 +511,7 @@
                     }  
                     },
                     success: function (response) {
-                    console.log(response.delivery_charge);
+                    console.log(response);
                     if (response.delivery_charge != 0 ) {
                         $("#delivery-charge").text(response.delivery_charge);
                         $("#delivery-charge-hidden").val(response.delivery_charge);
@@ -529,6 +528,7 @@
                         
                     }
                     else if(response.message = 'User do not have lat and long'){
+                        // alert(response.message);
                        
                         $('#delivery-charge-hidden').val(response.delivery_charge);
                         var order = $('#order-total').val();
@@ -544,6 +544,7 @@
                         $('#delivery-charge').text(response.delivery_charge);
                     }
                     else{
+                        // alert(response.messages);
                         $('#delivery-charge-hidden').val(response.delivery_charge);
                         var order = $('#order-total').val();
                        
