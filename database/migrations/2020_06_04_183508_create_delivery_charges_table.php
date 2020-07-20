@@ -15,8 +15,7 @@ class CreateDeliveryChargesTable extends Migration
     {
         Schema::create('delivery_charges', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('from_location');
-            $table->integer('to_location');
+            $table->string('distance');
             $table->double('price', 10, 2);
             $table->timestamps();
         });

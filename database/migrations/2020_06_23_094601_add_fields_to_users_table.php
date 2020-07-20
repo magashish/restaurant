@@ -14,9 +14,9 @@ class AddFieldsToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('first_name')->after('stripe_customer_id')->nullable();
+            $table->string('first_name')->after('name')->nullable();
             $table->string('last_name')->after('first_name')->nullable();
-            $table->string('mobile', 20)->after('last_name')->nullable();
+            $table->string('mobile', 20)->after('email')->nullable();
             $table->string('city')->after('mobile')->nullable();
             $table->string('state')->after('city')->nullable();
             $table->string('country')->after('state')->nullable();

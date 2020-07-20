@@ -15,6 +15,11 @@ class CreateSiteSettingsTable extends Migration
     {
         Schema::create('site_settings', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->double('tax', 5, 2)->default(0);
+            $table->double('payment_processing_fee	', 5, 2)->default(0);
+            $table->string('stripe_s_key');
+            $table->string('stripe_p_key');
+            $table->string('google_key');
             $table->timestamps();
         });
     }

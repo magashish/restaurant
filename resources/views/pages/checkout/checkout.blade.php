@@ -527,8 +527,8 @@
                         $('#final-total').text(finalTotal.toFixed(2));
                         
                     }
-                    else if(response.message = 'User do not have lat and long'){
-                        // alert(response.message);
+                    else if(response.message == 'Please Enter the Address'){
+                        alert(response.message);
                        
                         $('#delivery-charge-hidden').val(response.delivery_charge);
                         var order = $('#order-total').val();
@@ -543,8 +543,8 @@
                         $('#final-total').text(adddeliveryCharge.toFixed(2));
                         $('#delivery-charge').text(response.delivery_charge);
                     }
-                    else{
-                        // alert(response.messages);
+                    else if(response.message == 'This restraunt can not serve you at your location'){
+                        alert(response.message);
                         $('#delivery-charge-hidden').val(response.delivery_charge);
                         var order = $('#order-total').val();
                        
@@ -800,7 +800,7 @@
                       
                     }
                     else{
-                        alert(response.message);
+                        // alert(response.message);
                         //$("#booking_heading").html('<div class="alert alert-danger">This restraunt can not serve you at your location</div>');
 
                     }
@@ -812,7 +812,8 @@
                     type: "POST",
                     dataType: "JSON",
                     data: {
-                        zip: "{{ \Auth::user()->zip }}",
+                        
+                        zip: "{{ \Auth::user()->zip ?? "0" }}",
                         _token: '{{ csrf_token() }}',
                     },
                     success: function (response) {

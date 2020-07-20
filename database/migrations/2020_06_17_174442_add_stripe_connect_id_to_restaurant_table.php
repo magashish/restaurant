@@ -14,7 +14,7 @@ class AddStripeConnectIdToRestaurantTable extends Migration
     public function up()
     {
         Schema::table('restaurants', function (Blueprint $table) {
-            $table->string('stripe_connect_id')->after('id')->nullable();
+            $table->string('stripe_connect_id')->after('card_token')->nullable();
         });
     }
 

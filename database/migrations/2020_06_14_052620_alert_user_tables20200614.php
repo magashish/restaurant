@@ -14,8 +14,10 @@ class AlertUserTables20200614 extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('type', ['customer', 'seller'])->after('password')->default('customer');
-            $table->string('stripe_connect_id')->after('stripe_customer_id')->nullable();
+            // $table->enum('type', ['customer', 'seller'])->after('password')->default('customer');
+            $table->tinyInteger('type')->after('password')->default('1');
+            // $table->string('stripe_connect_id')->after('stripe_customer_id')->nullable();
+            $table->string('card_token')->after('stripe_customer_id')->nullable();
         });
     }
 
