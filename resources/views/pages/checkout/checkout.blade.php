@@ -163,14 +163,12 @@
                             <div class="paymentmethod">
                                 <h3>Self Pickup</h3>
                                 <div class="md-radio md-radio-inline">
-                                    <input id="self_pickup" type="radio" class="radio_check" name="self_pickup"
-                                           value="yes">
-                                    <label for="self_pickup">Yes</label>
+                                    <input id="1" type="radio" id="self_pickup" class="radio_check" name="self_pickup"  value="yes">
+                                    <label for="1">Yes</label>
                                 </div>
                                 <div class="md-radio md-radio-inline">
-                                    <input id="self_pickup" type="radio" class="radio_check" name="self_pickup"
-                                           value="no" checked>
-                                    <label for="self_pickup">No</label>
+                                    <input  id="2" type="radio" id="self_pickup" class="radio_check" name="self_pickup" value="no" checked>
+                                    <label for="2">No</label>
                                 </div>
                                 <br>
                                 <span><strong>Note:</strong> If yes then delivery charges will remove</span>
@@ -190,7 +188,8 @@
                                 </div>
                             </div>
                             <div class="place_order">
-                             
+                                <!-- <input type="submit" class="btn btn-success" id="place-order-btn-checkout"  disabled="disabled" /> -->
+                                <!-- <button class="btn btn-success" disabled="disabled" type="submit" id="place-order-btn-checkout">Continue</button> -->
                                 <a id="place-order-btn-checkout" href="javascript:void(0)">Continue</a>
 
                             </div>
@@ -490,7 +489,7 @@
                 });
             });
 
-            $('.address').on('input', function () {
+            $('.address').on('change', function () {
               var address =  document.getElementById('address').value;
               var city =  document.getElementById('city').value;
               var state = document.getElementById('state').value;
@@ -846,6 +845,8 @@
                     $("#cod-payment-modal").modal('show');
                 }
             });
+
+           
 
             $("input[name='self_pickup']").on("change", function () {
                 var self_delivery = $("input[name='self_pickup']:checked").val();
