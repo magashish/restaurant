@@ -37,6 +37,7 @@
                                     </div>
                                 </div>
                             @endif
+                            <span class="hide" id="pricing_error2" style="color:#cd4040;font-size:17px;" ></span>
                             <div id="new-address-container">
                                 <div class="col-half">
                                     <label>First Name<span>*</span></label>
@@ -149,7 +150,7 @@
                             <ul>
                                 <li>Subtotal <span>${{ $data['order_total'] }}</span></li>
                                 <li>Tax <span class="tax_preview">${{ $tax }}</span></li>
-                                <li>Delivery Charges <span>$<span id="delivery-charge">0</span></span></li>
+                                <li>Delivery Charges <span>$<span id="delivery-charge">{{ $deliveryCharge }}</span></span></li>
                                 @php
                                     $finalTotal = $data['order_total'] + $deliveryCharge + $tax;
                                 @endphp
@@ -163,11 +164,11 @@
                             <div class="paymentmethod">
                                 <h3>Self Pickup</h3>
                                 <div class="md-radio md-radio-inline">
-                                    <input id="1" type="radio" id="self_pickup" class="radio_check" name="self_pickup"  value="yes">
+                                    <input id="1" type="radio" id="self_pickup" class="radio_check" name="self_pickup"  value="yes" checked>
                                     <label for="1">Yes</label>
                                 </div>
                                 <div class="md-radio md-radio-inline">
-                                    <input  id="2" type="radio" id="self_pickup" class="radio_check" name="self_pickup" value="no" checked>
+                                    <input  id="2" type="radio" id="self_pickup" class="radio_check" name="self_pickup" value="no">
                                     <label for="2">No</label>
                                 </div>
                                 <br>
@@ -189,8 +190,8 @@
                             </div>
                             <div class="place_order">
                                 <!-- <input type="submit" class="btn btn-success" id="place-order-btn-checkout"  disabled="disabled" /> -->
-                                <!-- <button class="btn btn-success" disabled="disabled" type="submit" id="place-order-btn-checkout">Continue</button> -->
-                                <a id="place-order-btn-checkout" href="javascript:void(0)">Continue</a>
+                                <!-- <button class="btn btn-success"  type="submit" id="place-order-btn-checkout">Continue</button> -->
+                                <a id="place-order-btn-checkout" class="button" href="javascript:void(0)">Continue</a>
 
                             </div>
                         </div>
@@ -489,80 +490,78 @@
                 });
             });
 
-            $('.address').on('change', function () {
-              var address =  document.getElementById('address').value;
-              var city =  document.getElementById('city').value;
-              var state = document.getElementById('state').value;
-              var country = document.getElementById('country').value;
-                $.ajax({
-                    url: "{{ route('input.calculate.delivery.charge') }}",
-                    type: "POST",
-                    dataType: "JSON",
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        data: {
-                        user: {
-                            address : address,
-                            city : city,
-                            state : state,
-                            country : country
-                        }
-                    }  
-                    },
-                    success: function (response) {
-                    console.log(response);
-                    if (response.delivery_charge != 0 ) {
-                        $("#delivery-charge").text(response.delivery_charge);
-                        $("#delivery-charge-hidden").val(response.delivery_charge);
-                        var order = $('#order-total').val();
+            // $('.address').on('change', function () {
+            //   var address =  document.getElementById('address').value;
+            //   var city =  document.getElementById('city').value;
+            //   var state = document.getElementById('state').value;
+            //   var country = document.getElementById('country').value;
+            //     $.ajax({
+            //         url: "{{ route('input.calculate.delivery.charge') }}",
+            //         type: "POST",
+            //         dataType: "JSON",
+            //         data: {
+            //             _token: '{{ csrf_token() }}',
+            //             data: {
+            //             user: {
+            //                 address : address,
+            //                 city : city,
+            //                 state : state,
+            //                 country : country
+            //             }
+            //         }  
+            //         },
+            //         success: function (response) {
+            //         console.log(response);
+            //         if (response.delivery_charge != 0 ) {
+            //             $("#delivery-charge").text(response.delivery_charge);
+            //             $("#delivery-charge-hidden").val(response.delivery_charge);
+            //             var order = $('#order-total').val();
                         
-                        var delivery_charge = response.delivery_charge;
+            //             var delivery_charge = response.delivery_charge;
                         
-                        var tax = $("#tax").val();
+            //             var tax = $("#tax").val();
                         
-                        var finalTotal = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
+            //             var finalTotal = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
                        
-                        $('#order-total-final').val(finalTotal.toFixed(2));
-                        $('#final-total').text(finalTotal.toFixed(2));
+            //             $('#order-total-final').val(finalTotal.toFixed(2));
+            //             $('#final-total').text(finalTotal.toFixed(2));
                         
-                    }
-                    else if(response.message == 'Please Enter the Address'){
-                        alert(response.message);
+            //         }
+            //         else if(response.message == 'Please Enter the Address'){
+            //             alert(response.message);
                        
-                        $('#delivery-charge-hidden').val(response.delivery_charge);
-                        var order = $('#order-total').val();
+            //             $('#delivery-charge-hidden').val(response.delivery_charge);
+            //             var order = $('#order-total').val();
                        
-                        var delivery_charge = response.delivery_charge;
+            //             var delivery_charge = response.delivery_charge;
                         
-                        var tax = $("#tax").val();
+            //             var tax = $("#tax").val();
                         
-                        var adddeliveryCharge = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
+            //             var adddeliveryCharge = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
                       
-                        $('#order-total-final').val(adddeliveryCharge.toFixed(2));
-                        $('#final-total').text(adddeliveryCharge.toFixed(2));
-                        $('#delivery-charge').text(response.delivery_charge);
-                    }
-                    else if(response.message == 'This restraunt can not serve you at your location'){
-                        alert(response.message);
-                        $('#delivery-charge-hidden').val(response.delivery_charge);
-                        var order = $('#order-total').val();
+            //             $('#order-total-final').val(adddeliveryCharge.toFixed(2));
+            //             $('#final-total').text(adddeliveryCharge.toFixed(2));
+            //             $('#delivery-charge').text(response.delivery_charge);
+            //         }
+            //         else if(response.message == 'This restraunt can not serve you at your location'){
+            //             alert(response.message);
+            //             $('#delivery-charge-hidden').val(response.delivery_charge);
+            //             var order = $('#order-total').val();
                        
-                        var delivery_charge = response.delivery_charge;
+            //             var delivery_charge = response.delivery_charge;
                       
-                        var tax = $("#tax").val();
+            //             var tax = $("#tax").val();
                        
-                        var adddeliveryCharge = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
+            //             var adddeliveryCharge = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
                         
-                        $('#order-total-final').val(adddeliveryCharge.toFixed(2));
-                        $('#final-total').text(adddeliveryCharge.toFixed(2));
-                        $('#delivery-charge').text(response.delivery_charge);
-                    }
-                    
+            //             $('#order-total-final').val(adddeliveryCharge.toFixed(2));
+            //             $('#final-total').text(adddeliveryCharge.toFixed(2));
+            //             $('#delivery-charge').text(response.delivery_charge);
+            //         }
+            //     }
                    
-                }
-                   
-                });
-            });
+            //     });
+            // });
 
             $("body").on("change", ".item-quantity", function () {
                 var quantity = $(this).val();
@@ -773,38 +772,48 @@
                     $("#no-saved-address-container").hide();
                 }
             });
-
-            $.ajax({
-                url: '{{ route('calculate.delivery.charge') }}',
-                method: "post",
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    data: {
-                        user: {
-                            lat: "{{ \Auth::user()->lat ?? (Session::get('location')['lat'] ?? "0") }}",
-                            lng: "{{ \Auth::user()->lng ?? (Session::get('location')['lng'] ?? "0") }}",
-                        }
-                    }
-                },
-                success: function (response) {
-                    // alert(response.message);
-                    if (response.delivery_charge != 0 ) {
-                        $("#delivery-charge").text(response.delivery_charge);
-                        $("#delivery-charge-hidden").val(response.delivery_charge);
-                        var finalTotal = $("#final-total").text();
-                        finalTotal = parseFloat(finalTotal) + parseFloat(response.delivery_charge);
-                        finalTotal = finalTotal.toFixed(2);
-                        $("#final-total").text(finalTotal);
-                        $("#order-total-final").val(finalTotal);
+          
+            // $.ajax({
+            //     url: '{{ route('calculate.delivery.charge') }}',
+            //     method: "post",
+            //     data: {
+            //         _token: '{{ csrf_token() }}',
+            //         data: {
+            //             user: {
+            //                 lat: "{{ \Auth::user()->lat ?? (Session::get('location')['lat'] ?? "0") }}",
+            //                 lng: "{{ \Auth::user()->lng ?? (Session::get('location')['lng'] ?? "0") }}",
+            //             }
+            //         }
+            //     },
+            //     success: function (response) {
+            //             console.log(response);
+            //         if (response.delivery_charge != 0 ) {
+            //             alert('in');
+            //             $("#delivery-charge").text(response.delivery_charge);
+            //             $("#delivery-charge-hidden").val(response.delivery_charge);
+            //             var finalTotal = $("#final-total").text();
+            //             finalTotal = parseFloat(finalTotal) + parseFloat(response.delivery_charge);
+            //             finalTotal = finalTotal.toFixed(2);
+            //             $("#final-total").text(finalTotal);
+            //             $("#order-total-final").val(finalTotal);
+            //             // $('#delivery-charge').text(response.tax);
                       
-                    }
-                    else{
-                        // alert(response.message);
-                        //$("#booking_heading").html('<div class="alert alert-danger">This restraunt can not serve you at your location</div>');
+            //         }
+            //         else{
+            //             $("#delivery-charge").text(response.delivery_charge);
+            //             $("#delivery-charge-hidden").val(response.delivery_charge);
+            //             var finalTotal = $("#final-total").text();
+            //             finalTotal = parseFloat(finalTotal) + parseFloat(response.delivery_charge);
+            //             finalTotal = finalTotal.toFixed(2);
+            //             $("#final-total").text(finalTotal);
+            //             $("#order-total-final").val(finalTotal);
+            //             // $('#delivery-charge').text(response.tax);
+            //             // alert(response.message);
+            //             //$("#booking_heading").html('<div class="alert alert-danger">This restraunt can not serve you at your location</div>');
 
-                    }
-                }
-            });
+            //         }
+            //     }
+            // });
 
             $.ajax({
                     url: "{{ route('check.tax') }}",
@@ -834,43 +843,248 @@
                     }
             });
 
-            $("#place-order-btn-checkout").on("click", function () {
-                //$(".billing-address-container").hide();
-                var paymentMethod = $("input[name='payment_method']:checked").val();
-                if (paymentMethod == "stripe") {
+            $("#place-order-btn-checkout").on("click", function (e) {
+                var err = 0;
+                if($("#fName").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your first name!');
+                    $("#fName" ).focus();
+                    var err=1;
+                }
+                
+                else if($("#lName").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your last name!');
+                    $("#lName" ).focus();
+                    var err=1;
+                }
+
+                else if($("#email").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your email!');
+                    $("#email" ).focus();
+                    var err=1;
+                }
+
+                else if($("#mobile").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your mobile number!');
+                    $("#mobile" ).focus();
+                    var err=1;
+                }
+
+                else if($("#city").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your city!');
+                    $("#city" ).focus();
+                    var err=1;
+                }
+
+                else if($("#state").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your state!');
+                    $("#state" ).focus();
+                    var err=1;
+                }
+
+                else if($("#country").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your country!');
+                    $("#country" ).focus();
+                    var err=1;
+                }
+
+                else if($("#address").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your street address!');
+                    $("#address" ).focus();
+                    var err=1;
+                }
+
+                else if($("#zip").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your zipcode!');
+                    $("#zip" ).focus();
+                    var err=1;
+                }
+
+                if(err == 0)
+                {
+                    $("#pricing_error2").removeClass("show");
+                    $("#pricing_error2").addClass("hide");
+                    $("#pricing_error2").html('');
+                    var paymentMethod = $("input[name='payment_method']:checked").val();
+                    if (paymentMethod == "stripe") {
                     // $("#stripe-payment-modal").find('input:text').val('');
                     $("#stripe-payment-modal").modal('show');
-                } else if (paymentMethod == "cod") {
+                    } else if (paymentMethod == "cod") {
                     // $("#place-order-form").submit();
                     $("#cod-payment-modal").modal('show');
+                    }
                 }
             });
 
            
 
             $("input[name='self_pickup']").on("change", function () {
-                var self_delivery = $("input[name='self_pickup']:checked").val();
-                var delivery_charge_hidden = $("#delivery-charge-hidden").val();
-                var final_total = $("#final-total").text();
-                final_total = parseFloat(final_total);
 
-                delivery_charge_hidden = parseFloat(delivery_charge_hidden);
-
-                if (self_delivery == "yes") {
-                    var finalPrice = final_total - delivery_charge_hidden;
-                    finalPrice = finalPrice.toFixed(2);
-
-                    $("#delivery-charge").text("0");
-                    $("#final-total").text(finalPrice);
-                    $("#order-total-final").val(finalPrice);
-                } else {
-                    var finalPrice = final_total + delivery_charge_hidden;
-                    finalPrice = finalPrice.toFixed(2);
-
-                    $("#delivery-charge").text(delivery_charge_hidden);
-                    $("#final-total").text(finalPrice);
-                    $("#order-total-final").val(finalPrice);
+                var err = 0;
+                if($("#city").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your city first!');
+                    $("#city" ).focus();
+                   $(this).prop('checked', false);
+                    var err=1;
                 }
+                else if($("#state").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your state first!');
+                    $("#state" ).focus();
+                   $(this).prop('checked', false);
+                    var err=1;
+                }
+
+                else if($("#country").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your country first!');
+                    $("#country" ).focus();
+                   $(this).prop('checked', false);
+                    var err=1;
+                }
+
+                else if($("#address").val()=="")
+                {    
+                    $("#pricing_error2").removeClass("hide");
+                    $("#pricing_error2").addClass("show");
+                    $("#pricing_error2").html('Please enter your address first!');
+                    $("#address" ).focus();
+                   $(this).prop('checked', false);
+                    var err=1;
+                }
+                if(err == 0)
+                {
+                    $("#pricing_error2").removeClass("show");
+                    $("#pricing_error2").addClass("hide");
+                    $("#pricing_error2").html('');
+                    var self_delivery = $("input[name='self_pickup']:checked").val();
+                    var delivery_charge_hidden = $("#delivery-charge-hidden").val();
+                    var final_total = $("#final-total").text();
+                    final_total = parseFloat(final_total);
+                    delivery_charge_hidden = parseFloat(delivery_charge_hidden);
+
+                    if (self_delivery == "yes") {
+                        // alert('in');
+                        var finalPrice = final_total - delivery_charge_hidden;
+                        finalPrice = finalPrice.toFixed(2);
+
+                        $("#delivery-charge").text("0");
+                        $("#final-total").text(finalPrice);
+                        $("#order-total-final").val(finalPrice);
+                    } else {
+                        // alert('out');
+                        // var finalPrice = final_total + delivery_charge_hidden;
+                        // finalPrice = finalPrice.toFixed(2);
+                        // $("#delivery-charge").text(delivery_charge_hidden);
+                        // $("#final-total").text(finalPrice);
+                        // $("#order-total-final").val(finalPrice);
+                        var address =  document.getElementById('address').value;
+                        var city =  document.getElementById('city').value;
+                        var state = document.getElementById('state').value;
+                        var country = document.getElementById('country').value;
+                        $.ajax({
+                            url: "{{ route('input.calculate.delivery.charge') }}",
+                            type: "POST",
+                            dataType: "JSON",
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                data: {
+                                user: {
+                                    address : address,
+                                    city : city,
+                                    state : state,
+                                    country : country
+                                }
+                            }  
+                            },
+                            success: function (response) {
+                            console.log(response);
+                            if (response.delivery_charge != 0 ) {
+                                // alert('in');
+                                $("#delivery-charge").text(response.delivery_charge);
+                                $("#delivery-charge-hidden").val(response.delivery_charge);
+                                var order = $('#order-total').val();
+                                
+                                var delivery_charge = response.delivery_charge;
+                                
+                                var tax = $("#tax").val();
+                                
+                                var finalTotal = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
+                            
+                                $('#order-total-final').val(finalTotal.toFixed(2));
+                                $('#final-total').text(finalTotal.toFixed(2));
+                                
+                            }
+                            else if(response.message == 'Please Enter the Address'){
+                                // alert(response.message);
+                            
+                                $('#delivery-charge-hidden').val(response.delivery_charge);
+                                var order = $('#order-total').val();
+                            
+                                var delivery_charge = response.delivery_charge;
+                                
+                                var tax = $("#tax").val();
+                                
+                                var adddeliveryCharge = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
+                            
+                                $('#order-total-final').val(adddeliveryCharge.toFixed(2));
+                                $('#final-total').text(adddeliveryCharge.toFixed(2));
+                                $('#delivery-charge').text(response.delivery_charge);
+                            }
+                            else if(response.message == 'This restraunt can not serve you at your location'){
+                                // alert(response.message);
+                                $('#delivery-charge-hidden').val(response.delivery_charge);
+                                var order = $('#order-total').val();
+                            
+                                var delivery_charge = response.delivery_charge;
+                            
+                                var tax = $("#tax").val();
+                            
+                                var adddeliveryCharge = parseFloat(order) + parseFloat(delivery_charge) + parseFloat(tax);
+                                
+                                $('#order-total-final').val(adddeliveryCharge.toFixed(2));
+                                $('#final-total').text(adddeliveryCharge.toFixed(2));
+                                $('#delivery-charge').text(response.delivery_charge);
+                            }
+                        }
+                        
+                        });
+                    }
+                }
+                
             });
 
             $("#submit-checkout-payment-form").on("click", function () {

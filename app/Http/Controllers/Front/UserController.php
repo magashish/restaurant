@@ -82,8 +82,9 @@ class UserController extends Controller
                     }
                     session(['check_customer_stripe' => auth::user()->stripe_customer_id]);
                    
-                    return redirect()->away($requestData['previous_url']);
-                    return redirect('/');
+                    // return redirect()->away($requestData['previous_url']);
+                    return redirect()->route('home.index');
+                    
                 }
                 else if(Auth::attempt(['email' => $request->email, 'password' => $request->password,'type' => 2]))
                 {
@@ -180,7 +181,7 @@ class UserController extends Controller
         $userObj->county = $requestFields['county'] ?? "";
         $userObj->state = $requestFields['state'] ?? "";
         $userObj->country = $requestFields['country'] ?? "";
-        $userObj->zip = $requestFields['zip'] ?? "";
+        // $userObj->zip = $requestFields['zip'] ?? "";
         $userObj->address = $requestFields['address'] ?? "";
         // dd($userObj);
         if ($userObj->save()) {

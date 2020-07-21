@@ -65,8 +65,9 @@ class SellerController extends Controller
 
     public function dashboard()
     {
-       
-        $orders = Order::where('status','RECEIVED')->orWhere('status','PREPARING')->orWhere('status','DISPATCHED')->orderBy('created_at','desc')->with('order_address')->with('user')->with('restraunt')->get();
+        $seller_id = Auth::user()->id;
+        // dd($seller_id);
+        $orders = Order::where('seller_id',$seller_id)->where('status','RECEIVED')->orWhere('status','PREPARING')->orWhere('status','DISPATCHED')->orderBy('created_at','desc')->with('order_address')->with('user')->with('restraunt')->get();
         return view('pages.seller.dashboard',compact('orders'));
     }
 

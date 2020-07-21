@@ -49,7 +49,7 @@
                                 <input type="hidden" name="state" id="state"  value="{{ \Auth::user()->state ?? '' }}">
                                 <input type="hidden" name="county" id="county" value="{{ \Auth::user()->county ?? '' }}">
                                 <input type="hidden" name="city" id="city" value="{{ \Auth::user()->city ?? '' }}">
-                                <input type="hidden" name="zip" id="postcode" value="{{ \Auth::user()->zip ?? '' }}">
+                                <!-- <input type="hidden" name="zip" id="postcode" value="{{ \Auth::user()->zip ?? '' }}"> -->
                             </div>
                             <!-- <div class="col-full">
                                 <label>Address<span>*</span></label>
@@ -116,10 +116,10 @@
                     // alert(current_loc.long_name);
                 }
 
-                if(current_loc.types[0] == 'postal_code'){
-                document.getElementById('postcode').value = current_loc.long_name;
-                    // alert(current_loc.long_name);
-                }
+                // if(current_loc.types[0] == 'postal_code'){
+                // document.getElementById('postcode').value = current_loc.long_name;
+                //     // alert(current_loc.long_name);
+                // }
 
             }
 

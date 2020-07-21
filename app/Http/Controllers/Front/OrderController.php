@@ -217,10 +217,39 @@ class OrderController extends Controller
         if($request->ajax())
         {
             $requestFields = $request->all();
-       
+            // dd($requestFields);
+            if($requestFields['data']['user']['city'] == null)
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'delivery_charge' => 0,
+                    'message' => 'Please Enter the City'
+                ]);  
+                echo $response;
+                exit();
+            }
+            if($requestFields['data']['user']['state'] == null)
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'delivery_charge' => 0,
+                    'message' => 'Please Enter the State'
+                ]);  
+                echo $response;
+                exit();
+            }
+            if($requestFields['data']['user']['country'] == null)
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'delivery_charge' => 0,
+                    'message' => 'Please Enter the Country'
+                ]);  
+                echo $response;
+                exit();
+            }
             if($requestFields['data']['user']['address'] == null)
             {
-              
                 return response()->json([
                     'status' => 'error',
                     'delivery_charge' => 0,
@@ -252,7 +281,6 @@ class OrderController extends Controller
                 // Get lat lng
             $fullAddressArr = [
                 $requestFields['data']['user']['address'],
-             
                 $requestFields['data']['user']['city'],
                 $requestFields['data']['user']['state'],
                 $requestFields['data']['user']['country'],
@@ -264,7 +292,7 @@ class OrderController extends Controller
             $res = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=" . $address_tmp . "&key=AIzaSyDpavHXELJMJvIHifFPN6tBBiFSXKGpy2g");
            
             $address_res = json_decode($res, TRUE);
-           
+        //    dd($address_res);
             $userLat = $address_res['results'][0]['geometry']['location']['lat'];
             $userLng = $address_res['results'][0]['geometry']['location']['lng'];
             // dd($userLat,$userLng);
