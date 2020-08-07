@@ -61,11 +61,12 @@ class CartController extends Controller
     {
         $data = [];
         $data['data'] = [];
-
+        // dd($data);
         if (\Auth::check()) {
             $userId = \Auth::user()->id;
             $data['data'] = Cart::where('user_id', $userId)->with('product_detail', 'menu_options', 'menu_options.menu_option_detail')
                 ->get()->toArray();
+                // dd($data);
             /*echo "<pre>";
             print_r($data['data']);die;*/
         } else {
@@ -103,8 +104,26 @@ class CartController extends Controller
 
         //echo "<pre>";
         //print_r($data['data']);die;
-
+        // dd($data);
         return view('pages.cart.index')->with(compact('data'));
+    }
+
+    public function getProductOptions(Request $request)
+    {
+        if($request->ajax())
+        {
+            $data = $request->all();
+            // dd($data);
+            $get_options = RestaurantMenu::where('id',$data['product_id'])->with('options')->first();
+            // dd($get_options);
+            return response()->json([
+                'status' => 'success',
+                'menu_options' => $get_options,
+                'message' => 'Menu Options Fetched Successfully'
+            ]);  
+            echo $response;
+            exit();
+        }
     }
 
     public function updateCart(Request $request)
@@ -174,7 +193,6 @@ class CartController extends Controller
         $response = [];
         $response['success'] = FALSE;
         $response['session_cart'] = FALSE;
-
         $requestFields = $request->all();
 
         try {
@@ -232,12 +250,14 @@ class CartController extends Controller
     public function addtocart(Request $request)
     {
         $requestFields = $request->all();
+        // dd($requestFields);
         // Check item is already exist in cart
         if (\Auth::check()) {
             $cartObj = Cart::where([
                 'restaurant_menu_id' => $requestFields['pid'],
                 'user_id' => \Auth::user()->id,
             ])->first();
+            // dd($cartObj);
             if ($cartObj) {
                 $cartObj->quantity = $cartObj->quantity + $requestFields['pqty'];
                 $cartObj->extra_items = json_encode($requestFields['itemoption'] ?? []);
@@ -249,6 +269,7 @@ class CartController extends Controller
                 $cartObj->price = $requestFields['price'];
                 $cartObj->extra_items = json_encode($requestFields['itemoption'] ?? []);
             }
+            // dd($cartObj);
             if ($cartObj->save()) {
                 // Delete old data
                 CartExtraItem::where('cart_id', $cartObj->id)->delete();
@@ -263,9 +284,21 @@ class CartController extends Controller
                 }
 
                 if(isset($requestFields['previous_url']) && !empty($requestFields['previous_url'])) {
-                    return redirect()->away($requestFields['previous_url'])->with('success', 'Item added to Cart successfull');
+                    // return redirect()->away($requestFields['previous_url'])->with('success', 'Item added to Cart successfully');
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Item added to Cart successfully'
+                    ]);  
+                    echo $response;
+                    exit();
                 } else {
-                    return redirect()->route('cart')->with('error', 'Oops! some error occured, please try again');
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Oops! some error occured, please try again'
+                    ]);  
+                    echo $response;
+                    exit();
+                    // return redirect()->route('cart')->with('error', 'Oops! some error occured, please try again');
                 }
             }
         } else {
@@ -290,10 +323,23 @@ class CartController extends Controller
             Session::put('cart', $cart);
         }
         $cart = session()->get('cart');
+        // dd($cart);
         if(isset($requestFields['previous_url']) && !empty($requestFields['previous_url'])) {
-            return redirect()->away($requestFields['previous_url'])->with('success', 'Item added to Cart successfull');
+            // return redirect()->away($requestFields['previous_url'])->with('success', 'Item added to Cart successfull');
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Item added to Cart successfully'
+            ]);  
+            echo $response;
+            exit();
         } else {
-            return redirect()->route('cart')->with('error', 'Oops! some error occured, please try again');
+            // return redirect()->route('cart')->with('error', 'Oops! some error occured, please try again');
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Oops! some error occured, please try again'
+            ]);  
+            echo $response;
+            exit();
         }
     }
 

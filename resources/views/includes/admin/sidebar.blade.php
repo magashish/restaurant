@@ -80,6 +80,15 @@
             </li>
 
             <li class="nav-item">
+                <a href="{{url('/cms')}}" class="nav-link">
+                    <i class="fa fa-users" aria-hidden="true"></i>
+                    <p>
+                        CMS Management
+                    </p>
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a href="{{url('/orders')}}" class="nav-link">
                     <i class="fa fa-first-order" aria-hidden="true"></i>
                     <p>

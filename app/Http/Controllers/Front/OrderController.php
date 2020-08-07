@@ -321,7 +321,7 @@ class OrderController extends Controller
                 $distanceData = calculateDistance($location,$g_key);
                 // dd($distanceData);
                 if ($distanceData['rows'][0]['elements'][0]['status'] === 'OK') {
-                   
+                //    dd('1');
                     $distanceArr = $distanceData['rows'][0]['elements'][0]['distance'];
                     $distanceValueArr = explode(" ", $distanceArr['text']);
                     $distance = $distanceValueArr[0];
@@ -380,6 +380,16 @@ class OrderController extends Controller
                         exit();
                     }
                 }
+                else{
+                    return response()->json([
+                        'status' => 'error',
+                        'delivery_charge' => 0,
+                        'message' => 'This restraunt can not serve you at your location'
+                    ]);  
+                    echo $response;
+                    exit();
+                }
+               
             } catch (Exception $ex) {
                 $response['error'] = $ex->getMessage() . ' Line No ' . $ex->getLine() . ' in File' . $ex->getFile();
                 $response['success'] = FALSE;

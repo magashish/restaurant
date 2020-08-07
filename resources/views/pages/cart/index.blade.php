@@ -25,7 +25,7 @@
                                     <th>Total</th>
                                     <th>Action</th>
                                 </tr>
-
+                               
                                 <?php $total = 0 ?>
                                 <?php $extraItemtotal = 0 ?>
                                 @if(!empty($data['data']))

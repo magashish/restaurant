@@ -228,4 +228,8 @@
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initMap&key=AIzaSyDpavHXELJMJvIHifFPN6tBBiFSXKGpy2g"
    async defer></script>
+   <script src="//cdn.ckeditor.com/4.12.1/full/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('desc');
+</script>
 @stop

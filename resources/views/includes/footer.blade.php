@@ -24,28 +24,28 @@
                     <div class="col-lg-3 col-md-6 col-sm-12 foot_col1">
                         <h3>Company</h3>
                         <ul>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> About</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Team</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Careers</a></li>
+                            <li><a href="/about"><i class="fas fa-angle-double-right"></i> About</a></li>
+                            <li><a href="/teams"><i class="fas fa-angle-double-right"></i> Team</a></li>
+                            <li><a href="/carrers"><i class="fas fa-angle-double-right"></i> Careers</a></li>
                         </ul>
                     </div>
                     <div class="col-lg-3 col-md-6 col-sm-12 foot_col2">
                         <h3>Legal</h3>
                         <ul>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Terms & Condition</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Refund & Cancellation</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Privacy Policy</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Cookie Policy</a></li>
+                            <li><a href="/terms&conditions"><i class="fas fa-angle-double-right"></i> Terms & Condition</a></li>
+                            <li><a href="/refund&cancellation"><i class="fas fa-angle-double-right"></i> Refund & Cancellation</a></li>
+                            <li><a href="/privacy-policy"><i class="fas fa-angle-double-right"></i> Privacy Policy</a></li>
+                            <li><a href="/cookie-policy"><i class="fas fa-angle-double-right"></i> Cookie Policy</a></li>
                         </ul>
                     </div>
 
                     <div class="col-lg-3 col-md-6 col-sm-12 foot_col2">
                         <h3>CONTACT</h3>
                         <ul>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Help & Support</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Partner with us</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Ride With us</a></li>
-                            <li><a href="#"><i class="fas fa-angle-double-right"></i> Contact</a></li>
+                            <li><a href="/help&support"><i class="fas fa-angle-double-right"></i> Help & Support</a></li>
+                            <li><a href="/partner-with-us"><i class="fas fa-angle-double-right"></i> Partner with us</a></li>
+                            <li><a href="/ride-with-us"><i class="fas fa-angle-double-right"></i> Ride With us</a></li>
+                            <li><a href="/contact"><i class="fas fa-angle-double-right"></i> Contact</a></li>
                         </ul>
                     </div>
 

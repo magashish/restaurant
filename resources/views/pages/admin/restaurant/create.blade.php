@@ -78,7 +78,7 @@
 					</div>
 					<div class="form-group">
 						<label for="desc">Description</label>
-						<textarea class="form-control" id="desc" rows="3" name="description"></textarea>
+						<textarea class="form-control" id="desc" rows="5" cols="40" name="description"></textarea>
                     </div>
                     <!-- <div class="form-group">
 						<label for="name">Address 1</label>
@@ -214,4 +214,8 @@
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initMap&key=AIzaSyDpavHXELJMJvIHifFPN6tBBiFSXKGpy2g"
    async defer></script>
+   <script src="//cdn.ckeditor.com/4.12.1/full/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('desc');
+</script>
 	@stop

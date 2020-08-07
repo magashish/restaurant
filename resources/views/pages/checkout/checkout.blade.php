@@ -1048,7 +1048,7 @@
                                 $('#final-total').text(finalTotal.toFixed(2));
                                 
                             }
-                            else if(response.message == 'Please Enter the Address'){
+                            else if(response.message == 'Please enter the nearest point to your address'){
                                 // alert(response.message);
                             
                                 $('#delivery-charge-hidden').val(response.delivery_charge);
@@ -1065,7 +1065,7 @@
                                 $('#delivery-charge').text(response.delivery_charge);
                             }
                             else if(response.message == 'This restraunt can not serve you at your location'){
-                                // alert(response.message);
+                                alert(response.message);
                                 $('#delivery-charge-hidden').val(response.delivery_charge);
                                 var order = $('#order-total').val();
                             

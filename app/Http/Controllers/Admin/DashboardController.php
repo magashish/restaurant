@@ -6,6 +6,8 @@ use App\Setting;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\SiteSetting;
+use App\Cms;
+use Image;
 use DB;
 use App\DeliveryCharge;
 
@@ -100,5 +102,43 @@ class DashboardController extends Controller
         $get_price_detail = DeliveryCharge::where('id',$id)->first();
         return view('pages.admin.delivery.edit_charges',compact('get_price_detail'));
         
+    }
+
+    public function getCms()
+    {
+        $cms = Cms::all();
+        // dd($cms);
+        return view('pages.admin.cms.view-cms',compact('cms'));
+    }
+
+    public function editCms(Request $request,$id)
+    {
+        // dd($id);
+        if($request->isMethod('POST'))
+        {
+            $data = $request->all();
+            // dd($data);
+            $cms = Cms::findOrFail($id);
+            $cms->title = $data['page_title'];
+            $cms->short_description = $data['short_description'];
+            $cms->description = $data['page_description'];
+            if($request->page_image)
+            { 
+                $file = $request->file('page_image');
+                $fileName = time() . '.' . $file->getClientOriginalExtension();
+                $destinationPaththumb = 'uploads/cms_images';
+                $img = Image::make($file->getRealPath());
+                $img->resize(150, 90, function ($constraint) {
+                    $constraint->aspectRatio();
+                })->save($destinationPaththumb . '/' . $fileName);
+                $cms->page_image = $fileName;
+            } 
+            $cms->save();
+            // dd($cms);
+            return redirect('/cms')->with('success','Page Content Updated Successfully');
+
+        }
+        $cms = Cms::where(['id'=>$id])->first();
+        return view('pages.admin.cms.edit-cms')->with(compact('cms'));
     }
 }

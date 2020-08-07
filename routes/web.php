@@ -15,17 +15,29 @@ Route::get('/', function () {
     return View::make('pages.home');
 });
 
-Route::get('/about', function () {
-    return View::make('pages.about');
-})->name('about');
+// Route::get('/about', function () {
+//     return View::make('pages.about');
+// })->name('about');
 
 /*Route::get('/restaurant', function () {
     return View::make('pages.restaurant');
 })->name('restaurant');*/
 
-Route::get('/contact', function () {
-    return View::make('pages.contact');
-})->name('contact');
+// Route::get('/contact', function () {
+//     return View::make('pages.contact');
+// })->name('contact');
+
+Route::get('/contact', 'CmsController@contact')->name('contact');
+Route::get('/about', 'CmsController@about')->name('about');
+Route::get('/carrers', 'CmsController@carrer');
+Route::get('/teams', 'CmsController@teams');
+Route::get('/terms&conditions', 'CmsController@termsConditions');
+Route::get('/refund&cancellation', 'CmsController@refundCancellation');
+Route::get('/privacy-policy', 'CmsController@privacyPolicy');
+Route::get('/cookie-policy', 'CmsController@cookiePolicy');
+Route::get('/help&support', 'CmsController@helpSupport');
+Route::get('/partner-with-us', 'CmsController@partnerwithUs');
+Route::get('/ride-with-us', 'CmsController@ridewithUs');
 
 /*Admin Routes*/
 Route::group(['namespace' => 'Admin'], function () {
@@ -54,6 +66,8 @@ Route::group(['namespace' => 'Admin'], function () {
     Route::any('/admin/category-delete/{id}', 'CategoryController@deleteCategory')->name('category.delete');
 
     Route::any('/settings', 'DashboardController@settings')->name('admin.settings');
+    Route::any('/cms', 'DashboardController@getCms')->name('admin.cms');
+    Route::any('/cms/{id}', 'DashboardController@editCms')->name('cms.edit');
 
     Route::any('/users', 'UserController@getUsers')->name('admin.users');
     Route::any('/user-details/{id}', 'UserController@userDetails')->name('admin.user.detail');
@@ -97,6 +111,7 @@ Route::group(['namespace' => 'Front'], function () {
 
     Route::get('/thank-you', 'OrderController@thankYou')->name('thank.you');
     Route::post('/check-same-restaurant', 'CartController@checkSameRestaurant')->name('check-same-restaurant');
+    Route::post('/get-product-options', 'CartController@getProductOptions')->name('get-product-options');
     Route::post('/update-lat-lng', 'UserController@updateLatLng')->name('update.lat.lng');
     Route::post('/calculate-delivery-charge', 'OrderController@calculateDeliveryCharge')->name('calculate.delivery.charge');
     Route::post('/input-calculate-delivery-charge', 'OrderController@inputcalculateDeliveryCharge')->name('input.calculate.delivery.charge');

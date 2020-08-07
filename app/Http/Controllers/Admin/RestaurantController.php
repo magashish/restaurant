@@ -228,6 +228,8 @@ class RestaurantController extends Controller
         $Restaurant->description = $request->post('description');
         $Restaurant->addr1 = $request->post('addr1');
         // $Restaurant->addr2 = $request->post('addr2');
+        $Restaurant->lat = $request->post('address_latitude');
+        $Restaurant->lng = $request->post('address_longitude');
         $Restaurant->seller_id = $request->post('seller');
         $Restaurant->city = $request->post('city');
         $Restaurant->state = $request->post('state');
