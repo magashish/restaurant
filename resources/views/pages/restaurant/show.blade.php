@@ -186,9 +186,6 @@
                         </div>
                     @endif
                 </div>
-
-                
-
             </div>
         </div>
     </div>
@@ -267,6 +264,7 @@
         </div>
     </div>
 </div>
+
 @stop
 @section('page_script')
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -316,12 +314,13 @@
                 });
         }); 
     </script>
-    <script>
-     $('#product-options').on('hidden.bs.modal', function () {
-       location.reload();
-    });
 
-    $("body").on("click", ".delete-cart-item", function () {
+    <script>
+        $('#product-options').on('hidden.bs.modal', function () {
+            location.reload();
+        });
+
+        $("body").on("click", ".delete-cart-item", function () {
                 swal({
                     title: "Are you sure?",
                     buttons: true,
@@ -362,11 +361,6 @@
             var itemPrice =  $("#product_price").html();
             var optionPrice =  $("#option_price-"+detail.value).html();
             var optionName =  $("#option_name-"+detail.value).html();
-            // console.log(optionPrice);
-            // console.log(optionName);
-            // console.log(itemPrice);
-           
-
             if ($(detail).is(":checked"))
             {
                 // alert('checked');
@@ -414,6 +408,7 @@
             });
         // });
     </script>
+
     <script>
         function submitForm()
         {
@@ -453,6 +448,7 @@
         }
     </script>
 @endsection
+
 @section('page_style')
     <style>
         .padding-100px {

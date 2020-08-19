@@ -1,17 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App;
 
+// use Illuminate\Database\Eloquent\Model;
 use Auth;
 use Hash;
-use Illuminate\Database\Eloquent\SoftDeletes;
-//use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Model;
 
-class Admin extends Model
+class Rider extends Model
 {
-    use SoftDeletes;
-
     protected $guarded = ['id'];
 
     protected $hidden = [
@@ -26,9 +23,15 @@ class Admin extends Model
     {
         $requestData = $request->all();
         // dd($requestData);
-        if (Auth::guard('admin')->attempt(['email' => $requestData['email'], 'password' => $requestData['password']]))
+        if (Auth::guard('rider')->attempt(['email' => $requestData['email'], 'password' => $requestData['password']]))
             return TRUE;
 
         return FALSE;
+
+
+        // if (Auth::guard('admin')->attempt(['email' => $requestData['email'], 'password' => $requestData['password']]))
+        // return TRUE;
+
+        // return FALSE;
     }
 }

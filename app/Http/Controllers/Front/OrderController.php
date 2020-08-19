@@ -573,11 +573,11 @@ class OrderController extends Controller
                 $restaurantMenuId = $cartObjResId->restaurant_menu_id;
                 
                 $restaurantMenuObj = RestaurantMenu::find($restaurantMenuId);
-                
+               
                 $restaurantId = $restaurantMenuObj->restaurant_id;
                 
                 $restaurantObj = Restaurant::find($restaurantId);
-               
+                // dd($restaurantObj);
                 $seller_details = User::where('id',$restaurantObj['seller_id'])->first();
                 
                 $seller_stripe_connect_id = $seller_details['stripe_connect_id'];

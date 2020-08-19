@@ -40,18 +40,23 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-
         'api' => [
             'driver' => 'token',
             'provider' => 'users',
             'hash' => false,
         ],
         'admin' => [
-            'redirectTo' => 'admin/dashboard',
+            // 'redirectTo' => 'admin/dashboard',
             'driver' => 'session',
-            'provider' => 'admin',
+            'provider' => 'admins',
+        ],
+        'rider' => [
+            'driver' => 'session',
+            'provider' => 'riders',
         ],
     ],
+
+    
 
     /*
     |--------------------------------------------------------------------------
@@ -76,13 +81,13 @@ return [
             'model' => App\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
-        'admin' => [
+        'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
+        ],
+        'riders' => [
+            'driver' => 'eloquent',
+            'model' => App\Rider::class,
         ],
     ],
 
@@ -107,6 +112,17 @@ return [
             'table' => 'password_resets',
             'expire' => 60,
         ],
+        'admins' => [
+            'provider' => 'admins',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'riders' => [
+            'provider' => 'riders',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        
     ],
 
 ];

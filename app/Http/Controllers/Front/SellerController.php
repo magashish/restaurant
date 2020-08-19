@@ -13,6 +13,7 @@ use Stripe\Exception\ApiErrorException;
 use App\Http\Controllers\Controller;
 use Stripe\Stripe;
 use App\Models\OrderAddress;
+use App\Rider;
 use App\SiteSetting;
 use App\Models\OrderItem;
 use Carbon\Carbon;
@@ -67,8 +68,38 @@ class SellerController extends Controller
     {
         $seller_id = Auth::user()->id;
         // dd($seller_id);
+        // $riders = Rider::where('status','FREE')->get();
         $orders = Order::where('seller_id',$seller_id)->where('status','RECEIVED')->orWhere('status','PREPARING')->orWhere('status','DISPATCHED')->orderBy('created_at','desc')->with('order_address')->with('user')->with('restraunt')->get();
         return view('pages.seller.dashboard',compact('orders'));
+    }
+
+    public function getRiders(Request $request)
+    {
+        $data = $request->all();
+        $riders = Rider::where('status','FREE')->get();
+        return response()->json([
+            'status' => 'success',
+            'riders' => $riders,
+            'order_id' => $data['order_id'],
+            'message' => 'Available Riders Fetched Successfully'
+        ]);  
+        echo $response;
+        exit();
+    }
+
+    public function updateRider(Request $request)
+    {
+        $data = $request->all();
+        // dd($data);
+        $update_rider = Order::find($data['order_id']);
+        $update_rider->rider_id = $data['rider_id'];
+        $update_rider->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Rider Aligned Successfully'
+        ]);  
+        echo $response;
+        exit();
     }
 
     public function orderDetails(Request $request)
@@ -161,7 +192,7 @@ class SellerController extends Controller
     public function sellerOrders()
     {
         $seller_id = Auth::user()->id;
-        $get_seller_orders = Order::where('seller_id',$seller_id)->where('status','COMPLETED')->with('user')->with('restraunt')->get();
+        $get_seller_orders = Order::where('seller_id',$seller_id)->where('status','DELIVERED')->with('user')->with('restraunt')->get();
         return view('pages.seller.orders',compact('get_seller_orders'));
     }
 

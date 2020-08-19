@@ -1,4 +1,4 @@
-<!--@extends('layouts.app')-->
+
 @extends('layouts.default')
 @section('content')
 <div class="about_sec">
@@ -35,6 +35,7 @@
                                 <select id="type" class="form-control @error('type') is-invalid @enderror" name="type" required>
                                     <option value="1">{{ \App\User::CUSTOMER }}</option>
                                     <option value="2">{{ \App\User::SELLER }}</option>
+                                    <!-- <option value="3">{{ \App\User::RIDER }}</option> -->
                                 </select>
 
                                 @error('type')

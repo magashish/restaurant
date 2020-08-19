@@ -1,4 +1,4 @@
-@extends('includes.seller.sellerView')
+@extends('includes.rider.riderView')
 @section('content')
 <style type="text/css">
   		.ajax-load{
@@ -26,7 +26,7 @@
            
                 <div class="col-lg-8" id="post-data">
                     @foreach($orders as $order) 
-                          
+                           
                         @php
                             $created = new \Carbon\Carbon($order->created_at);
                             $now = \Carbon\Carbon::now();
@@ -44,14 +44,10 @@
                                 <div class="timeline-badge danger">{{$span}}</div>
                                 <div class="timeline-panel">
                                     <div class="timeline-heading" id="order_heading_{{$order->id}}">
-                                        @if($order->status == 'PREPARING' && $order->rider_id == null)
-                                        <div class="alert alert-info">Order is now being prepared</div>
-                                        @elseif($order->status == 'PREPARING' && $order->rider_id != null)
-                                        <div class="alert alert-info">Order is prepared,Rider Aligned Successfully</div>
-                                        @elseif($order->status == 'DISPATCHED')
-                                        <div class="alert alert-success">Order is now dispatched with the aligned rider</div>
+                                        @if($order->status == 'DELIVERED')
+                                        <div class="alert alert-info">Order is delivered to the customer</div>
                                         @endif
-                                        <h4 class="timeline-title">Congratulations,You got a new order!
+                                        <h4 class="timeline-title">Congratulations,You got a new order to deliver!
                                             @if($diff_in_minutes < 60)
                                            
                                                 <span class="float-right">{{$diff_in_minutes}} Minutes Ago</span>
@@ -83,19 +79,16 @@
                                                 </p>
                                                 <p class="mb-0" id="footer_buttons_{{$order->id}}">
 
-                                                    @if($order->status == 'RECEIVED')
-                                                    <button class='btn btn-xs btn-success' data-toggle="modal" data-target="#cnfrmprep" data-message='Are you sure you want to process the order status to preparing' data-title="Mark Preparing" id='change_status{{$order->id}}' type='button' 
-                                                        data-value="{{$order->id}}" data-status="PREPARING">Mark Preparing </button> &nbsp&nbsp
+                                                    @if($order->status == 'DISPATCHED')
+                                                    <button class='btn btn-xs btn-success' data-toggle="modal" data-target="#cnfrmdlvrd" data-message='Are you sure you want to process the order status to delivered' data-title="Mark Delivered" id='change_status{{$order->id}}' type='button' 
+                                                        data-value="{{$order->id}}" data-status="DELIVERED">Mark Delivered </button> &nbsp&nbsp
                                                     @elseif($order->status == 'PREPARING')
-                                                        @if($order->rider_id == null)
-                                                            <button class = "btn btn-primary viewriders" id='{{$order->id}}'>Align Rider</button> &nbsp&nbsp
-                                                        @else
-                                                        <button class='btn btn-xs btn-success' 
-                                                            data-toggle="modal" data-target="#cnfrmdisp"
-                                                            data-message='Are you sure you want to process the order status to dispatched' data-title="Mark Preparing" id='change_status{{$order->id}}' type='button' 
-                                                            data-value="{{$order->id}}" data-status="DISPATCHED">Mark Dispatched </button> &nbsp&nbsp
-                                                        @endif
+                                                    <button class='btn btn-xs btn-success' 
+                                                    data-toggle="modal" data-target="#cnfrmdisp"
+                                                    data-message='Are you sure you want to process the order status to dispatched' data-title="Mark Preparing" id='change_status{{$order->id}}' type='button' 
+                                                        data-value="{{$order->id}}" data-status="DISPATCHED">Mark Dispatched </button> &nbsp&nbsp
                                                     @endif
+                
                                                     <button class = "btn btn-primary vieworderdetails" data-user="{{$order->user->first_name}}" data-mobile="{{$order->user->mobile}}" data-amount="{{$order->amount}}" data-total="{{$order->final_total}}" data-tax="{{$order->tax}}" data-delivery="{{$order->delivery_charge}}" data-id= "{{$order->id}}" data-restid= "{{$order->restraunt_id}}" >Order Details</button>
                                                 </p>
                                             </div>
@@ -196,7 +189,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="cnfrmprep" role="dialog" aria-labelledby="cnfrmprepLabel" aria-hidden="true">
+<div class="modal fade" id="cnfrmdlvrd" role="dialog" aria-labelledby="cnfrmdlvrdLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -207,83 +200,10 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-success" id="confirmprep">Ok</button>
+        <button type="button" class="btn btn-success" id="confirmdelivery">Ok</button>
       </div>
     </div>
   </div>
-</div>
-
-<div class="modal fade" id="cnfrmdisp" role="dialog" aria-labelledby="cnfrmdispLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      </div>
-      <div class="modal-body">
-        <p></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-success" id="confirmdisp">Ok</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="view-riders" class="modal fade" tabindex="-1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="panel-title modal-title" id="exampleModalLabel">Available Riders</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card-body pb-0 pt-0">
-                         <table class="table table-bordered">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <label class="mb-2"> <b>Order Id :</b> &nbsp; <span id="order_id"></span></label>
-                                            <h4><span id="order_id"> </span></h4>
-                                        </td>
-                                    </tr>
-                                </tbody>         
-                            </table>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Select</th>
-                                            <th>Id</th>
-                                            <th>Name</th>
-                                            <th>Contact Number</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="tbodyy">
-                                        <tr>
-                                            <td colspan="4" style="border-bottom: 1px dashed #ddddde;">&nbsp;</td>
-                                        </tr>
-                                    </tbody>
-
-                                    </table>
-                                    <!-- <div class="modal-footer">
-                                    <button type="button" class="btn btn-outline-primary waves-effect waves-light add-to-cart-submit" id="add-to-cart-submit">Proceed</button>
-                                    </div> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script type="text/javascript">
@@ -322,122 +242,7 @@
 </script>
 
 <script>
-
-    $('#cnfrmprep').on('show.bs.modal', function (e) {
-        $message = $(e.relatedTarget).attr('data-message');
-        $(this).find('.modal-body p').text($message);
-        var id = $(e.relatedTarget).attr('data-value');
-        $('#confirmprep').attr('id', $(e.relatedTarget).attr('data-value'));
-    });
-
-    $('#cnfrmdisp').on('show.bs.modal', function (e) {
-        $message = $(e.relatedTarget).attr('data-message');
-        $(this).find('.modal-body p').text($message);
-        var id = $(e.relatedTarget).attr('data-value');
-        $('#confirmdisp').attr('id', $(e.relatedTarget).attr('data-value'));
-    });
-
-    $('#confirmprep').on('click', function (e) {
-        var url = "/seller/changeOrderStatus";
-        var id = $(this).attr('id');
-        var status = 'PREPARING';
-        $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {"_token": $("input[name='_token']").val(),"order_id":id,"status":status},
-                    beforeSend: function(){
-                        $("#change_status"+id).html('<span class="spinner"><i class="fa fa-spinner fa-spin"></i></span> Loading ...');
-                        $("#change_status"+id).attr('disabled','disabled');                
-                    },    
-                    success: function(data) {
-                        console.log(data);
-                        if(data.status = 'success')
-                        {
-                        location.reload();
-                        }
-                    },
-                    error: { }
-                });
-    });
-
-    $('#confirmdisp').on('click', function (e) {
-        var url = "/seller/changeOrderStatus";
-        var id = $(this).attr('id');
-        var status = 'DISPATCHED';
-        $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {"_token": $("input[name='_token']").val(),"order_id":id,"status":status},
-                    beforeSend: function(){
-                        $("#change_status"+id).html('<span class="spinner"><i class="fa fa-spinner fa-spin"></i></span> Loading ...');
-                        $("#change_status"+id).attr('disabled','disabled');                
-                    },    
-                    success: function(data) {
-                        console.log(data);
-                        if(data.status = 'success')
-                        {
-                            location.reload();
-                        }
-                    },
-                    error: { }
-                });
-    });
-
-    function align_rider(detail)
-    {
-        console.log(detail);
-        var rider_id = detail.value;
-        var order_id = $("#order_id").html();
-        var url = "/seller/updateRider";
-        $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {"_token": $("input[name='_token']").val(),rider_id:rider_id,order_id:order_id},   
-                    success: function(data) {
-                        console.log(data);
-                        if(data.status = 'success')
-                        {
-                            alert('Rider Aligned Successfully');
-                            location.reload();
-                        }
-                    },
-                    error: { }
-                });
-    }
-
-    $('.viewriders').on('click', function (e) {
-        var url = "/seller/viewRiders";
-        var id = $(this).attr('id');
-        $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: {"_token": $("input[name='_token']").val(),order_id:id},
-                    // beforeSend: function(){
-                    //     $("#change_status"+id).html('<span class="spinner"><i class="fa fa-spinner fa-spin"></i></span> Loading ...');
-                    //     $("#change_status"+id).attr('disabled','disabled');                
-                    // },    
-                    success: function(data) {
-                        console.log(data);
-                        if(data.status = 'success')
-                        {
-                            document.getElementById("order_id").innerHTML =data.order_id;
-                            $.each(data.riders, function (i, option) {
-                            var $row = $('<tr>'+         
-                            '<td>' + '<input type="radio" class="menu-option-checkbox" id="'+option.name+ '-' +option.id+'" onclick="align_rider(this)" name="alignrider" value="'+option.id+'">' + '<label for="'+option.name+ '-' +option.id+'">'  + '</td>'+
-                            '<td>' + option.id  + '</td>'+
-                            '<td id="option_name-'+option.id+'">' + option.name  + '</td>'+
-                            '<td id="option_price-'+option.id+'">' + option.contact_number+'</td>'+
-                            '</tr>'); 
-                            $('.tbodyy').append($row);
-                        });
-                            $("#view-riders").modal('show');
-                        }
-                    },
-                    error: { }
-                });
-    });
-
-   $('#ordersummary').on('hidden.bs.modal', function () {
+ $('#ordersummary').on('hidden.bs.modal', function () {
     //    $(".tbody").remove();
        location.reload();
     });
@@ -485,6 +290,37 @@
             });
             return false;
     });
+</script>
 
+<script>
+ $('#cnfrmdlvrd').on('show.bs.modal', function (e) {
+        $message = $(e.relatedTarget).attr('data-message');
+        $(this).find('.modal-body p').text($message);
+        var id = $(e.relatedTarget).attr('data-value');
+        $('#confirmdelivery').attr('id', $(e.relatedTarget).attr('data-value'));
+    });
+
+    $('#confirmdelivery').on('click', function (e) {
+        var url = "/seller/changeOrderStatus";
+        var id = $(this).attr('id');
+        var status = 'DELIVERED';
+        $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {"_token": $("input[name='_token']").val(),"order_id":id,"status":status},
+                    beforeSend: function(){
+                        $("#change_status"+id).html('<span class="spinner"><i class="fa fa-spinner fa-spin"></i></span> Loading ...');
+                        $("#change_status"+id).attr('disabled','disabled');                
+                    },    
+                    success: function(data) {
+                        console.log(data);
+                        if(data.status = 'success')
+                        {
+                        location.reload();
+                        }
+                    },
+                    error: { }
+                });
+    });
 </script>
 @endsection

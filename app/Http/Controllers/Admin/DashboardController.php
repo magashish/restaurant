@@ -13,6 +13,11 @@ use App\DeliveryCharge;
 
 class DashboardController extends Controller
 {
+    // public function __construct()
+    // {
+    //     $this->middleware('auth:admin');
+    // }
+
     public function index()
     {
         return view('pages.admin.dashboard');
@@ -107,17 +112,14 @@ class DashboardController extends Controller
     public function getCms()
     {
         $cms = Cms::all();
-        // dd($cms);
         return view('pages.admin.cms.view-cms',compact('cms'));
     }
 
     public function editCms(Request $request,$id)
     {
-        // dd($id);
         if($request->isMethod('POST'))
         {
             $data = $request->all();
-            // dd($data);
             $cms = Cms::findOrFail($id);
             $cms->title = $data['page_title'];
             $cms->short_description = $data['short_description'];
@@ -134,7 +136,6 @@ class DashboardController extends Controller
                 $cms->page_image = $fileName;
             } 
             $cms->save();
-            // dd($cms);
             return redirect('/cms')->with('success','Page Content Updated Successfully');
 
         }

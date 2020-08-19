@@ -15,36 +15,12 @@ Route::get('/', function () {
     return View::make('pages.home');
 });
 
-// Route::get('/about', function () {
-//     return View::make('pages.about');
-// })->name('about');
-
-/*Route::get('/restaurant', function () {
-    return View::make('pages.restaurant');
-})->name('restaurant');*/
-
-// Route::get('/contact', function () {
-//     return View::make('pages.contact');
-// })->name('contact');
-
-Route::get('/contact', 'CmsController@contact')->name('contact');
-Route::get('/about', 'CmsController@about')->name('about');
-Route::get('/carrers', 'CmsController@carrer');
-Route::get('/teams', 'CmsController@teams');
-Route::get('/terms&conditions', 'CmsController@termsConditions');
-Route::get('/refund&cancellation', 'CmsController@refundCancellation');
-Route::get('/privacy-policy', 'CmsController@privacyPolicy');
-Route::get('/cookie-policy', 'CmsController@cookiePolicy');
-Route::get('/help&support', 'CmsController@helpSupport');
-Route::get('/partner-with-us', 'CmsController@partnerwithUs');
-Route::get('/ride-with-us', 'CmsController@ridewithUs');
-
 /*Admin Routes*/
 Route::group(['namespace' => 'Admin'], function () {
     Route::get('/admin/login', 'AdminController@login')->name('admin.login');
     Route::post('/admin/login', 'AdminController@loginPost')->name('admin.login');
 
-    //Route::group(['middleware' => 'auth:admin'], function () {
+    // Route::group(['middleware' => 'auth:admin'], function () {
     Route::get('/admin', 'DashboardController@index')->name('admin');
     Route::get('/admin/dashboard', 'DashboardController@index')->name('admin.dashboard');
 
@@ -85,6 +61,34 @@ Route::group(['namespace' => 'Admin'], function () {
     // });
 });
 
+Route::group(['namespace' => 'Rider'], function () {
+    Route::get('/rider/register', 'RiderController@showRegistrationForm')->name('rider.register.show');
+    Route::post('/rider/register','RiderController@register')->name('rider.register.submit');
+    Route::any('/get-email-checked','RiderController@checkEmailAddress')->name('checkcheckEmailAddressReq');
+    Route::get('/rider/login','RiderController@showLoginForm')->name('rider.login');
+    Route::post('/rider/login','RiderController@login')->name('rider.login.submit');
+    Route::group(['middleware' => 'auth:rider'], function () {
+    Route::get('/rider','RiderController@dashboard')->name('rider.dashboard');
+    Route::get('/rider/dashboard','RiderController@dashboard')->name('rider.dashboard');
+    Route::get('/rider/account', 'RiderController@riderAccount')->name('rider.account');
+    Route::post('/rider/update-profile','RiderController@updateRiderProfile')->name('rider.update');
+    Route::get('/rider/orders','RiderController@riderOrders')->name('rider.orders');
+    Route::post('/rider/logout','RiderController@logout')->name('rider.logout');
+    });
+});
+
+Route::get('/contact', 'CmsController@contact')->name('contact');
+Route::get('/about', 'CmsController@about')->name('about');
+Route::get('/carrers', 'CmsController@carrer');
+Route::get('/teams', 'CmsController@teams');
+Route::get('/terms&conditions', 'CmsController@termsConditions');
+Route::get('/refund&cancellation', 'CmsController@refundCancellation');
+Route::get('/privacy-policy', 'CmsController@privacyPolicy');
+Route::get('/cookie-policy', 'CmsController@cookiePolicy');
+Route::get('/help&support', 'CmsController@helpSupport');
+Route::get('/partner-with-us', 'CmsController@partnerwithUs');
+Route::get('/ride-with-us', 'CmsController@ridewithUs');
+
 Route::group(['namespace' => 'Front'], function () {
     Route::post('/user-login', 'UserController@login')->name('user.login');
     Route::post('/user-register', 'UserController@register')->name('user.register');
@@ -106,31 +110,36 @@ Route::group(['namespace' => 'Front'], function () {
     Route::post('/check-tax', 'OrderController@checkTax')->name('check.tax');
     Route::post('/input-check-tax', 'OrderController@inputcheckTax')->name('input.check.tax');
 
-    Route::group(['middleware' => 'auth'], function () {
-    });
-
     Route::get('/thank-you', 'OrderController@thankYou')->name('thank.you');
     Route::post('/check-same-restaurant', 'CartController@checkSameRestaurant')->name('check-same-restaurant');
     Route::post('/get-product-options', 'CartController@getProductOptions')->name('get-product-options');
     Route::post('/update-lat-lng', 'UserController@updateLatLng')->name('update.lat.lng');
     Route::post('/calculate-delivery-charge', 'OrderController@calculateDeliveryCharge')->name('calculate.delivery.charge');
     Route::post('/input-calculate-delivery-charge', 'OrderController@inputcalculateDeliveryCharge')->name('input.calculate.delivery.charge');
+      
+    Route::get('save', 'CustomerController@form')->name('stripe.form');
+    Route::post('save', 'CustomerController@save')->name('save.customer');
+    Route::get('express', 'SellerController@create')->name('create.express');
+    Route::get('stripe', 'SellerController@save')->name('save.express');
 
-   // Route::group(['middleware' => ['auth:web']], function(){
-        //Route::group(['middleware' => ['stripe']], function() {
-            Route::get('/', 'HomeController@index')->name('home.index');
-        //});
-        Route::get('/seller/dashboard', 'SellerController@dashboard')->name('seller.dashboard');
-
-        Route::get('save', 'CustomerController@form')->name('stripe.form');
-        Route::post('save', 'CustomerController@save')->name('save.customer');
-        Route::get('express', 'SellerController@create')->name('create.express');
-        Route::get('stripe', 'SellerController@save')->name('save.express');
-    //});
-
+    Route::get('/', 'HomeController@index')->name('home.index');
+   
+    Route::group(['middleware' => 'auth'], function () {
+        
     Route::get('/account', 'AccountController@account')->name('account');
+    Route::post('/update-profile', 'UserController@updateProfile')->name('update.profile');
+    Route::get('/my-orders', 'OrderController@myOrders')->name('my.orders');
+    Route::get('/order-detail/{oid}', 'OrderController@orderDetail')->name('order.detail');
+    Route::get('/change-password', 'UserController@changePassword')->name('change.password');
+    Route::post('/update-password-post', 'UserController@updatePasswordPost')->name('update.password.post');
+    Route::get('/saved-address', 'AccountController@savedAddress')->name('saved.address');
+    Route::get('/delete-address/{id}', 'AccountController@deleteAddress')->name('delete.address');
+
+    Route::get('/seller/dashboard', 'SellerController@dashboard')->name('seller.dashboard');
+    Route::post('/seller/viewRiders', 'SellerController@getRiders')->name('seller.riders');
+    Route::post('/seller/updateRider', 'SellerController@updateRider')->name('seller.update.rider');
     Route::get('/seller/account', 'AccountController@sellerAccount')->name('seller.account');
-    Route::post('/seller/update-profile','UserController@updateSellerProfile')->name('seller.update');;
+    Route::post('/seller/update-profile','UserController@updateSellerProfile')->name('seller.update');
     Route::get('/link-bank-account','SellerController@getaccountdetail')->name('seller.connect');
     Route::get('/seller/orders','SellerController@sellerOrders')->name('seller.orders');
     Route::get('/seller/view-order-details/{id}','SellerController@viewDetails')->name('order.details');
@@ -138,14 +147,10 @@ Route::group(['namespace' => 'Front'], function () {
     Route::post('/seller/changeOrderStatus','SellerController@changeStatus')->name('seller.changeorder.status');
     Route::any('/seller/store-stripe-account-details','SellerController@storestripedetail')->name('seller.storeconnect');
     Route::any('/seller/delete-stripe-account','SellerController@deletestripeaccount');
-    Route::post('/update-profile', 'UserController@updateProfile')->name('update.profile');
-    Route::get('/change-password', 'UserController@changePassword')->name('change.password');
-    Route::post('/update-password-post', 'UserController@updatePasswordPost')->name('update.password.post');
-    Route::get('/my-orders', 'OrderController@myOrders')->name('my.orders');
-    Route::get('/order-detail/{oid}', 'OrderController@orderDetail')->name('order.detail');
 
-    Route::get('/saved-address', 'AccountController@savedAddress')->name('saved.address');
-    Route::get('/delete-address/{id}', 'AccountController@deleteAddress')->name('delete.address');
+    // Route::get('/rider/dashboard', 'RiderController@dashboard')->name('rider.dashboard');
+
+    });
 });
 
 Auth::routes();

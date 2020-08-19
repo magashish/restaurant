@@ -8,6 +8,8 @@ use App\Models\Admin;
 
 class AdminController extends Controller
 {
+    
+
     public function login()
     {
         return view('pages.admin.login');

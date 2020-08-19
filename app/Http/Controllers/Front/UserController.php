@@ -37,7 +37,6 @@ class UserController extends Controller
          return redirect()->back()->withInput()->with('error', $strMessage);
         }
             $data = $request->all();
-        //    dd($data);
             try{
                     $register = new User();
                     $register->first_name = $data['name'];
@@ -92,6 +91,12 @@ class UserController extends Controller
                     return redirect()->route('seller.dashboard');
                     
                 }
+                // else if(Auth::attempt(['email' => $request->email, 'password' => $request->password,'type' => 3]))
+                // {
+                  
+                //     return redirect()->route('rider.dashboard');
+                    
+                // }
                 else {
                     return redirect('login')->with('error', "Email and password do not match");
                 }
@@ -169,7 +174,6 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         $requestFields = $request->all();
-        // dd($requestFields);
         $userObj = User::find(\Auth::user()->id);
         $userObj->first_name = $requestFields['first_name'] ?? "";
         $userObj->last_name = $requestFields['last_name'] ?? "";
@@ -183,7 +187,6 @@ class UserController extends Controller
         $userObj->country = $requestFields['country'] ?? "";
         // $userObj->zip = $requestFields['zip'] ?? "";
         $userObj->address = $requestFields['address'] ?? "";
-        // dd($userObj);
         if ($userObj->save()) {
             return redirect()->route('account')->with('success', 'Profile updated successfully');
         }
@@ -193,7 +196,6 @@ class UserController extends Controller
     public function updateSellerProfile(Request $request)
     {
         $requestFields = $request->all();
-        // dd($requestFields);
         $userObj = User::find(\Auth::user()->id);
         $userObj->first_name = $requestFields['first_name'] ?? "";
         $userObj->name = $requestFields['first_name'] ?? "";
@@ -206,10 +208,8 @@ class UserController extends Controller
         $userObj->zip = $requestFields['zip'] ?? "";
         $userObj->address = $requestFields['address'] ?? "";
         if ($userObj->save()) {
-            // dd('1');
             return redirect()->route('seller.account')->with('success', 'Profile updated successfully');
         }
-        // dd('2');
         return redirect()->route('seller.account')->with('error', GLOBAL_ERROR_MSG);
       
        

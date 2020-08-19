@@ -6,18 +6,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Restraunt </title>
+    <title>Restraunt</title>
     <!-- Favicon icon -->
    
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('frontend/assets/images/favicon.png') }}">
     <!-- Bootstrap Core CSS -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('frontend/assets/images/favicon.png') }}">
+
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
-    <!-- <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,700&display=swap" rel="stylesheet"> -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <!-- <link rel="stylesheet" href="{{asset('frontend/assets/css/pickmeup.css') }}" type="text/css" /> -->
     
     <!-- Custom Stylesheet -->
-  
     <link href="{{ asset('frontend/assets/css/style.css') }}" rel="stylesheet">
     <script src=" https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js "></script>
 
@@ -57,13 +55,13 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="{{ url('/seller/dashboard') }}">
+                <a class="nav-link" href="{{ url('/rider/dashboard') }}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link"  href="{{ url('/seller/orders') }}" >
+                <a class="nav-link"  href="{{ url('/rider/orders') }}" >
                     <i class="fas fa-fw fa-link" ></i>
                     <span>Orders</span>
                 </a>
@@ -76,13 +74,13 @@
                 </a>
                <ul class="collapse list-unstyled" id="homeSubmenus">
                     <li>
-                        <a class="nav-link" href="{{ route('seller.account') }}">
+                        <a class="nav-link" href="{{ route('rider.account') }}">
                         <i class="fa fa-user"></i>
                             <span>Profile</span>
                         </a>
                     </li>
                     <li>
-                        <a class="nav-link" href="{{ url('/seller/change-password/'.Auth::user()->id) }}">
+                        <a class="nav-link" href="{{ url('/rider/change-password/'.Auth::guard('rider')->user()->id) }}">
                         <i class="fa fa-key"></i>
                             <span>Manage Passwords</span>
                         </a>
@@ -90,13 +88,6 @@
                </ul>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link"  href="{{ url('/link-bank-account') }}" >
-                    <i class="fas fa-fw fa-link" ></i>
-                    <span>Link account</span>
-                </a>
-               
-            </li>
            
         </ul>
         <!-- End of Sidebar -->
@@ -138,17 +129,17 @@
                         @else
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"> {{ Auth::user()->name }} </span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"> {{ Auth::guard('rider')->user()->name }} </span>
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                <a class="dropdown-item" href="{{ route('rider.logout') }}"
                                 onclick="event.preventDefault();
                                     document.getElementById('logout-form').submit();">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i> {{ __('Logout') }}
                                 </a>
                                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    <form id="logout-form" action="{{ route('rider.logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>
                                 </div>
@@ -190,9 +181,9 @@
 <!-- JS files starts here -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src = "https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="{{asset('frontend/assets/js/jquery-ui-1.7.custom.min.js') }}"></script>
 <script src=" {{ asset('frontend/assets/js/custom.min.js') }} "></script>
-<script src = "https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 <script src = "https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
 <script src = "https://cdn.datatables.net/buttons/1.6.0/js/dataTables.buttons.min.js"></script>
 <script src = "https://cdn.datatables.net/buttons/1.6.0/js/buttons.bootstrap4.min.js"></script>
